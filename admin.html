@@ -18,6 +18,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./session.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,7 +28,6 @@
     :root{
       --bg:#04110d;
       --card:#0b1f18;
-      --card2:#102820;
       --line:rgba(255,255,255,.08);
       --line-g:rgba(34,197,94,.22);
       --text:#f3fff7;
@@ -38,7 +38,6 @@
       --danger:#f87171;
       --blue:#60a5fa;
       --shadow:0 24px 70px rgba(0,0,0,.45);
-      --r:24px;
       --max:1120px;
       --ff-title:'Playfair Display', Georgia, serif;
       --ff-body:'Nunito', system-ui, sans-serif;
@@ -47,9 +46,7 @@
     *,*::before,*::after{box-sizing:border-box}
     html,body{margin:0;padding:0}
     body{
-      min-height:100vh;
-      color:var(--text);
-      font-family:var(--ff-body);
+      min-height:100vh;color:var(--text);font-family:var(--ff-body);
       background:
         radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 36%),
         radial-gradient(circle at 100% 100%, rgba(250,204,21,.07), transparent 28%),
@@ -60,481 +57,204 @@
     a{text-decoration:none;color:inherit}
     button,input,select,textarea{font-family:var(--ff-body)}
 
-    .wrap{
-      width:min(var(--max), calc(100% - 24px));
-      margin:0 auto;
-    }
-
+    .wrap{width:min(var(--max), calc(100% - 24px));margin:0 auto}
     .topbar{
-      position:sticky;
-      top:0;
-      z-index:50;
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-      background:rgba(4,17,13,.82);
-      border-bottom:1px solid var(--line);
-      margin-bottom:18px;
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      background:rgba(4,17,13,.82);border-bottom:1px solid var(--line);margin-bottom:18px;
     }
-
     .topbar-in{
-      width:min(var(--max), calc(100% - 24px));
-      margin:0 auto;
-      min-height:78px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
+      width:min(var(--max), calc(100% - 24px));margin:0 auto;min-height:78px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;
     }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-
+    .brand{display:flex;align-items:center;gap:10px;min-width:0}
     .brand-mark{
-      width:46px;height:46px;
-      border-radius:14px;
+      width:46px;height:46px;border-radius:14px;
       background:linear-gradient(135deg,var(--green),var(--green2));
-      display:grid;place-items:center;
-      font-size:22px;font-weight:900;
-      color:#032215;
-      box-shadow:var(--shadow);
-      flex-shrink:0;
+      display:grid;place-items:center;font-size:22px;font-weight:900;color:#032215;
+      box-shadow:var(--shadow);flex-shrink:0;
     }
-
     .brand-title{
-      font-family:var(--ff-title);
-      color:var(--gold);
-      font-size:21px;
-      line-height:1.05;
+      font-family:var(--ff-title);color:var(--gold);font-size:21px;line-height:1.05;
     }
-
     .brand-sub{
-      color:var(--muted);
-      font-size:13px;
-      font-weight:800;
-      margin-top:4px;
-      word-break:break-word;
+      color:var(--muted);font-size:13px;font-weight:800;margin-top:4px;word-break:break-word;
     }
 
-    .nav{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:flex-end;
-    }
-
+    .nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
     .pill{
-      padding:11px 15px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--muted);
-      font-weight:800;
-      font-size:13px;
-      cursor:pointer;
-      transition:.18s ease;
+      padding:11px 15px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);color:var(--muted);
+      font-weight:800;font-size:13px;cursor:pointer;transition:.18s ease;
     }
     .pill:hover{
-      color:var(--gold);
-      border-color:rgba(250,204,21,.28);
-      background:rgba(250,204,21,.07);
+      color:var(--gold);border-color:rgba(250,204,21,.28);background:rgba(250,204,21,.07);
     }
 
-    .hero{
-      display:grid;
-      gap:14px;
-      margin-bottom:16px;
-    }
-
+    .hero{display:grid;gap:14px;margin-bottom:16px}
     .slug-badge{
-      display:none;
-      align-items:center;
-      gap:10px;
-      padding:12px 16px;
-      border-radius:16px;
-      border:1px solid var(--line-g);
-      background:rgba(34,197,94,.07);
+      display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:16px;
+      border:1px solid var(--line-g);background:rgba(34,197,94,.07);
     }
     .slug-badge .dot{
-      width:10px;height:10px;border-radius:50%;
-      background:var(--green);
-      box-shadow:0 0 0 3px rgba(34,197,94,.2);
-      flex-shrink:0;
+      width:10px;height:10px;border-radius:50%;background:var(--green);
+      box-shadow:0 0 0 3px rgba(34,197,94,.2);flex-shrink:0;
     }
-    .slug-badge .info{
-      font-size:13px;
-      font-weight:800;
-      color:#bbf7d0;
-    }
-    .slug-badge .info span{
-      color:var(--muted);
-      font-weight:700;
-    }
+    .slug-badge .info{font-size:13px;font-weight:800;color:#bbf7d0}
+    .slug-badge .info span{color:var(--muted);font-weight:700}
 
     .state{
-      min-height:72px;
-      padding:16px 18px;
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      display:grid;
-      gap:6px;
-      align-content:center;
+      min-height:72px;padding:16px 18px;border-radius:18px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);display:grid;gap:6px;align-content:center;
     }
-    .state.ok{
-      border-color:rgba(34,197,94,.24);
-      background:rgba(34,197,94,.08);
-    }
-    .state.bad{
-      border-color:rgba(248,113,113,.24);
-      background:rgba(248,113,113,.09);
-    }
+    .state.ok{border-color:rgba(34,197,94,.24);background:rgba(34,197,94,.08)}
+    .state.bad{border-color:rgba(248,113,113,.24);background:rgba(248,113,113,.09)}
     .state-title{
-      font-size:13px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.08em;
+      font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;
     }
     .state-txt{
-      font-size:15px;
-      color:var(--muted);
-      font-weight:800;
-      line-height:1.5;
-      word-break:break-word;
+      font-size:15px;color:var(--muted);font-weight:800;line-height:1.5;word-break:break-word;
     }
 
     .grid{
-      display:grid;
-      grid-template-columns:1.05fr .95fr;
-      gap:16px;
-      align-items:start;
+      display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:start;
     }
 
     .card{
-      border:1px solid var(--line);
-      border-radius:24px;
+      border:1px solid var(--line);border-radius:24px;
       background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
-      box-shadow:var(--shadow);
-      overflow:hidden;
+      box-shadow:var(--shadow);overflow:hidden;
     }
-
     .card-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:17px 18px 15px;
-      border-bottom:1px solid var(--line);
-      flex-wrap:wrap;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:17px 18px 15px;border-bottom:1px solid var(--line);flex-wrap:wrap;
     }
-
     .card-title{
-      font-size:14px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      display:flex;
-      align-items:center;
-      gap:7px;
-      color:#fde68a;
+      font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;
+      display:flex;align-items:center;gap:7px;color:#fde68a;
     }
+    .card-body{padding:18px}
 
-    .card-body{
-      padding:18px;
-    }
-
-    .form{
-      display:grid;
-      gap:16px;
-    }
-
-    .row2{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-
-    .row3{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:12px;
-    }
-
-    .field{
-      display:grid;
-      gap:8px;
-    }
-
+    .form{display:grid;gap:16px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .field{display:grid;gap:8px}
     .label{
-      font-size:12px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:#bbf7d0;
+      font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#bbf7d0;
     }
 
     input,select,textarea{
-      width:100%;
-      min-height:56px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      color:var(--text);
-      padding:0 16px;
-      font-size:16px;
-      font-weight:800;
-      outline:none;
-      transition:border-color .15s, background .15s;
+      width:100%;min-height:56px;border-radius:16px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);color:var(--text);padding:0 16px;
+      font-size:16px;font-weight:800;outline:none;transition:border-color .15s, background .15s;
     }
-
     textarea{
-      min-height:110px;
-      padding-top:14px;
-      padding-bottom:14px;
-      resize:vertical;
+      min-height:110px;padding-top:14px;padding-bottom:14px;resize:vertical;
     }
-
     input:focus,select:focus,textarea:focus{
-      border-color:rgba(34,197,94,.38);
-      background:rgba(255,255,255,.05);
+      border-color:rgba(34,197,94,.38);background:rgba(255,255,255,.05);
     }
+    input::placeholder,textarea::placeholder{color:rgba(243,255,247,.28)}
+    select option{background:#0d221b;color:var(--text)}
 
-    input::placeholder,textarea::placeholder{
-      color:rgba(243,255,247,.28);
-    }
-
-    select option{
-      background:#0d221b;
-      color:var(--text);
-    }
-
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
     .btn{
-      min-height:54px;
-      padding:13px 20px;
-      border-radius:999px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      border:1px solid var(--line);
-      font-weight:900;
-      font-size:15px;
-      cursor:pointer;
-      transition:.18s ease;
+      min-height:54px;padding:13px 20px;border-radius:999px;display:inline-flex;
+      align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);
+      font-weight:900;font-size:15px;cursor:pointer;transition:.18s ease;
     }
-
     .btn.primary{
-      border:none;
-      color:#032215;
-      background:linear-gradient(135deg,var(--green),var(--green2));
+      border:none;color:#032215;background:linear-gradient(135deg,var(--green),var(--green2));
     }
     .btn.primary:hover{filter:brightness(1.06)}
-    .btn.primary:disabled{
-      opacity:.6;
-      cursor:not-allowed;
-      filter:none;
-    }
-
+    .btn.primary:disabled{opacity:.6;cursor:not-allowed;filter:none}
     .btn.secondary{
-      color:var(--text);
-      background:rgba(255,255,255,.04);
+      color:var(--text);background:rgba(255,255,255,.04);
     }
     .btn.secondary:hover{
-      background:rgba(255,255,255,.07);
-      border-color:rgba(255,255,255,.16);
+      background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16);
     }
 
-    .helper{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.55;
-      font-weight:700;
-    }
+    .helper{color:var(--muted);font-size:14px;line-height:1.55;font-weight:700}
 
     .stats{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-bottom:14px;
+      display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;
     }
-
     .stat{
-      padding:16px;
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
+      padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03);
     }
-
     .stat-k{
-      font-size:11px;
-      font-weight:900;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:var(--muted);
-      margin-bottom:7px;
+      font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;
     }
-
     .stat-v{
-      font-family:var(--ff-title);
-      font-size:24px;
-      line-height:1.05;
-      font-weight:700;
+      font-family:var(--ff-title);font-size:24px;line-height:1.05;font-weight:700;
     }
     .stat-v.green{color:var(--green)}
     .stat-v.danger{color:var(--danger)}
     .stat-v.gold{color:var(--gold)}
 
-    .list{
-      min-height:80px;
-    }
-
+    .list{min-height:80px}
     .empty{
-      padding:22px 0;
-      text-align:center;
-      color:var(--muted);
-      font-size:15px;
-      font-weight:700;
-      line-height:1.55;
+      padding:22px 0;text-align:center;color:var(--muted);font-size:15px;font-weight:700;line-height:1.55;
     }
 
     .item{
-      display:flex;
-      align-items:flex-start;
-      gap:12px;
-      padding:14px 0;
-      border-bottom:1px solid var(--line);
+      display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);
     }
     .item:last-child{border-bottom:none}
 
     .item-ico{
-      width:42px;height:42px;
-      border-radius:12px;
-      display:grid;place-items:center;
-      font-size:18px;
-      flex-shrink:0;
+      width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:18px;flex-shrink:0;
     }
     .item-ico.in{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2)}
     .item-ico.out{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2)}
     .item-ico.sav{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2)}
 
-    .item-body{
-      flex:1;
-      min-width:0;
-    }
-
+    .item-body{flex:1;min-width:0}
     .item-title{
-      font-size:15px;
-      font-weight:900;
-      color:var(--text);
-      line-height:1.45;
-      word-break:break-word;
+      font-size:15px;font-weight:900;color:var(--text);line-height:1.45;word-break:break-word;
     }
-
     .item-meta{
-      margin-top:4px;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:700;
-      line-height:1.55;
-      word-break:break-word;
+      margin-top:4px;color:var(--muted);font-size:13px;font-weight:700;line-height:1.55;word-break:break-word;
     }
 
     .item-right{
-      flex-shrink:0;
-      display:grid;
-      gap:8px;
-      justify-items:end;
-      text-align:right;
+      flex-shrink:0;display:grid;gap:8px;justify-items:end;text-align:right;
     }
-
     .item-amount{
-      font-family:var(--ff-title);
-      font-size:18px;
-      font-weight:700;
-      line-height:1.05;
+      font-family:var(--ff-title);font-size:18px;font-weight:700;line-height:1.05;
     }
     .item-amount.in{color:var(--green)}
     .item-amount.out{color:var(--danger)}
     .item-amount.sav{color:var(--blue)}
 
     .btn-del{
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(248,113,113,.22);
-      background:rgba(248,113,113,.08);
-      color:#fecaca;
-      font-size:12px;
-      font-weight:900;
-      cursor:pointer;
-      transition:.15s ease;
+      padding:8px 12px;border-radius:999px;border:1px solid rgba(248,113,113,.22);
+      background:rgba(248,113,113,.08);color:#fecaca;font-size:12px;font-weight:900;cursor:pointer;transition:.15s ease;
     }
-    .btn-del:hover{
-      background:rgba(248,113,113,.14);
-    }
+    .btn-del:hover{background:rgba(248,113,113,.14)}
 
     .loader{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:22px 0;
-      font-size:14px;
-      font-weight:700;
-      color:var(--muted);
+      display:flex;align-items:center;justify-content:center;gap:8px;padding:22px 0;
+      font-size:14px;font-weight:700;color:var(--muted);
     }
-
     .spinner{
-      width:16px;height:16px;
-      border:2px solid rgba(255,255,255,.1);
-      border-top-color:var(--green);
-      border-radius:50%;
-      animation:spin .7s linear infinite;
+      width:16px;height:16px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--green);
+      border-radius:50%;animation:spin .7s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
     #toast{
-      position:fixed;
-      bottom:24px;
-      left:50%;
-      transform:translateX(-50%) translateY(20px);
-      z-index:9999;
-      padding:12px 22px;
-      border-radius:999px;
-      font-size:14px;
-      font-weight:800;
-      background:var(--card);
-      border:1px solid var(--line-g);
-      color:#bbf7d0;
-      opacity:0;
-      transition:opacity .25s, transform .25s;
-      pointer-events:none;
-      white-space:nowrap;
-      max-width:calc(100vw - 24px);
-      overflow:hidden;
-      text-overflow:ellipsis;
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;
+      padding:12px 22px;border-radius:999px;font-size:14px;font-weight:800;background:var(--card);
+      border:1px solid var(--line-g);color:#bbf7d0;opacity:0;transition:opacity .25s, transform .25s;
+      pointer-events:none;white-space:nowrap;max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis;
     }
-    #toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(0);
-    }
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    @media (max-width:980px){
-      .grid{grid-template-columns:1fr}
-    }
-
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
     @media (max-width:700px){
-      .topbar-in,
-      .wrap{width:min(var(--max), calc(100% - 16px))}
+      .topbar-in,.wrap{width:min(var(--max), calc(100% - 16px))}
       .row2,.row3,.stats{grid-template-columns:1fr}
       .brand-title{font-size:18px}
     }
@@ -554,7 +274,7 @@
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
         <a class="pill" href="./pin.html">🔐 PIN</a>
-        <a class="pill" href="./cockpit.html">📊 Cockpit</a>
+        <a class="pill" href="./cockpit.html" id="topCockpitLink">📊 Cockpit</a>
         <button class="pill" id="btnRefresh" type="button">🔄 Recharger</button>
         <button class="pill" id="btnLogout" type="button">🚪 Quitter</button>
       </nav>
@@ -682,7 +402,7 @@
             </div>
 
             <div class="helper">
-              Cette page sert à la saisie manuelle PAY. Le cockpit, lui, reste une lecture réelle séparée.
+              Cette page sert à la saisie manuelle PAY. La session reste active et le cockpit garde la lecture globale.
             </div>
           </form>
         </div>
@@ -722,32 +442,28 @@
   <div id="toast"></div>
 
   <script>
-    const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL || "").trim();
-    const SUPABASE_ANON_KEY = String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim();
-    const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
-
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
-        storage: {
-          getItem: () => null,
-          setItem: () => {},
-          removeItem: () => {}
+    const sb = window.supabase.createClient(
+      String(window.DIGIY_SUPABASE_URL || "").trim(),
+      String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim(),
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false,
+          storage: {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {}
+          }
         }
       }
-    });
+    );
+
+    const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
 
     let SLUG = "";
     let PHONE = "";
     let HISTORY = [];
-
-    const SESSION_KEYS = [
-      "digiy_pay_session",
-      "digiy_session",
-      "digiy_loc_pro_session"
-    ];
 
     function $(id){ return document.getElementById(id); }
 
@@ -762,22 +478,6 @@
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
-    }
-
-    function normalizeSlug(v){
-      return String(v || "").trim().toLowerCase();
-    }
-
-    function normalizePhone(v){
-      return String(v || "").replace(/[^\d]/g, "");
-    }
-
-    function safeJsonParse(raw){
-      try{
-        return JSON.parse(raw);
-      }catch(_){
-        return null;
-      }
     }
 
     function todayStr(){
@@ -797,12 +497,7 @@
 
     function errText(err){
       if(!err) return "Erreur inconnue.";
-      const parts = [
-        err.message,
-        err.details,
-        err.hint,
-        err.code ? ("code: " + err.code) : ""
-      ].filter(Boolean);
+      const parts = [err.message, err.details, err.hint, err.code ? ("code: " + err.code) : ""].filter(Boolean);
       return parts.join(" · ") || "Erreur inconnue.";
     }
 
@@ -842,77 +537,6 @@
       btn.textContent = on ? "⏳ Enregistrement..." : "💾 Enregistrer";
     }
 
-    function cleanupBrokenSessions(){
-      SESSION_KEYS.forEach(key => {
-        try{
-          const raw = localStorage.getItem(key);
-          if(raw == null) return;
-          if(!safeJsonParse(raw)){
-            localStorage.removeItem(key);
-          }
-        }catch(_){}
-      });
-    }
-
-    function persistPaySession(sessionLike){
-      const slug = normalizeSlug(sessionLike && sessionLike.slug);
-      const phone = normalizePhone(sessionLike && sessionLike.phone);
-      if(!slug) return null;
-
-      const payload = {
-        slug,
-        phone,
-        module: "PAY",
-        ts: Date.now()
-      };
-
-      try{
-        localStorage.setItem("digiy_pay_session", JSON.stringify(payload));
-      }catch(_){}
-
-      return payload;
-    }
-
-    function getSession(){
-      cleanupBrokenSessions();
-
-      for(const key of SESSION_KEYS){
-        try{
-          const raw = localStorage.getItem(key);
-          if(!raw) continue;
-
-          const parsed = safeJsonParse(raw);
-          if(!parsed || typeof parsed !== "object"){
-            try{ localStorage.removeItem(key); }catch(_){}
-            continue;
-          }
-
-          const slug = normalizeSlug(parsed.slug);
-          const phone = normalizePhone(parsed.phone);
-          const ts = Number(parsed.ts || 0);
-
-          if(!slug) continue;
-
-          if(ts){
-            const age = Date.now() - ts;
-            if(age > 8 * 60 * 60 * 1000 && key === "digiy_pay_session"){
-              try{ localStorage.removeItem(key); }catch(_){}
-              continue;
-            }
-          }
-
-          return persistPaySession({ slug, phone });
-        }catch(_){}
-      }
-      return null;
-    }
-
-    function clearSessions(){
-      SESSION_KEYS.forEach(key => {
-        try{ localStorage.removeItem(key); }catch(_){}
-      });
-    }
-
     function resetForm(){
       $("direction").value = "in";
       $("scope").value = "pro";
@@ -930,12 +554,11 @@
     function syncKindByScope(){
       const scope = $("scope").value;
       const kind = $("kind");
-
       if(scope === "savings"){
         kind.value = "saving";
-      } else if(scope === "pro" && kind.value === "saving") {
+      }else if(scope === "pro" && kind.value === "saving"){
         kind.value = "sale";
-      } else if(scope === "personal" && kind.value === "saving") {
+      }else if(scope === "personal" && kind.value === "saving"){
         kind.value = "other";
       }
     }
@@ -943,7 +566,6 @@
     function iconFor(item){
       const scope = String(item.scope || "");
       const direction = String(item.direction || "");
-
       if(scope === "savings") return { cls:"sav", emoji:"🛟" };
       if(direction === "out") return { cls:"out", emoji:"📉" };
       return { cls:"in", emoji:"📈" };
@@ -952,7 +574,6 @@
     function amountClass(item){
       const scope = String(item.scope || "");
       const direction = String(item.direction || "");
-
       if(scope === "savings") return "sav";
       if(direction === "out") return "out";
       return "in";
@@ -1052,7 +673,6 @@
         HISTORY = Array.isArray(data) ? data : [];
         renderStats(HISTORY);
         renderHistory(HISTORY);
-
         setState("ok", "Saisie PAY prête", "Historique chargé sur le slug PAY actif.");
       }catch(err){
         logErr("[PAY admin history]", err);
@@ -1162,70 +782,29 @@
       }
     }
 
-    function resolveContext(){
-      try{
-        const url = new URL(window.location.href);
-        const qSlug = normalizeSlug(url.searchParams.get("slug"));
-        const qPhone = normalizePhone(url.searchParams.get("phone"));
-
-        if(qSlug){
-          persistPaySession({ slug: qSlug, phone: qPhone });
-          return { slug: qSlug, phone: qPhone };
-        }
-
-        const s = getSession();
-        if(s && s.slug){
-          return {
-            slug: normalizeSlug(s.slug),
-            phone: normalizePhone(s.phone)
-          };
-        }
-
-        return null;
-      }catch(_){
-        const s = getSession();
-        if(s && s.slug){
-          return {
-            slug: normalizeSlug(s.slug),
-            phone: normalizePhone(s.phone)
-          };
-        }
-        return null;
-      }
-    }
-
-    function updateUrl(slug, phone){
-      try{
-        const url = new URL(window.location.href);
-        if(slug) url.searchParams.set("slug", slug);
-        if(phone) url.searchParams.set("phone", phone);
-        if(!phone) url.searchParams.delete("phone");
-        window.history.replaceState({}, "", url.toString());
-      }catch(_){}
-    }
-
     async function boot(){
       try{
-        const ctx = resolveContext();
-
-        if(!ctx || !ctx.slug){
-          setState("bad", "Session absente", "Aucun slug PAY actif. Passe d’abord par l’entrée PIN.");
-          $("topSlug").textContent = "Session absente";
-          $("historyList").innerHTML = `<div class="empty">Ouvre d’abord PAY via pin.html.</div>`;
-          return;
+        const fromUrl = window.DIGIY_SESSION.fromUrl();
+        if(fromUrl && fromUrl.slug){
+          window.DIGIY_SESSION.save(fromUrl.slug, fromUrl.phone);
         }
 
-        SLUG = normalizeSlug(ctx.slug);
-        PHONE = normalizePhone(ctx.phone);
+        const session = window.DIGIY_SESSION.require("./pin.html?redirect=admin");
+        if(!session) return;
 
-        persistPaySession({ slug: SLUG, phone: PHONE });
+        SLUG = session.slug;
+        PHONE = session.phone;
+
+        window.DIGIY_SESSION.applyUrl(SLUG, PHONE);
 
         $("topSlug").textContent = SLUG;
         $("badgeSlug").textContent = SLUG;
         $("slugBadge").style.display = "flex";
         $("movementDate").value = todayStr();
 
-        updateUrl(SLUG, PHONE);
+        const cockpitHref = `./cockpit.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
+        $("topCockpitLink").href = cockpitHref;
+
         setState("ok", "Saisie PAY prête", "Session chargée. Tu peux enregistrer des mouvements manuels.");
         await loadHistory();
       }catch(err){
@@ -1244,7 +823,7 @@
     });
 
     $("btnLogout").addEventListener("click", () => {
-      clearSessions();
+      window.DIGIY_SESSION.clear();
       window.location.href = "./pin.html";
     });
 
