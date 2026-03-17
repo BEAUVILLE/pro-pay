@@ -991,7 +991,7 @@
         const icon = iconFor(item);
         const aClass = amountClass(item);
         const sign = String(item.direction || "") === "out" ? "−" : "+";
-        const note = item.note ? `<br>${esc(item.note)}` : "";
+        const note = item.note_text ? `<br>${esc(item.note_text)}` : "";
 
         return `
           <div class="item">
@@ -1041,7 +1041,7 @@
 
         const { data, error } = await sb
           .from(PAY_MOVEMENTS_TABLE)
-          .select("id,slug,direction,scope,kind,category,amount_xof,channel,label,note,source_module,source_id,movement_date,created_at,status")
+          .select("id,slug,direction,scope,kind,category,amount_xof,channel,label,note_text,source_module,source_id,movement_date,created_at,status")
           .eq("slug", SLUG)
           .order("movement_date", { ascending: false })
           .order("created_at", { ascending: false })
@@ -1114,7 +1114,7 @@
           amount_xof: Math.round(amount),
           channel,
           label,
-          note: note || null,
+          note_text: note || null,
           source_module: sourceModule === "OTHER" ? "OTHER" : sourceModule,
           source_id: sourceId || null,
           origin: "manual",
