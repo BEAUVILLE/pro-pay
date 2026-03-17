@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Cockpit réel MON ARGENT by DIGIY : entrées, dépenses pro, épargne, net, modules et canaux."
+    content="Cockpit réel MON ARGENT by DIGIY : entrées, dépenses pro, épargne, net, disponible, modules et canaux."
   />
 
   <script>
@@ -79,7 +79,7 @@
     .topbar-in{
       width:min(var(--max), calc(100% - 24px));
       margin:0 auto;
-      min-height:72px;
+      min-height:74px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -95,11 +95,11 @@
     }
 
     .brand-mark{
-      width:42px;height:42px;
+      width:44px;height:44px;
       border-radius:14px;
       background:linear-gradient(135deg,var(--green),var(--green2));
       display:grid;place-items:center;
-      font-size:20px;font-weight:900;
+      font-size:21px;font-weight:900;
       color:#032215;
       box-shadow:var(--shadow);
       flex-shrink:0;
@@ -108,13 +108,13 @@
     .brand-title{
       font-family:var(--ff-title);
       color:var(--gold);
-      font-size:18px;
+      font-size:19px;
       line-height:1.05;
     }
 
     .brand-sub{
       color:var(--muted);
-      font-size:11px;
+      font-size:12px;
       font-weight:800;
       margin-top:3px;
       word-break:break-word;
@@ -128,7 +128,7 @@
     }
 
     .pill{
-      padding:9px 13px;
+      padding:10px 14px;
       border-radius:999px;
       border:1px solid var(--line);
       background:rgba(255,255,255,.04);
@@ -176,7 +176,7 @@
     }
 
     .state{
-      min-height:62px;
+      min-height:64px;
       padding:14px 16px;
       border-radius:18px;
       border:1px solid var(--line);
@@ -204,7 +204,6 @@
       color:var(--muted);
       font-weight:800;
       line-height:1.45;
-      word-break:break-word;
     }
 
     .tabs{
@@ -294,6 +293,52 @@
       line-height:1.4;
     }
 
+    .hero-cake{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .cake{
+      padding:18px 16px;
+      border-radius:24px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      background:linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.92));
+    }
+    .cake.main{
+      border-color:rgba(250,204,21,.20);
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.12), transparent 30%),
+        linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.92));
+    }
+    .cake-title{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .cake-value{
+      font-family:var(--ff-title);
+      font-size:28px;
+      line-height:1.02;
+      font-weight:700;
+    }
+    .cake-value.green{color:var(--green)}
+    .cake-value.gold{color:var(--gold)}
+    .cake-value.blue{color:var(--blue)}
+    .cake-value.danger{color:var(--danger)}
+    .cake-sub{
+      margin-top:7px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.45;
+    }
+
     .scard{
       border:1px solid var(--line);
       border-radius:24px;
@@ -375,6 +420,8 @@
     }
     .row-ico.green{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2)}
     .row-ico.gold{background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.2)}
+    .row-ico.blue{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2)}
+    .row-ico.red{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2)}
 
     .row-body{flex:1;min-width:0}
     .row-title{
@@ -401,6 +448,8 @@
     }
     .row-amount.green{color:var(--green)}
     .row-amount.gold{color:var(--gold)}
+    .row-amount.blue{color:var(--blue)}
+    .row-amount.danger{color:var(--danger)}
 
     .info-grid{
       display:grid;
@@ -527,6 +576,10 @@
       transform:translateX(-50%) translateY(0);
     }
 
+    @media (max-width:1100px){
+      .hero-cake{grid-template-columns:1fr 1fr}
+    }
+
     @media (max-width:980px){
       .kpi-strip{grid-template-columns:1fr}
       .info-grid{grid-template-columns:1fr}
@@ -536,11 +589,13 @@
       .topbar-in,
       .wrap{width:min(var(--max), calc(100% - 16px))}
       .tabs{grid-template-columns:1fr}
+      .hero-cake{grid-template-columns:1fr}
     }
 
     @media (max-width:480px){
       .brand-title{font-size:16px}
       .kpi-val{font-size:20px}
+      .cake-value{font-size:24px}
       .bar-label{width:76px}
       .bar-val{width:88px}
     }
@@ -595,6 +650,32 @@
     </nav>
 
     <section class="panel active" id="panel-pro">
+      <div class="hero-cake">
+        <div class="cake main">
+          <div class="cake-title">💼 Net pro</div>
+          <div class="cake-value gold" id="cakeNetPro">—</div>
+          <div class="cake-sub">Entrées pro − dépenses pro. La vérité du business.</div>
+        </div>
+
+        <div class="cake">
+          <div class="cake-title">🛟 Épargne du mois</div>
+          <div class="cake-value blue" id="cakeSavings">—</div>
+          <div class="cake-sub">Part mise de côté pour sécurité, projet ou réserve.</div>
+        </div>
+
+        <div class="cake">
+          <div class="cake-title">💰 Disponible pro</div>
+          <div class="cake-value green" id="cakeDisponible">—</div>
+          <div class="cake-sub">Net pro − épargne. Ce que le pro peut encore mobiliser.</div>
+        </div>
+
+        <div class="cake">
+          <div class="cake-title">🍗 Reste après perso</div>
+          <div class="cake-value danger" id="cakeResteApresPerso">—</div>
+          <div class="cake-sub">Disponible pro − dépenses perso visibles dans PAY.</div>
+        </div>
+      </div>
+
       <div class="kpi-strip">
         <div class="kpi">
           <div class="kpi-label">Entrées du mois</div>
@@ -617,8 +698,17 @@
 
       <div class="scard">
         <div class="scard-head">
+          <div class="scard-title gold">🍒 Lecture du résultat</div>
+        </div>
+        <div class="list" id="resultList">
+          <div class="loader"><div class="spinner"></div> Chargement…</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
           <div class="scard-title green">📦 Répartition par module</div>
-          <a class="btn-mini" href="./admin.html">➕ Ajouter un mouvement</a>
+          <a class="btn-mini" id="btnGoAdmin" href="./admin.html">➕ Ajouter un mouvement</a>
         </div>
         <div class="list" id="modulesList">
           <div class="loader"><div class="spinner"></div> Chargement…</div>
@@ -758,10 +848,7 @@
   <script>
     const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL || "").trim();
     const SUPABASE_ANON_KEY = String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim();
-
-    if(!window.supabase || !SUPABASE_URL || !SUPABASE_ANON_KEY){
-      console.error("[PAY cockpit] Supabase config manquante.");
-    }
+    const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
@@ -780,12 +867,9 @@
     let SLUG = "";
     let PHONE = "";
     let COCKPIT = null;
+    let MANUAL_MOVES = [];
 
-    const SESSION_KEYS = [
-      "digiy_pay_session",
-      "digiy_session",
-      "digiy_loc_pro_session"
-    ];
+    const SESSION_KEYS = ["digiy_pay_session","digiy_session","digiy_loc_pro_session"];
 
     function money(n){
       const v = Number(n || 0);
@@ -818,23 +902,7 @@
     }
 
     function safeJsonParse(raw){
-      try{
-        return JSON.parse(raw);
-      }catch(_){
-        return null;
-      }
-    }
-
-    function coerceObject(value){
-      if(!value) return null;
-      if(typeof value === "object") return value;
-      if(typeof value === "string"){
-        const trimmed = value.trim();
-        if(!trimmed) return null;
-        const parsed = safeJsonParse(trimmed);
-        return parsed && typeof parsed === "object" ? parsed : null;
-      }
-      return null;
+      try{ return JSON.parse(raw); }catch(_){ return null; }
     }
 
     function cleanupBrokenSessions(){
@@ -842,9 +910,7 @@
         try{
           const raw = localStorage.getItem(key);
           if(raw == null) return;
-          if(!safeJsonParse(raw)){
-            localStorage.removeItem(key);
-          }
+          if(!safeJsonParse(raw)) localStorage.removeItem(key);
         }catch(_){}
       });
     }
@@ -854,17 +920,8 @@
       const phone = normalizePhone(sessionLike && sessionLike.phone);
       if(!slug) return null;
 
-      const payload = {
-        slug,
-        phone,
-        module: "PAY",
-        ts: Date.now()
-      };
-
-      try{
-        localStorage.setItem("digiy_pay_session", JSON.stringify(payload));
-      }catch(_){}
-
+      const payload = { slug, phone, module:"PAY", ts:Date.now() };
+      try{ localStorage.setItem("digiy_pay_session", JSON.stringify(payload)); }catch(_){}
       return payload;
     }
 
@@ -875,32 +932,21 @@
         try{
           const raw = localStorage.getItem(key);
           if(!raw) continue;
-
           const parsed = safeJsonParse(raw);
-          if(!parsed || typeof parsed !== "object") {
+          if(!parsed || typeof parsed !== "object"){
             try{ localStorage.removeItem(key); }catch(_){}
             continue;
           }
 
           const slug = normalizeSlug(parsed.slug);
           const phone = normalizePhone(parsed.phone);
-          const module = String(parsed.module || "").trim().toUpperCase();
           const ts = Number(parsed.ts || 0);
-
-          if(!slug){
-            continue;
-          }
-
-          if(module && module !== "PAY" && key === "digiy_pay_session"){
-            continue;
-          }
+          if(!slug) continue;
 
           if(ts){
             const age = Date.now() - ts;
-            if(age > 8 * 60 * 60 * 1000){
-              if(key === "digiy_pay_session"){
-                try{ localStorage.removeItem(key); }catch(_){}
-              }
+            if(age > 8 * 60 * 60 * 1000 && key === "digiy_pay_session"){
+              try{ localStorage.removeItem(key); }catch(_){}
               continue;
             }
           }
@@ -908,7 +954,6 @@
           return persistPaySession({ slug, phone });
         }catch(_){}
       }
-
       return null;
     }
 
@@ -955,15 +1000,13 @@
       const qPhone = normalizePhone(url.searchParams.get("phone"));
 
       if(qSlug){
-        const normalized = persistPaySession({ slug: qSlug, phone: qPhone });
+        const normalized = persistPaySession({ slug:qSlug, phone:qPhone });
         if(normalized) SESSION = normalized;
-        return normalized || { slug: qSlug, phone: qPhone };
+        return normalized || { slug:qSlug, phone:qPhone };
       }
 
       const s = getSession();
-      if(!s || !s.slug){
-        return null;
-      }
+      if(!s || !s.slug) return null;
 
       SESSION = s;
       return {
@@ -984,19 +1027,15 @@
 
     function setEmptyEverywhere(message){
       const safe = esc(message || "Aucune donnée chargée.");
-      const modules = document.getElementById("modulesList");
-      const channels = document.getElementById("channelsList");
-      const bars = document.getElementById("channelsBars");
-
-      if(modules) modules.innerHTML = `<div class="empty">${safe}</div>`;
-      if(channels) channels.innerHTML = `<div class="empty">${safe}</div>`;
-      if(bars) bars.innerHTML = `<div class="empty">${safe}</div>`;
+      ["modulesList","channelsList","channelsBars","resultList"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = `<div class="empty">${safe}</div>`;
+      });
     }
 
     function renderModules(items){
       const el = document.getElementById("modulesList");
       if(!el) return;
-
       const arr = Array.isArray(items) ? items.filter(Boolean) : [];
 
       if(!arr.length){
@@ -1019,7 +1058,6 @@
     function renderChannels(items){
       const el = document.getElementById("channelsList");
       if(!el) return;
-
       const arr = Array.isArray(items) ? items.filter(Boolean) : [];
 
       if(!arr.length){
@@ -1042,7 +1080,6 @@
     function renderChannelBars(items){
       const el = document.getElementById("channelsBars");
       if(!el) return;
-
       const arr = Array.isArray(items) ? items.filter(Boolean) : [];
 
       if(!arr.length){
@@ -1078,6 +1115,79 @@
       }catch(_){}
     }
 
+    async function loadManualMovements(){
+      if(!SLUG){
+        MANUAL_MOVES = [];
+        return;
+      }
+
+      try{
+        const { data, error } = await sb
+          .from(PAY_MOVEMENTS_TABLE)
+          .select("id,slug,direction,scope,kind,amount_xof,label,note_text,channel,source_module,movement_date,status")
+          .eq("slug", SLUG)
+          .eq("status", "posted")
+          .order("movement_date", { ascending:false })
+          .order("id", { ascending:false })
+          .limit(100);
+
+        if(error) throw error;
+        MANUAL_MOVES = Array.isArray(data) ? data : [];
+      }catch(err){
+        console.error("[PAY manual moves]", err);
+        MANUAL_MOVES = [];
+      }
+    }
+
+    function renderResultRows(calc){
+      const el = document.getElementById("resultList");
+      if(!el) return;
+
+      el.innerHTML = `
+        <div class="row">
+          <div class="row-ico green">💼</div>
+          <div class="row-body">
+            <div class="row-title">NET PRO</div>
+            <div class="row-meta">Entrées pro − dépenses pro</div>
+          </div>
+          <div class="row-amount gold">${money(calc.netPro)}</div>
+        </div>
+
+        <div class="row">
+          <div class="row-ico blue">🛟</div>
+          <div class="row-body">
+            <div class="row-title">ÉPARGNE DU MOIS</div>
+            <div class="row-meta">Montant mis de côté sur la période</div>
+          </div>
+          <div class="row-amount blue">${money(calc.monthSavings)}</div>
+        </div>
+
+        <div class="row">
+          <div class="row-ico green">💰</div>
+          <div class="row-body">
+            <div class="row-title">DISPONIBLE PRO</div>
+            <div class="row-meta">Net pro − épargne</div>
+          </div>
+          <div class="row-amount green">${money(calc.disponiblePro)}</div>
+        </div>
+
+        <div class="row">
+          <div class="row-ico red">🍗</div>
+          <div class="row-body">
+            <div class="row-title">RESTE APRÈS PERSO</div>
+            <div class="row-meta">Disponible pro − dépenses perso visibles dans PAY</div>
+          </div>
+          <div class="row-amount ${calc.resteApresPerso >= 0 ? "gold" : "danger"}">${money(calc.resteApresPerso)}</div>
+        </div>
+      `;
+    }
+
+    function computePersonalOutVisible(){
+      return MANUAL_MOVES
+        .filter(x => String(x.scope || "") === "personal" && String(x.direction || "") === "out")
+        .reduce((sum, x) => sum + Number(x.amount_xof || 0), 0);
+    }
+
     function renderCockpit(data){
       COCKPIT = data || {};
 
@@ -1092,6 +1202,9 @@
       const totalSavings = Number(data.total_savings || 0);
       const modules = Array.isArray(data.by_module) ? data.by_module : [];
       const channels = Array.isArray(data.by_channel) ? data.by_channel : [];
+      const personalOutVisible = computePersonalOutVisible();
+      const disponiblePro = monthNet - monthSavings;
+      const resteApresPerso = disponiblePro - personalOutVisible;
 
       document.getElementById("kpiMonthIn").textContent = money(monthIn);
       document.getElementById("kpiTodayIn").textContent = "Aujourd’hui : " + money(todayIn);
@@ -1123,6 +1236,20 @@
       document.getElementById("iboxPhone").textContent = normalizePhone(data.phone) || PHONE || "—";
       document.getElementById("iboxAccess").textContent = data.access_ok ? "ABONNEMENT OK" : "NON ACTIF";
 
+      document.getElementById("cakeNetPro").textContent = money(monthNet);
+      document.getElementById("cakeSavings").textContent = money(monthSavings);
+      document.getElementById("cakeDisponible").textContent = money(disponiblePro);
+      const resteEl = document.getElementById("cakeResteApresPerso");
+      resteEl.textContent = money(resteApresPerso);
+      resteEl.className = "cake-value " + (resteApresPerso >= 0 ? "gold" : "danger");
+
+      renderResultRows({
+        netPro: monthNet,
+        monthSavings,
+        disponiblePro,
+        resteApresPerso
+      });
+
       renderModules(modules);
       renderChannels(channels);
       renderChannelBars(channels);
@@ -1134,9 +1261,14 @@
       document.getElementById("badgeSlug").textContent = realSlug || "PAY";
       document.getElementById("slugBadge").style.display = "flex";
 
+      const adminLink = document.getElementById("btnGoAdmin");
+      if(adminLink){
+        adminLink.href = `./admin.html?slug=${encodeURIComponent(realSlug)}${realPhone ? `&phone=${encodeURIComponent(realPhone)}` : ""}`;
+      }
+
       SLUG = realSlug;
       PHONE = realPhone;
-      SESSION = persistPaySession({ slug: realSlug, phone: realPhone }) || SESSION;
+      SESSION = persistPaySession({ slug:realSlug, phone:realPhone }) || SESSION;
 
       if(data.access_ok){
         setState("ok", "Cockpit PAY connecté", "Lecture réelle chargée depuis le backbone DIGIY PAY.");
@@ -1148,8 +1280,15 @@
     }
 
     function normalizeRpcPayload(payload){
-      const obj = coerceObject(payload);
-      return obj && typeof obj === "object" ? obj : null;
+      if(!payload) return null;
+      if(typeof payload === "object") return payload;
+      if(typeof payload === "string"){
+        const trimmed = payload.trim();
+        if(!trimmed) return null;
+        const parsed = safeJsonParse(trimmed);
+        return parsed && typeof parsed === "object" ? parsed : null;
+      }
+      return null;
     }
 
     async function loadCockpit(){
@@ -1169,6 +1308,8 @@
         document.getElementById("badgeSlug").textContent = SLUG || "PAY";
         document.getElementById("slugBadge").style.display = "flex";
 
+        await loadManualMovements();
+
         const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", {
           p_slug: SLUG
         });
@@ -1176,13 +1317,8 @@
         if(error) throw error;
 
         const payload = normalizeRpcPayload(data);
-        if(!payload){
-          throw new Error("Réponse cockpit vide ou illisible.");
-        }
-
-        if(payload.ok !== true){
-          throw new Error(String(payload.error || payload.message || "Cockpit PAY invalide."));
-        }
+        if(!payload) throw new Error("Réponse cockpit vide ou illisible.");
+        if(payload.ok !== true) throw new Error(String(payload.error || payload.message || "Cockpit PAY invalide."));
 
         renderCockpit(payload);
       }catch(err){
@@ -1235,7 +1371,6 @@
       bindActions();
 
       if(!requireSessionUnlessSlugInUrl()) return;
-
       await loadCockpit();
     })();
   </script>
