@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>MON ARGENT PRO — Cockpit DIGIY ♾️</title>
+  <meta name="theme-color" content="#04110d" />
+  <meta
+    name="description"
+    content="Cockpit réel MON ARGENT by DIGIY : entrées, dépenses pro, épargne, net, modules et canaux."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "PAY";
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=pay-cockpit-real-001"></script>
+
+  <style>
+    :root{
+      --bg:#04110d;
+      --bg2:#071a13;
+      --card:#0b1f18;
+      --card2:#102820;
+      --line:rgba(255,255,255,.08);
+      --line-g:rgba(34,197,94,.22);
+      --text:#f3fff7;
+      --muted:rgba(243,255,247,.62);
+      --green:#22c55e;
+      --green2:#16a34a;
+      --gold:#facc15;
+      --gold-soft:rgba(250,204,21,.10);
+      --danger:#f87171;
+      --danger-soft:rgba(248,113,113,.10);
+      --blue:#60a5fa;
+      --blue-soft:rgba(96,165,250,.10);
+      --shadow:0 20px 60px rgba(0,0,0,.38);
+      --r:22px;
+      --max:940px;
+      --ff-title:'Playfair Display', Georgia, serif;
+      --ff-body:'Nunito', system-ui, sans-serif;
+    }
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    html,body{
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(34,197,94,.09), transparent 38%),
+        radial-gradient(circle at 90% 100%, rgba(250,204,21,.06), transparent 30%),
+        linear-gradient(175deg, var(--bg), #061710 60%, #04110d);
+      color:var(--text);
+      font-family:var(--ff-body);
+      padding:12px 12px 60px;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{text-decoration:none;color:inherit}
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:100;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 16px;
+      background:rgba(4,17,13,.88);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      margin:-12px -12px 20px;
+    }
+
+    .topbar-left{display:flex;align-items:center;gap:10px}
+    .brand-mark{
+      width:38px;height:38px;border-radius:12px;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      display:grid;place-items:center;
+      font-size:18px;font-weight:900;color:#032215;flex-shrink:0;
+    }
+
+    .topbar-title{
+      font-family:var(--ff-title);
+      font-size:17px;
+      color:var(--gold);
+      line-height:1.1;
+    }
+
+    .topbar-sub{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+    .pill{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:6px 11px;border-radius:999px;
+      font-size:12px;font-weight:800;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      cursor:pointer;
+      transition:border-color .15s, background .15s, color .15s;
+    }
+    .pill:hover{
+      border-color:rgba(250,204,21,.3);
+      background:rgba(250,204,21,.07);
+      color:var(--gold);
+    }
+
+    .wrap{width:min(var(--max),100%);margin:0 auto}
+
+    .slug-badge{
+      display:none;
+      align-items:center;
+      gap:10px;
+      padding:10px 16px;
+      border-radius:16px;
+      border:1px solid var(--line-g);
+      background:rgba(34,197,94,.07);
+      margin-bottom:20px;
+    }
+    .slug-badge .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 0 3px rgba(34,197,94,.2);
+    }
+    .slug-badge .info{
+      font-size:12px;
+      font-weight:800;
+      color:#bbf7d0;
+    }
+    .slug-badge .info span{
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .state{
+      margin-bottom:18px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:6px;
+    }
+    .state.ok{
+      border-color:rgba(34,197,94,.22);
+      background:rgba(34,197,94,.07);
+    }
+    .state.bad{
+      border-color:rgba(248,113,113,.22);
+      background:rgba(248,113,113,.08);
+    }
+    .state .title{
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .state .txt{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.45;
+    }
+
+    .tabs{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+      margin-bottom:20px;
+      background:rgba(255,255,255,.03);
+      padding:5px;
+      border-radius:18px;
+      border:1px solid var(--line);
+    }
+
+    .tab{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:2px;
+      padding:10px 8px;
+      border-radius:14px;
+      border:1px solid transparent;
+      background:none;
+      color:var(--muted);
+      font-family:var(--ff-body);
+      font-weight:800;
+      font-size:13px;
+      cursor:pointer;
+      transition:all .18s;
+    }
+    .tab .ico{font-size:18px}
+    .tab.active{
+      background:var(--card);
+      border-color:var(--line);
+      color:var(--text);
+    }
+    .tab.active.pro{border-color:rgba(34,197,94,.28);color:#bbf7d0}
+    .tab.active.epargne{border-color:rgba(96,165,250,.28);color:#bfdbfe}
+    .tab.active.eco{border-color:rgba(250,204,21,.28);color:#fde68a}
+
+    .panel{display:none;animation:fadeIn .22s ease}
+    .panel.active{display:block}
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(6px)}
+      to{opacity:1;transform:none}
+    }
+
+    .kpi-strip{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:20px;
+    }
+
+    .kpi{
+      padding:14px 14px 12px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:linear-gradient(160deg, rgba(11,31,24,.9), rgba(7,22,16,.9));
+    }
+    .kpi-label{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .kpi-val{
+      font-family:var(--ff-title);
+      font-size:20px;
+      font-weight:700;
+      line-height:1;
+      word-break:break-word;
+    }
+    .kpi-val.green{color:var(--green)}
+    .kpi-val.danger{color:var(--danger)}
+    .kpi-val.gold{color:var(--gold)}
+    .kpi-val.blue{color:var(--blue)}
+    .kpi-sub{
+      font-size:10px;
+      color:var(--muted);
+      font-weight:700;
+      margin-top:4px;
+    }
+
+    .scard{
+      background:linear-gradient(160deg, rgba(11,31,24,.97), rgba(9,24,19,.97));
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      overflow:hidden;
+      margin-bottom:14px;
+    }
+
+    .scard-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px 12px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .scard-title{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:7px;
+    }
+    .scard-title.green{color:#86efac}
+    .scard-title.danger{color:#fca5a5}
+    .scard-title.blue{color:#93c5fd}
+    .scard-title.gold{color:#fde68a}
+
+    .head-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+    .btn-mini{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-family:var(--ff-body);
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+      transition:all .15s;
+    }
+    .btn-mini:hover{
+      border-color:rgba(255,255,255,.18);
+      color:var(--text);
+    }
+
+    .txn-list{padding:8px 0;min-height:60px}
+    .txn-empty{
+      padding:20px 16px;
+      text-align:center;
+      font-size:13px;
+      font-weight:700;
+      color:var(--muted);
+    }
+
+    .txn-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 16px;
+      border-bottom:1px solid var(--line);
+    }
+    .txn-item:last-child{border-bottom:none}
+
+    .txn-icon{
+      width:36px;height:36px;flex-shrink:0;
+      border-radius:12px;
+      display:grid;place-items:center;
+      font-size:16px;
+    }
+    .txn-icon.green{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2)}
+    .txn-icon.red{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2)}
+    .txn-icon.blue{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2)}
+    .txn-icon.gold{background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.2)}
+
+    .txn-body{flex:1;min-width:0}
+    .txn-label{
+      font-size:13px;
+      font-weight:800;
+      color:var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .txn-meta{
+      font-size:11px;
+      font-weight:700;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .txn-amount{
+      font-family:var(--ff-title);
+      font-size:15px;
+      font-weight:700;
+      flex-shrink:0;
+      text-align:right;
+    }
+    .txn-amount.green{color:var(--green)}
+    .txn-amount.red{color:var(--danger)}
+    .txn-amount.blue{color:var(--blue)}
+    .txn-amount.gold{color:var(--gold)}
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      padding:16px;
+    }
+
+    .ibox{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:6px;
+    }
+    .ibox .t{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.07em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .ibox .v{
+      font-size:14px;
+      font-weight:900;
+      color:var(--text);
+      word-break:break-word;
+    }
+    .ibox .s{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.4;
+    }
+
+    .eco-bars{padding:16px}
+    .bar-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .bar-label{
+      font-size:11px;
+      font-weight:800;
+      color:var(--muted);
+      width:90px;
+      flex-shrink:0;
+    }
+    .bar-track{
+      flex:1;
+      height:8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+    }
+    .bar-fill{
+      height:100%;
+      border-radius:999px;
+      transition:width .6s ease;
+    }
+    .bar-val{
+      font-size:11px;
+      font-weight:800;
+      width:110px;
+      text-align:right;
+      flex-shrink:0;
+    }
+
+    .loader{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:20px;
+      font-size:13px;
+      font-weight:700;
+      color:var(--muted);
+    }
+
+    .spinner{
+      width:16px;height:16px;
+      border:2px solid rgba(255,255,255,.1);
+      border-top-color:var(--green);
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    #toast{
+      position:fixed;
+      bottom:24px;
+      left:50%;
+      transform:translateX(-50%) translateY(20px);
+      z-index:9999;
+      padding:10px 20px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      background:var(--card);
+      border:1px solid var(--line-g);
+      color:#bbf7d0;
+      opacity:0;
+      transition:opacity .25s, transform .25s;
+      pointer-events:none;
+      white-space:nowrap;
+    }
+    #toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    @media (max-width:700px){
+      .kpi-strip{grid-template-columns:1fr}
+      .info-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:480px){
+      .tab{font-size:11px}
+      .tab .ico{font-size:15px}
+      .topbar-title{font-size:15px}
+      .kpi-val{font-size:17px}
+      .bar-label{width:78px}
+      .bar-val{width:88px}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-mark">₣</div>
+      <div>
+        <div class="topbar-title">MON ARGENT PRO ♾️</div>
+        <div class="topbar-sub" id="topSlug">Chargement…</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="pill" href="./index.html">← Accueil</a>
+      <a class="pill" href="./pin.html">🔐 PIN</a>
+      <a class="pill" href="./admin.html">➕ Saisie</a>
+      <button class="pill" id="btnRefresh">🔄 Recharger</button>
+      <button class="pill" id="btnLogout">🚪 Quitter</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="slug-badge" id="slugBadge">
+      <div class="dot"></div>
+      <div class="info">
+        Session active — <span id="badgeSlug"></span> &nbsp;·&nbsp; Module PAY
+      </div>
+    </div>
+
+    <div class="state" id="stateBox">
+      <div class="title">Chargement</div>
+      <div class="txt">Connexion au cockpit PAY…</div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active pro" data-tab="pro" role="tab">
+        <span class="ico">💼</span> PRO
+      </button>
+      <button class="tab epargne" data-tab="epargne" role="tab">
+        <span class="ico">🛟</span> ÉPARGNE
+      </button>
+      <button class="tab eco" data-tab="eco" role="tab">
+        <span class="ico">📊</span> ÉCOSYSTÈME
+      </button>
+    </nav>
+
+    <section class="panel active" id="panel-pro">
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-label">Entrées du mois</div>
+          <div class="kpi-val green" id="kpi-month-in">—</div>
+          <div class="kpi-sub" id="kpi-today-in">Aujourd’hui : —</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Dépenses pro du mois</div>
+          <div class="kpi-val danger" id="kpi-month-out">—</div>
+          <div class="kpi-sub" id="kpi-today-out">Aujourd’hui : —</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Net du mois</div>
+          <div class="kpi-val gold" id="kpi-month-net">—</div>
+          <div class="kpi-sub" id="kpi-today-net">Aujourd’hui : —</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title green">📦 Répartition par module</div>
+          <div class="head-actions">
+            <a class="btn-mini" href="./admin.html">➕ Ajouter un mouvement</a>
+          </div>
+        </div>
+        <div class="txn-list" id="list-modules">
+          <div class="loader"><div class="spinner"></div> Chargement…</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title gold">🧭 État du cockpit</div>
+        </div>
+        <div class="info-grid">
+          <div class="ibox">
+            <div class="t">Entreprise</div>
+            <div class="v" id="ibox-business">—</div>
+            <div class="s">Nom visible du cockpit PAY.</div>
+          </div>
+          <div class="ibox">
+            <div class="t">Plan</div>
+            <div class="v" id="ibox-plan">—</div>
+            <div class="s">Plan PAY actif associé au slug.</div>
+          </div>
+          <div class="ibox">
+            <div class="t">Téléphone</div>
+            <div class="v" id="ibox-phone">—</div>
+            <div class="s">Rail principal du pro pour la session active.</div>
+          </div>
+          <div class="ibox">
+            <div class="t">Accès</div>
+            <div class="v" id="ibox-access">—</div>
+            <div class="s">Lecture réelle de l’état d’abonnement.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-epargne">
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-label">Épargne du mois</div>
+          <div class="kpi-val blue" id="kpi-month-savings">—</div>
+          <div class="kpi-sub" id="kpi-today-savings">Aujourd’hui : —</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Épargne totale</div>
+          <div class="kpi-val gold" id="kpi-total-savings">—</div>
+          <div class="kpi-sub">Cumul sécurité / projet / réserve</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Lecture</div>
+          <div class="kpi-val blue" id="kpi-savings-ratio">—</div>
+          <div class="kpi-sub">Poids de l’épargne vs entrées du mois</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title blue">🛟 Couche épargne</div>
+        </div>
+        <div class="info-grid">
+          <div class="ibox">
+            <div class="t">Mission</div>
+            <div class="v">Protéger le pro</div>
+            <div class="s">L’épargne n’est pas décorative. Elle sert de sécurité, de projet et d’investissement.</div>
+          </div>
+          <div class="ibox">
+            <div class="t">Doctrine PAY</div>
+            <div class="v">PAY pilote</div>
+            <div class="s">PAY organise les flux. Il ne garde pas les fonds et ne remplace pas le portefeuille du pro.</div>
+          </div>
+          <div class="ibox">
+            <div class="t">Mois courant</div>
+            <div class="v" id="ibox-savings-month">—</div>
+            <div class="s">Montant épargne remonté sur la période en cours.</div>
+          </div>
+          <div class="ibox">
+            <div class="t">Total cumulé</div>
+            <div class="v" id="ibox-savings-total">—</div>
+            <div class="s">Cumul visible dans le cockpit global.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-eco">
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-label">Modules actifs visibles</div>
+          <div class="kpi-val gold" id="kpi-mod-count">—</div>
+          <div class="kpi-sub">Nombre de modules remontant du flux</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Canaux visibles</div>
+          <div class="kpi-val blue" id="kpi-chan-count">—</div>
+          <div class="kpi-sub">Wave, cash, autres canaux remontés</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Vue consolidée</div>
+          <div class="kpi-val gold" id="kpi-eco-total">—</div>
+          <div class="kpi-sub">Entrées du mois toutes sources visibles</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title gold">📊 Répartition par canal</div>
+        </div>
+        <div class="eco-bars" id="eco-bars">
+          <div class="loader"><div class="spinner"></div> Calcul…</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title gold">💳 Canaux remontés</div>
+        </div>
+        <div class="txn-list" id="list-channels">
+          <div class="loader"><div class="spinner"></div> Chargement…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storage: {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {}
+        }
+      }
+    });
+
+    let SESSION = null;
+    let SLUG = "";
+    let PHONE = "";
+    let COCKPIT = null;
+
+    function fmt(n){
+      const v = Number(n || 0);
+      return Math.round(v).toLocaleString("fr-FR");
+    }
+
+    function money(n){
+      return fmt(n) + " F CFA";
+    }
+
+    function escHtml(v){
+      return String(v == null ? "" : v)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function toast(msg, duration = 2200){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), duration);
+    }
+
+    function getSession(){
+      try{
+        const raw =
+          localStorage.getItem("digiy_pay_session") ||
+          localStorage.getItem("digiy_session") ||
+          localStorage.getItem("digiy_loc_pro_session");
+
+        if(!raw) return null;
+        const s = JSON.parse(raw);
+        if(!s || !s.slug) return null;
+
+        const age = Date.now() - (s.ts || 0);
+        if(age > 8 * 60 * 60 * 1000) return null;
+
+        return s;
+      }catch(_){
+        return null;
+      }
+    }
+
+    function requireSession(){
+      const s = getSession();
+      if(!s){
+        window.location.href = "./pin.html?redirect=cockpit";
+        return null;
+      }
+      return s;
+    }
+
+    async function resolveSlugFromUrlOrSession(){
+      const url = new URL(window.location.href);
+      const qSlug = (url.searchParams.get("slug") || "").trim().toLowerCase();
+      const qPhone = (url.searchParams.get("phone") || "").trim();
+
+      if(qSlug) return { slug: qSlug, phone: qPhone || "" };
+
+      const s = requireSession();
+      if(!s) return null;
+
+      return {
+        slug: String(s.slug || "").trim().toLowerCase(),
+        phone: String(s.phone || "").trim()
+      };
+    }
+
+    function setState(type, title, txt){
+      const box = document.getElementById("stateBox");
+      box.className = "state " + (type || "");
+      box.innerHTML = `
+        <div class="title">${escHtml(title || "État")}</div>
+        <div class="txt">${escHtml(txt || "")}</div>
+      `;
+    }
+
+    function renderModules(items){
+      const el = document.getElementById("list-modules");
+      const arr = Array.isArray(items) ? items : [];
+
+      if(!arr.length){
+        el.innerHTML = `<div class="txn-empty">Aucun module visible pour l’instant.</div>`;
+        return;
+      }
+
+      el.innerHTML = arr.map(row => `
+        <div class="txn-item">
+          <div class="txn-icon green">📦</div>
+          <div class="txn-body">
+            <div class="txn-label">${escHtml(row.source_module || "MODULE")}</div>
+            <div class="txn-meta">Flux remonté depuis le module métier</div>
+          </div>
+          <div class="txn-amount green">${money(row.amount_xof)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderChannels(items){
+      const el = document.getElementById("list-channels");
+      const arr = Array.isArray(items) ? items : [];
+
+      if(!arr.length){
+        el.innerHTML = `<div class="txn-empty">Aucun canal visible pour l’instant.</div>`;
+        return;
+      }
+
+      el.innerHTML = arr.map(row => `
+        <div class="txn-item">
+          <div class="txn-icon gold">💳</div>
+          <div class="txn-body">
+            <div class="txn-label">${escHtml(String(row.channel || "AUTRE").toUpperCase())}</div>
+            <div class="txn-meta">Canal de paiement ou d’enregistrement remonté dans PAY</div>
+          </div>
+          <div class="txn-amount gold">${money(row.amount_xof)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderEcoBars(items){
+      const el = document.getElementById("eco-bars");
+      const arr = Array.isArray(items) ? items : [];
+
+      if(!arr.length){
+        el.innerHTML = `<div class="txn-empty">Aucune répartition canal pour l’instant.</div>`;
+        return;
+      }
+
+      const max = Math.max(...arr.map(x => Number(x.amount_xof || 0)), 1);
+
+      el.innerHTML = arr.map(row => {
+        const amount = Number(row.amount_xof || 0);
+        const pct = Math.min(100, Math.round((amount / max) * 100));
+        return `
+          <div class="bar-row">
+            <div class="bar-label">${escHtml(String(row.channel || "AUTRE").toUpperCase())}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${pct}%;background:#facc15"></div>
+            </div>
+            <div class="bar-val" style="color:#fde68a">${money(amount)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderCockpit(data){
+      COCKPIT = data || {};
+
+      const monthIn = Number(data.month_in || 0);
+      const todayIn = Number(data.today_in || 0);
+      const monthOut = Number(data.month_out_pro || 0);
+      const todayOut = Number(data.today_out_pro || 0);
+      const monthNet = Number(data.month_net || 0);
+      const todayNet = Number(data.today_net || 0);
+      const monthSavings = Number(data.month_savings || 0);
+      const todaySavings = Number(data.today_savings || 0);
+      const totalSavings = Number(data.total_savings || 0);
+      const modules = Array.isArray(data.by_module) ? data.by_module : [];
+      const channels = Array.isArray(data.by_channel) ? data.by_channel : [];
+
+      document.getElementById("kpi-month-in").textContent = money(monthIn);
+      document.getElementById("kpi-today-in").textContent = "Aujourd’hui : " + money(todayIn);
+
+      document.getElementById("kpi-month-out").textContent = money(monthOut);
+      document.getElementById("kpi-today-out").textContent = "Aujourd’hui : " + money(todayOut);
+
+      const netEl = document.getElementById("kpi-month-net");
+      netEl.textContent = money(monthNet);
+      netEl.className = "kpi-val " + (monthNet >= 0 ? "gold" : "danger");
+      document.getElementById("kpi-today-net").textContent = "Aujourd’hui : " + money(todayNet);
+
+      document.getElementById("kpi-month-savings").textContent = money(monthSavings);
+      document.getElementById("kpi-today-savings").textContent = "Aujourd’hui : " + money(todaySavings);
+      document.getElementById("kpi-total-savings").textContent = money(totalSavings);
+
+      const ratio = monthIn > 0 ? Math.round((monthSavings / monthIn) * 100) : 0;
+      document.getElementById("kpi-savings-ratio").textContent = ratio + "%";
+
+      document.getElementById("ibox-savings-month").textContent = money(monthSavings);
+      document.getElementById("ibox-savings-total").textContent = money(totalSavings);
+
+      document.getElementById("kpi-mod-count").textContent = String(modules.length);
+      document.getElementById("kpi-chan-count").textContent = String(channels.length);
+      document.getElementById("kpi-eco-total").textContent = money(monthIn);
+
+      document.getElementById("ibox-business").textContent = data.business_name || "DIGIY PAY";
+      document.getElementById("ibox-plan").textContent = data.plan || "—";
+      document.getElementById("ibox-phone").textContent = data.phone || PHONE || "—";
+      document.getElementById("ibox-access").textContent = data.access_ok ? "ABONNEMENT OK" : "NON ACTIF";
+
+      renderModules(modules);
+      renderChannels(channels);
+      renderEcoBars(channels);
+
+      document.getElementById("topSlug").textContent = data.slug || SLUG;
+      document.getElementById("badgeSlug").textContent = data.slug || SLUG;
+      document.getElementById("slugBadge").style.display = "flex";
+
+      if(data.access_ok){
+        setState(
+          "ok",
+          "Cockpit PAY connecté",
+          "Lecture réelle chargée depuis le backbone DIGIY PAY."
+        );
+      }else{
+        setState(
+          "bad",
+          "Accès PAY non actif",
+          "Le slug est lu mais l’abonnement PAY n’est pas actif ou est expiré."
+        );
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("slug", data.slug || SLUG);
+      if(data.phone) url.searchParams.set("phone", data.phone);
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    async function loadCockpit(){
+      try{
+        setState("","Chargement","Connexion au rail réel PAY…");
+
+        const resolved = await resolveSlugFromUrlOrSession();
+        if(!resolved || !resolved.slug){
+          return;
+        }
+
+        SLUG = resolved.slug;
+        PHONE = resolved.phone || "";
+
+        document.getElementById("topSlug").textContent = SLUG;
+        document.getElementById("badgeSlug").textContent = SLUG;
+        document.getElementById("slugBadge").style.display = "flex";
+
+        const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", {
+          p_slug: SLUG
+        });
+
+        if(error) throw error;
+        if(!data || data.ok !== true){
+          throw new Error((data && (data.error || data.message)) || "Cockpit PAY invalide.");
+        }
+
+        renderCockpit(data);
+      }catch(err){
+        console.error("[PAY cockpit]", err);
+        setState(
+          "bad",
+          "Erreur de chargement",
+          err && err.message ? err.message : "Impossible de charger le cockpit PAY."
+        );
+
+        document.getElementById("list-modules").innerHTML =
+          `<div class="txn-empty">Aucune donnée chargée.</div>`;
+        document.getElementById("list-channels").innerHTML =
+          `<div class="txn-empty">Aucune donnée chargée.</div>`;
+        document.getElementById("eco-bars").innerHTML =
+          `<div class="txn-empty">Aucune donnée chargée.</div>`;
+      }
+    }
+
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    document.getElementById("btnRefresh").addEventListener("click", async () => {
+      toast("🔄 Rechargement...");
+      await loadCockpit();
+    });
+
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      ["digiy_pay_session","digiy_session","digiy_loc_pro_session"].forEach(k => {
+        try { localStorage.removeItem(k); } catch(_) {}
+      });
+      window.location.href = "./pin.html";
+    });
+
+    document.addEventListener("keydown", e => {
+      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r"){
+        e.preventDefault();
+        loadCockpit();
+      }
+    });
+
+    (async function boot(){
+      SESSION = requireSession();
+      if(!SESSION) return;
+
+      await loadCockpit();
+    })();
+  </script>
+</body>
+</html>
