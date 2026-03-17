@@ -3,20 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT PRO — Entrée PIN</title>
+  <title>MON ARGENT by DIGIY ♾️</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Entrée protégée MON ARGENT by DIGIY. Vérification PIN PAY et redirection vers le cockpit."
+    content="MON ARGENT by DIGIY — cockpit financier simple pour les professionnels. Paiement direct, 0% commission, lecture claire."
   />
-
-  <script>
-    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
-    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
-    window.DIGIY_MODULE = "PAY";
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,18 +17,20 @@
   <style>
     :root{
       --bg:#04110d;
+      --bg2:#071a13;
       --card:#0b1f18;
       --card2:#102820;
       --line:rgba(255,255,255,.08);
       --line-g:rgba(34,197,94,.22);
       --text:#f3fff7;
-      --muted:rgba(243,255,247,.66);
+      --muted:rgba(243,255,247,.68);
       --green:#22c55e;
       --green2:#16a34a;
       --gold:#facc15;
-      --danger:#f87171;
-      --shadow:0 24px 70px rgba(0,0,0,.45);
-      --r:28px;
+      --gold-soft:rgba(250,204,21,.10);
+      --shadow:0 22px 70px rgba(0,0,0,.42);
+      --r:24px;
+      --max:1080px;
       --ff-title:'Playfair Display', Georgia, serif;
       --ff-body:'Nunito', system-ui, sans-serif;
     }
@@ -45,438 +39,465 @@
     html,body{margin:0;padding:0}
     body{
       min-height:100vh;
-      display:grid;
-      place-items:center;
-      padding:18px;
       color:var(--text);
       font-family:var(--ff-body);
       background:
-        radial-gradient(circle at 15% 0%, rgba(34,197,94,.12), transparent 35%),
-        radial-gradient(circle at 100% 100%, rgba(250,204,21,.08), transparent 28%),
-        linear-gradient(180deg, #04110d, #061710 58%, #04110d);
+        radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 36%),
+        radial-gradient(circle at 100% 100%, rgba(250,204,21,.07), transparent 28%),
+        linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
       -webkit-font-smoothing:antialiased;
     }
 
-    .card{
-      width:min(560px, 100%);
-      border-radius:var(--r);
-      border:1px solid var(--line);
-      background:linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.94));
-      box-shadow:var(--shadow);
-      overflow:hidden;
+    a{text-decoration:none;color:inherit}
+
+    .wrap{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
     }
 
-    .head{
-      padding:24px 22px 18px;
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      background:rgba(4,17,13,.82);
       border-bottom:1px solid var(--line);
-      display:grid;
+    }
+
+    .topbar-in{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
+      min-height:70px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       gap:12px;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:10px;
+      min-width:0;
     }
 
-    .mark{
-      width:48px;height:48px;
-      border-radius:16px;
+    .brand-mark{
+      width:42px;height:42px;
+      border-radius:14px;
       background:linear-gradient(135deg,var(--green),var(--green2));
       display:grid;place-items:center;
+      font-size:20px;font-weight:900;
       color:#032215;
-      font-size:22px;font-weight:900;
+      box-shadow:var(--shadow);
       flex-shrink:0;
     }
 
-    .t1{
+    .brand-title{
       font-family:var(--ff-title);
-      font-size:24px;
-      line-height:1;
       color:var(--gold);
+      font-size:18px;
+      line-height:1.05;
     }
 
-    .t2{
-      font-size:12px;
+    .brand-sub{
+      color:var(--muted);
+      font-size:11px;
       font-weight:800;
-      color:var(--muted);
-      margin-top:4px;
+      margin-top:3px;
     }
 
-    .intro{
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
       color:var(--muted);
-      font-size:14px;
+      font-weight:800;
+      font-size:12px;
+      transition:.18s ease;
+    }
+    .pill:hover{
+      color:var(--gold);
+      border-color:rgba(250,204,21,.28);
+      background:rgba(250,204,21,.07);
+    }
+
+    .hero{
+      padding:38px 0 22px;
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+      align-items:stretch;
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      border-radius:30px;
+      background:linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.94));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .hero-main{
+      padding:28px 24px 24px;
+      display:grid;
+      gap:18px;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:max-content;
+      max-width:100%;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line-g);
+      background:rgba(34,197,94,.08);
+      color:#bbf7d0;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      font-family:var(--ff-title);
+      font-size:clamp(32px, 5vw, 56px);
+      line-height:.98;
+      color:#fff8dc;
+    }
+
+    .hero-text{
+      color:var(--muted);
+      font-size:16px;
       line-height:1.6;
+      max-width:58ch;
       font-weight:700;
     }
 
-    .body{
-      padding:20px 22px 22px;
-      display:grid;
-      gap:14px;
-    }
-
-    .field{display:grid;gap:7px}
-
-    .label{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      font-weight:900;
-      color:#bbf7d0;
-    }
-
-    input{
-      width:100%;
-      min-height:52px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      color:var(--text);
-      padding:0 16px;
-      font-size:16px;
-      font-weight:800;
-      outline:none;
-      transition:border-color .15s, background .15s;
-      font-family:var(--ff-body);
-    }
-
-    input:focus{
-      border-color:rgba(34,197,94,.38);
-      background:rgba(255,255,255,.05);
-    }
-
-    input::placeholder{
-      color:rgba(243,255,247,.28);
-    }
-
-    .row{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
+    .cta-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
     }
 
     .btn{
-      min-height:52px;
-      border:none;
+      min-height:48px;
+      padding:12px 18px;
       border-radius:999px;
-      cursor:pointer;
-      font-size:15px;
-      font-weight:900;
-      font-family:var(--ff-body);
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:8px;
+      border:1px solid var(--line);
+      font-weight:900;
+      font-size:14px;
       transition:.18s ease;
     }
 
     .btn.primary{
-      background:linear-gradient(135deg,var(--green),var(--green2));
+      border:none;
       color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--green2));
     }
     .btn.primary:hover{filter:brightness(1.06)}
-    .btn.primary:disabled{
-      opacity:.6;
-      cursor:not-allowed;
-      filter:none;
-    }
-
     .btn.secondary{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
       color:var(--text);
+      background:rgba(255,255,255,.04);
     }
     .btn.secondary:hover{
-      background:rgba(255,255,255,.06);
+      background:rgba(255,255,255,.07);
       border-color:rgba(255,255,255,.16);
     }
 
-    .status{
-      min-height:54px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      padding:12px 14px;
+    .hero-aside{
+      padding:22px;
       display:grid;
-      align-content:center;
-      gap:3px;
+      gap:12px;
+      align-content:start;
     }
 
-    .status.ok{
-      border-color:rgba(34,197,94,.24);
-      background:rgba(34,197,94,.08);
+    .mini-box{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:rgba(255,255,255,.03);
+      padding:16px;
+      display:grid;
+      gap:6px;
     }
 
-    .status.bad{
-      border-color:rgba(248,113,113,.24);
-      background:rgba(248,113,113,.09);
-    }
-
-    .status-title{
-      font-size:12px;
-      font-weight:900;
+    .mini-k{
+      font-size:11px;
       text-transform:uppercase;
       letter-spacing:.08em;
+      color:var(--muted);
+      font-weight:900;
     }
 
-    .status-txt{
-      font-size:13px;
+    .mini-v{
+      font-size:22px;
+      font-weight:900;
+      color:var(--gold);
+      line-height:1.1;
+    }
+
+    .mini-s{
       color:var(--muted);
-      font-weight:800;
+      font-size:13px;
+      font-weight:700;
       line-height:1.45;
     }
 
-    .foot{
-      display:flex;
-      justify-content:space-between;
+    .section{
+      padding:10px 0 0;
+    }
+
+    .section-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:14px;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
+      box-shadow:var(--shadow);
+      padding:18px;
+      display:grid;
       gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+    }
+
+    .card-ico{
+      width:44px;height:44px;
+      border-radius:14px;
+      display:grid;place-items:center;
+      background:rgba(250,204,21,.08);
+      border:1px solid rgba(250,204,21,.16);
+      font-size:20px;
+    }
+
+    .card-title{
+      font-size:14px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+      color:#fde68a;
+    }
+
+    .card p{
+      margin:0;
       color:var(--muted);
-      font-size:12px;
+      font-size:14px;
+      line-height:1.55;
+      font-weight:700;
+    }
+
+    .flow{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .flow-title{
+      font-family:var(--ff-title);
+      color:var(--gold);
+      font-size:28px;
+      margin-bottom:14px;
+    }
+
+    .flow-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .step{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:rgba(255,255,255,.03);
+      padding:16px;
+      display:grid;
+      gap:8px;
+    }
+
+    .step-num{
+      width:32px;height:32px;border-radius:999px;
+      background:rgba(34,197,94,.13);
+      border:1px solid rgba(34,197,94,.22);
+      color:#bbf7d0;
+      display:grid;place-items:center;
+      font-size:13px;font-weight:900;
+    }
+
+    .step-title{
+      font-size:13px;
+      font-weight:900;
+      color:var(--text);
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+
+    .step p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      font-weight:700;
+    }
+
+    .footer{
+      padding:26px 0 34px;
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
       font-weight:800;
-      padding-top:4px;
     }
 
-    .foot a{color:#fde68a}
-
-    .spinner{
-      width:16px;height:16px;
-      border:2px solid rgba(0,0,0,.15);
-      border-top-color:#032215;
-      border-radius:50%;
-      animation:spin .8s linear infinite;
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr}
+      .section-grid{grid-template-columns:1fr}
+      .flow-grid{grid-template-columns:1fr 1fr}
     }
 
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    @media (max-width:560px){
-      .row{grid-template-columns:1fr}
-      .head,.body{padding-left:16px;padding-right:16px}
-      .t1{font-size:22px}
+    @media (max-width:580px){
+      .topbar-in{padding:10px 0}
+      .flow-grid{grid-template-columns:1fr}
+      .wrap{width:min(var(--max), calc(100% - 16px))}
+      .topbar-in{width:min(var(--max), calc(100% - 16px))}
+      .hero-main,.hero-aside{padding:18px}
+      .brand-title{font-size:16px}
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <section class="head">
+  <header class="topbar">
+    <div class="topbar-in">
       <div class="brand">
-        <div class="mark">₣</div>
+        <div class="brand-mark">₣</div>
         <div>
-          <div class="t1">MON ARGENT PRO ♾️</div>
-          <div class="t2">Entrée sécurisée vers le cockpit PAY</div>
+          <div class="brand-title">MON ARGENT by DIGIY ♾️</div>
+          <div class="brand-sub">Pilotage financier terrain • paiement direct • 0% commission</div>
         </div>
       </div>
 
-      <div class="intro">
-        Entre ton téléphone et ton PIN PAY pour ouvrir la session pro.
-        Après validation, tu es redirigé vers le vrai cockpit.
+      <nav class="nav">
+        <a class="pill" href="./pin.html">🔐 Entrée PIN</a>
+        <a class="pill" href="./cockpit.html">📊 Cockpit</a>
+        <a class="pill" href="./admin.html">➕ Saisie</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-card hero-main">
+        <div class="eyebrow">💳 PAY — cockpit transversal DIGIYLYFE</div>
+
+        <h1>Vois ton argent.<br />Ne le subis plus.</h1>
+
+        <div class="hero-text">
+          MON ARGENT by DIGIY aide le professionnel à lire clairement ses entrées,
+          ses dépenses, son épargne et le poids de ses modules métier.
+          L’argent reste chez le pro. PAY ne garde pas les fonds. Il éclaire.
+        </div>
+
+        <div class="cta-row">
+          <a class="btn primary" href="./pin.html">🔐 Entrer dans mon espace</a>
+          <a class="btn secondary" href="./cockpit.html">📊 Ouvrir le cockpit</a>
+          <a class="btn secondary" href="./admin.html">➕ Ajouter un mouvement</a>
+        </div>
+      </div>
+
+      <div class="hero-card hero-aside">
+        <div class="mini-box">
+          <div class="mini-k">Doctrine</div>
+          <div class="mini-v">Le pro reste maître</div>
+          <div class="mini-s">Paiement direct au professionnel. DIGIY n’encaisse pas l’argent du client.</div>
+        </div>
+
+        <div class="mini-box">
+          <div class="mini-k">Lecture</div>
+          <div class="mini-v">Simple et utile</div>
+          <div class="mini-s">Entrées, dépenses pro, épargne, net, modules et canaux visibles dans un seul cockpit.</div>
+        </div>
+
+        <div class="mini-box">
+          <div class="mini-k">Position</div>
+          <div class="mini-v">0% commission</div>
+          <div class="mini-s">PAY fait partie des outils métiers DIGIYLYFE. Il pilote, il n’attrape pas l’argent.</div>
+        </div>
       </div>
     </section>
 
-    <section class="body">
-      <div class="field">
-        <label class="label" for="phone">Téléphone</label>
-        <input id="phone" type="tel" inputmode="numeric" placeholder="221771342889" autocomplete="tel" />
-      </div>
+    <section class="section">
+      <div class="section-grid">
+        <article class="card">
+          <div class="card-ico">📈</div>
+          <div class="card-title">Entrées visibles</div>
+          <p>Les recettes remontées depuis PAY lui-même ou depuis les modules métiers comme DRIVER, COMMERCE et demain les autres wagons.</p>
+        </article>
 
-      <div class="field">
-        <label class="label" for="pin">PIN PAY</label>
-        <input id="pin" type="password" inputmode="numeric" placeholder="••••" maxlength="10" autocomplete="current-password" />
-      </div>
+        <article class="card">
+          <div class="card-ico">🛟</div>
+          <div class="card-title">Épargne utile</div>
+          <p>Une couche d’épargne claire pour la sécurité, le projet, le stock futur, l’investissement ou la famille.</p>
+        </article>
 
-      <div class="row">
-        <button class="btn primary" id="btnSubmit">
-          <span id="btnLabel">🔐 Ouvrir mon cockpit</span>
-        </button>
-        <a class="btn secondary" href="./index.html">← Retour accueil</a>
-      </div>
-
-      <div class="status" id="statusBox">
-        <div class="status-title">Prêt</div>
-        <div class="status-txt">Saisis ton téléphone et ton PIN PAY.</div>
-      </div>
-
-      <div class="foot">
-        <div>Module : PAY</div>
-        <div><a href="./admin.html">Aller vers la saisie manuelle</a></div>
+        <article class="card">
+          <div class="card-ico">📦</div>
+          <div class="card-title">Vision écosystème</div>
+          <p>Le cockpit montre quels modules alimentent le flux et par quels canaux l’activité se digitalise dans le temps.</p>
+        </article>
       </div>
     </section>
+
+    <section class="flow">
+      <div class="flow-title">Comment ça marche</div>
+
+      <div class="flow-grid">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-title">Activation</div>
+          <p>Le module PAY est activé côté abonnement DIGIY avec son slug réel.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-title">PIN</div>
+          <p>Le professionnel entre par PIN pour ouvrir sa session sécurisée.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-title">Cockpit</div>
+          <p>Le cockpit lit les vraies données agrégées du backbone PAY, sans démo locale.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-title">Pilotage</div>
+          <p>Le pro voit son net, ses dépenses, son épargne et les modules qui poussent le business.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      MON ARGENT by DIGIY ♾️ — paiement direct au professionnel • lecture claire • 0% commission
+    </div>
   </main>
-
-  <script>
-    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
-
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
-        storage: {
-          getItem: () => null,
-          setItem: () => {},
-          removeItem: () => {}
-        }
-      }
-    });
-
-    const $ = (id) => document.getElementById(id);
-
-    function cleanPhone(v){
-      return String(v || "").replace(/\D+/g, "");
-    }
-
-    function setStatus(kind, title, txt){
-      const box = $("statusBox");
-      box.className = "status" + (kind ? " " + kind : "");
-      box.innerHTML = `
-        <div class="status-title">${escapeHtml(title || "État")}</div>
-        <div class="status-txt">${escapeHtml(txt || "")}</div>
-      `;
-    }
-
-    function setLoading(on){
-      const btn = $("btnSubmit");
-      const lbl = $("btnLabel");
-      btn.disabled = !!on;
-      if(on){
-        lbl.innerHTML = `<span class="spinner"></span> Vérification...`;
-      }else{
-        lbl.textContent = "🔐 Ouvrir mon cockpit";
-      }
-    }
-
-    function escapeHtml(v){
-      return String(v == null ? "" : v)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;");
-    }
-
-    async function resolvePaySlug(phone){
-      const { data, error } = await sb
-        .from("digiy_subscriptions_public")
-        .select("slug,module,phone")
-        .eq("phone", phone)
-        .eq("module", "PAY")
-        .limit(1)
-        .maybeSingle();
-
-      if(error) throw error;
-      return data?.slug || "";
-    }
-
-    async function verifyPin(phone, pin){
-      const rpcNames = [
-        "digiy_verify_pin",
-        "digiy_pay_verify_pin"
-      ];
-
-      let lastError = null;
-
-      for(const fn of rpcNames){
-        try{
-          const { data, error } = await sb.rpc(fn, {
-            p_phone: phone,
-            p_module: "PAY",
-            p_pin: pin
-          });
-
-          if(error){
-            lastError = error;
-            continue;
-          }
-
-          return { ok: true, data, fn };
-        }catch(err){
-          lastError = err;
-        }
-      }
-
-      throw lastError || new Error("Aucune fonction de vérification PIN PAY n'a répondu.");
-    }
-
-    function saveSession(payload){
-      const session = {
-        slug: payload.slug,
-        phone: payload.phone,
-        module: "PAY",
-        ts: Date.now()
-      };
-
-      localStorage.setItem("digiy_pay_session", JSON.stringify(session));
-      localStorage.setItem("digiy_session", JSON.stringify(session));
-    }
-
-    async function submit(){
-      const phone = cleanPhone($("phone").value);
-      const pin = String($("pin").value || "").trim();
-
-      if(!phone){
-        setStatus("bad", "Téléphone manquant", "Renseigne le téléphone du compte PAY.");
-        $("phone").focus();
-        return;
-      }
-
-      if(!pin){
-        setStatus("bad", "PIN manquant", "Renseigne le PIN PAY.");
-        $("pin").focus();
-        return;
-      }
-
-      try{
-        setLoading(true);
-        setStatus("", "Contrôle", "Vérification du PIN PAY en cours...");
-
-        const pinResult = await verifyPin(phone, pin);
-
-        const pinData = pinResult?.data || {};
-        const isOk = pinData?.ok === true || pinData === true;
-
-        if(!isOk){
-          setStatus("bad", "Accès refusé", "PIN incorrect ou accès PAY non valide.");
-          return;
-        }
-
-        const slug =
-          (pinData && pinData.slug) ||
-          await resolvePaySlug(phone);
-
-        if(!slug){
-          setStatus("bad", "Slug introuvable", "Le PIN est accepté mais aucun slug PAY actif n’a été trouvé.");
-          return;
-        }
-
-        saveSession({ slug, phone });
-
-        setStatus("ok", "Accès accordé", "Session PAY ouverte. Redirection vers le cockpit...");
-        window.location.href = "./cockpit.html?slug=" + encodeURIComponent(slug) + "&phone=" + encodeURIComponent(phone);
-      }catch(err){
-        console.error("[PAY pin]", err);
-        setStatus("bad", "Erreur", err?.message || "Impossible de vérifier le PIN PAY.");
-      }finally{
-        setLoading(false);
-      }
-    }
-
-    $("btnSubmit").addEventListener("click", submit);
-
-    $("pin").addEventListener("keydown", (e) => {
-      if(e.key === "Enter") submit();
-    });
-
-    $("phone").addEventListener("keydown", (e) => {
-      if(e.key === "Enter") $("pin").focus();
-    });
-
-    (function boot(){
-      const u = new URL(window.location.href);
-      const qPhone = cleanPhone(u.searchParams.get("phone") || "");
-      if(qPhone) $("phone").value = qPhone;
-    })();
-  </script>
 </body>
 </html>
