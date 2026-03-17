@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="MON ARGENT by DIGIY — cockpit financier simple pour les professionnels. Paiement direct, 0% commission, lecture claire."
+    content="MON ARGENT by DIGIY — cockpit financier terrain pour voir vite, comprendre vite et agir vite. Paiement direct, 0% commission, lecture claire."
   />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,19 +18,25 @@
     :root{
       --bg:#04110d;
       --bg2:#071a13;
+      --bg3:#0a2018;
       --card:#0b1f18;
       --card2:#102820;
+      --card3:#0f2a20;
       --line:rgba(255,255,255,.08);
-      --line-g:rgba(34,197,94,.22);
+      --line-strong:rgba(255,255,255,.14);
+      --line-g:rgba(34,197,94,.25);
       --text:#f3fff7;
       --muted:rgba(243,255,247,.68);
+      --muted2:rgba(243,255,247,.52);
       --green:#22c55e;
       --green2:#16a34a;
       --gold:#facc15;
       --gold-soft:rgba(250,204,21,.10);
+      --danger:#ef4444;
+      --danger-soft:rgba(239,68,68,.10);
       --shadow:0 22px 70px rgba(0,0,0,.42);
       --r:24px;
-      --max:1080px;
+      --max:1120px;
       --ff-title:'Playfair Display', Georgia, serif;
       --ff-body:'Nunito', system-ui, sans-serif;
     }
@@ -42,13 +48,15 @@
       color:var(--text);
       font-family:var(--ff-body);
       background:
-        radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 36%),
-        radial-gradient(circle at 100% 100%, rgba(250,204,21,.07), transparent 28%),
+        radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 34%),
+        radial-gradient(circle at 100% 100%, rgba(250,204,21,.06), transparent 28%),
         linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
       -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
     }
 
     a{text-decoration:none;color:inherit}
+    button,input,select,textarea{font:inherit}
 
     .wrap{
       width:min(var(--max), calc(100% - 24px));
@@ -61,29 +69,30 @@
       z-index:50;
       backdrop-filter:blur(14px);
       -webkit-backdrop-filter:blur(14px);
-      background:rgba(4,17,13,.82);
+      background:rgba(4,17,13,.84);
       border-bottom:1px solid var(--line);
     }
 
     .topbar-in{
       width:min(var(--max), calc(100% - 24px));
       margin:0 auto;
-      min-height:70px;
+      min-height:72px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
+      padding:10px 0;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:12px;
       min-width:0;
     }
 
     .brand-mark{
-      width:42px;height:42px;
+      width:44px;height:44px;
       border-radius:14px;
       background:linear-gradient(135deg,var(--green),var(--green2));
       display:grid;place-items:center;
@@ -104,7 +113,7 @@
       color:var(--muted);
       font-size:11px;
       font-weight:800;
-      margin-top:3px;
+      margin-top:4px;
     }
 
     .nav{
@@ -123,22 +132,38 @@
       font-weight:800;
       font-size:12px;
       transition:.18s ease;
+      white-space:nowrap;
     }
+
     .pill:hover{
       color:var(--gold);
       border-color:rgba(250,204,21,.28);
       background:rgba(250,204,21,.07);
     }
 
+    .pill.primary{
+      border:none;
+      color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+    }
+
+    .pill.primary:hover{
+      filter:brightness(1.05);
+      color:#032215;
+    }
+
     .hero{
-      padding:38px 0 22px;
+      padding:26px 0 14px;
       display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:18px;
+      grid-template-columns:1.12fr .88fr;
+      gap:16px;
       align-items:stretch;
     }
 
-    .hero-card{
+    .hero-card,
+    .panel,
+    .flow,
+    .event-rail{
       border:1px solid var(--line);
       border-radius:30px;
       background:linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.94));
@@ -147,9 +172,10 @@
     }
 
     .hero-main{
-      padding:28px 24px 24px;
+      padding:26px 24px 22px;
       display:grid;
       gap:18px;
+      align-content:start;
     }
 
     .eyebrow{
@@ -172,15 +198,15 @@
     h1{
       margin:0;
       font-family:var(--ff-title);
-      font-size:clamp(32px, 5vw, 56px);
-      line-height:.98;
+      font-size:clamp(34px, 5.2vw, 58px);
+      line-height:.96;
       color:#fff8dc;
     }
 
     .hero-text{
       color:var(--muted);
       font-size:16px;
-      line-height:1.6;
+      line-height:1.58;
       max-width:58ch;
       font-weight:700;
     }
@@ -192,7 +218,7 @@
     }
 
     .btn{
-      min-height:48px;
+      min-height:50px;
       padding:12px 18px;
       border-radius:999px;
       display:inline-flex;
@@ -210,75 +236,271 @@
       color:#032215;
       background:linear-gradient(135deg,var(--green),var(--green2));
     }
+
     .btn.primary:hover{filter:brightness(1.06)}
+
     .btn.secondary{
       color:var(--text);
       background:rgba(255,255,255,.04);
     }
+
     .btn.secondary:hover{
       background:rgba(255,255,255,.07);
       border-color:rgba(255,255,255,.16);
     }
 
+    .btn.ghost{
+      color:var(--gold);
+      background:rgba(250,204,21,.06);
+      border-color:rgba(250,204,21,.18);
+    }
+
+    .btn.ghost:hover{
+      background:rgba(250,204,21,.10);
+      border-color:rgba(250,204,21,.28);
+    }
+
+    .hero-strip{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:10px;
+    }
+
+    .strip-box{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:rgba(255,255,255,.03);
+      padding:14px;
+      display:grid;
+      gap:5px;
+      min-height:104px;
+      align-content:start;
+    }
+
+    .strip-k{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted2);
+      font-weight:900;
+    }
+
+    .strip-v{
+      font-size:22px;
+      font-weight:900;
+      color:var(--gold);
+      line-height:1.05;
+    }
+
+    .strip-s{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      line-height:1.45;
+    }
+
     .hero-aside{
-      padding:22px;
+      padding:18px;
       display:grid;
       gap:12px;
       align-content:start;
     }
 
-    .mini-box{
+    .quick-hud{
       border:1px solid var(--line);
-      border-radius:20px;
-      background:rgba(255,255,255,.03);
+      border-radius:24px;
+      background:
+        radial-gradient(circle at right top, rgba(34,197,94,.08), transparent 40%),
+        linear-gradient(160deg, rgba(16,40,32,.94), rgba(8,24,18,.96));
       padding:16px;
       display:grid;
-      gap:6px;
-    }
-
-    .mini-k{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:var(--muted);
-      font-weight:900;
-    }
-
-    .mini-v{
-      font-size:22px;
-      font-weight:900;
-      color:var(--gold);
-      line-height:1.1;
-    }
-
-    .mini-s{
-      color:var(--muted);
-      font-size:13px;
-      font-weight:700;
-      line-height:1.45;
-    }
-
-    .section{
-      padding:10px 0 0;
-    }
-
-    .section-grid{
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
       gap:14px;
     }
 
-    .card{
+    .hud-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .hud-title{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#bbf7d0;
+      font-weight:900;
+    }
+
+    .hud-badge{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      background:rgba(34,197,94,.10);
+      border:1px solid rgba(34,197,94,.24);
+      color:#bbf7d0;
+      white-space:nowrap;
+    }
+
+    .hud-net{
+      display:grid;
+      gap:4px;
+    }
+
+    .hud-net-label{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .hud-net-value{
+      font-size:clamp(28px, 4vw, 40px);
+      line-height:1;
+      font-weight:900;
+      color:#fff8dc;
+    }
+
+    .hud-net-sub{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      font-weight:700;
+    }
+
+    .hud-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .hud-box{
       border:1px solid var(--line);
-      border-radius:24px;
-      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
-      box-shadow:var(--shadow);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      padding:13px;
+      display:grid;
+      gap:4px;
+    }
+
+    .hud-box.in .hud-box-v{color:#86efac}
+    .hud-box.out .hud-box-v{color:#fca5a5}
+    .hud-box.save .hud-box-v{color:#fde68a}
+    .hud-box.mod .hud-box-v{color:#93c5fd}
+
+    .hud-box-k{
+      color:var(--muted2);
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .hud-box-v{
+      font-size:18px;
+      font-weight:900;
+      line-height:1.1;
+    }
+
+    .hud-box-s{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      line-height:1.4;
+    }
+
+    .quick-actions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+
+    .qa{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      transition:.18s ease;
+    }
+
+    .qa:hover{
+      border-color:var(--line-strong);
+      background:rgba(255,255,255,.05);
+      transform:translateY(-1px);
+    }
+
+    .qa-left{
+      display:grid;
+      gap:2px;
+    }
+
+    .qa-k{
+      font-size:13px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .qa-s{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      line-height:1.4;
+    }
+
+    .qa-arrow{
+      color:var(--gold);
+      font-size:18px;
+      font-weight:900;
+      flex-shrink:0;
+    }
+
+    .section{
+      padding:12px 0 0;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:0 0 12px;
+    }
+
+    .section-title h2{
+      margin:0;
+      font-family:var(--ff-title);
+      color:var(--gold);
+      font-size:30px;
+      line-height:1;
+    }
+
+    .section-title p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+      text-align:right;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .panel{
       padding:18px;
       display:grid;
       gap:10px;
     }
 
-    .card-ico{
+    .panel-ico{
       width:44px;height:44px;
       border-radius:14px;
       display:grid;place-items:center;
@@ -287,7 +509,7 @@
       font-size:20px;
     }
 
-    .card-title{
+    .panel-title{
       font-size:14px;
       font-weight:900;
       text-transform:uppercase;
@@ -295,7 +517,7 @@
       color:#fde68a;
     }
 
-    .card p{
+    .panel p{
       margin:0;
       color:var(--muted);
       font-size:14px;
@@ -305,10 +527,6 @@
 
     .flow{
       margin-top:16px;
-      border:1px solid var(--line);
-      border-radius:28px;
-      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
-      box-shadow:var(--shadow);
       padding:20px;
     }
 
@@ -359,27 +577,244 @@
       font-weight:700;
     }
 
+    .event-rail{
+      margin-top:16px;
+      padding:20px;
+    }
+
+    .event-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .event-head h2{
+      margin:0;
+      font-family:var(--ff-title);
+      color:#fff8dc;
+      font-size:28px;
+      line-height:1;
+    }
+
+    .event-head p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+      text-align:right;
+    }
+
+    .event-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .event-card{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:rgba(255,255,255,.03);
+      padding:16px;
+      display:grid;
+      gap:8px;
+      min-height:160px;
+      align-content:start;
+    }
+
+    .event-tag{
+      width:max-content;
+      max-width:100%;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      border:1px solid var(--line);
+      color:#d1fae5;
+      background:rgba(34,197,94,.08);
+    }
+
+    .event-tag.out{
+      color:#fecaca;
+      background:rgba(239,68,68,.08);
+      border-color:rgba(239,68,68,.16);
+    }
+
+    .event-tag.save{
+      color:#fde68a;
+      background:rgba(250,204,21,.08);
+      border-color:rgba(250,204,21,.16);
+    }
+
+    .event-tag.mod{
+      color:#bfdbfe;
+      background:rgba(59,130,246,.08);
+      border-color:rgba(59,130,246,.16);
+    }
+
+    .event-title{
+      font-size:14px;
+      font-weight:900;
+      color:#fff;
+      line-height:1.35;
+    }
+
+    .event-text{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      font-weight:700;
+    }
+
+    .event-meta{
+      margin-top:auto;
+      color:var(--muted2);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .doctrine{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:14px;
+    }
+
+    .quote-box,
+    .rules-box{
+      border:1px solid var(--line);
+      border-radius:26px;
+      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .quote-top{
+      color:#bbf7d0;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:10px;
+    }
+
+    .quote-main{
+      margin:0;
+      font-family:var(--ff-title);
+      color:#fff8dc;
+      font-size:30px;
+      line-height:1.08;
+    }
+
+    .quote-sub{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      font-weight:700;
+    }
+
+    .rules-title{
+      font-size:13px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#fde68a;
+      margin-bottom:10px;
+    }
+
+    .rules{
+      display:grid;
+      gap:10px;
+    }
+
+    .rule{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:10px;
+      align-items:start;
+      padding:12px 0;
+      border-top:1px solid var(--line);
+    }
+
+    .rule:first-child{border-top:none;padding-top:0}
+
+    .rule-ico{
+      width:28px;height:28px;
+      border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(34,197,94,.10);
+      border:1px solid rgba(34,197,94,.18);
+      color:#bbf7d0;
+      font-size:13px;
+      font-weight:900;
+      margin-top:1px;
+    }
+
+    .rule strong{
+      display:block;
+      font-size:13px;
+      color:#fff;
+      margin-bottom:2px;
+    }
+
+    .rule span{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      font-weight:700;
+    }
+
     .footer{
-      padding:26px 0 34px;
+      padding:28px 0 38px;
       text-align:center;
       color:var(--muted);
       font-size:13px;
       font-weight:800;
     }
 
-    @media (max-width:980px){
+    .footer a{
+      color:#fde68a;
+    }
+
+    @media (max-width:1040px){
       .hero{grid-template-columns:1fr}
-      .section-grid{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr}
+      .event-grid{grid-template-columns:1fr 1fr}
+      .doctrine{grid-template-columns:1fr}
+    }
+
+    @media (max-width:820px){
       .flow-grid{grid-template-columns:1fr 1fr}
+      .hero-strip{grid-template-columns:1fr}
     }
 
     @media (max-width:580px){
-      .topbar-in{padding:10px 0}
-      .flow-grid{grid-template-columns:1fr}
       .wrap{width:min(var(--max), calc(100% - 16px))}
       .topbar-in{width:min(var(--max), calc(100% - 16px))}
+      .topbar-in{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+      .nav{width:100%;justify-content:flex-start}
       .hero-main,.hero-aside{padding:18px}
       .brand-title{font-size:16px}
+      .hud-grid,
+      .event-grid,
+      .flow-grid{
+        grid-template-columns:1fr;
+      }
+      .section-title{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+      .section-title p,
+      .event-head p{
+        text-align:left;
+      }
     }
   </style>
 </head>
@@ -390,14 +825,14 @@
         <div class="brand-mark">₣</div>
         <div>
           <div class="brand-title">MON ARGENT by DIGIY ♾️</div>
-          <div class="brand-sub">Pilotage financier terrain • paiement direct • 0% commission</div>
+          <div class="brand-sub">Cockpit financier terrain • paiement direct • lecture rapide • 0% commission</div>
         </div>
       </div>
 
       <nav class="nav">
-        <a class="pill" href="./pin.html">🔐 Entrée PIN</a>
+        <a class="pill primary" href="./pin.html">🔐 Entrée PIN</a>
         <a class="pill" href="./cockpit.html">📊 Cockpit</a>
-        <a class="pill" href="./admin.html">➕ Saisie</a>
+        <a class="pill" href="./admin.html">➕ Ajouter</a>
       </nav>
     </div>
   </header>
@@ -407,60 +842,190 @@
       <div class="hero-card hero-main">
         <div class="eyebrow">💳 PAY — cockpit transversal DIGIYLYFE</div>
 
-        <h1>Vois ton argent.<br />Ne le subis plus.</h1>
+        <h1>Vois vite.<br>Comprends vite.<br>Agis juste.</h1>
 
         <div class="hero-text">
-          MON ARGENT by DIGIY aide le professionnel à lire clairement ses entrées,
-          ses dépenses, son épargne et le poids de ses modules métier.
-          L’argent reste chez le pro. PAY ne garde pas les fonds. Il éclaire.
+          MON ARGENT by DIGIY ne garde pas les fonds du client.
+          Le professionnel reste maître de son argent.
+          PAY sert à lire clairement les entrées, les dépenses pro, l’épargne et le net,
+          sans bruit et sans confusion.
         </div>
 
         <div class="cta-row">
           <a class="btn primary" href="./pin.html">🔐 Entrer dans mon espace</a>
           <a class="btn secondary" href="./cockpit.html">📊 Ouvrir le cockpit</a>
-          <a class="btn secondary" href="./admin.html">➕ Ajouter un mouvement</a>
+          <a class="btn ghost" href="./admin.html">➕ Ajouter un mouvement</a>
+        </div>
+
+        <div class="hero-strip">
+          <div class="strip-box">
+            <div class="strip-k">En 2 secondes</div>
+            <div class="strip-v">Net du jour</div>
+            <div class="strip-s">Voir si l’activité monte, baisse ou tient la route sans ouvrir dix pages.</div>
+          </div>
+
+          <div class="strip-box">
+            <div class="strip-k">En 1 geste</div>
+            <div class="strip-v">Ajouter</div>
+            <div class="strip-s">Entrée, dépense pro, dépense perso utile ou épargne depuis une saisie simple.</div>
+          </div>
+
+          <div class="strip-box">
+            <div class="strip-k">En 1 lecture</div>
+            <div class="strip-v">Voir les modules</div>
+            <div class="strip-s">Comprendre si DRIVER, COMMERCE ou un autre wagon pousse vraiment le business.</div>
+          </div>
         </div>
       </div>
 
-      <div class="hero-card hero-aside">
-        <div class="mini-box">
-          <div class="mini-k">Doctrine</div>
-          <div class="mini-v">Le pro reste maître</div>
-          <div class="mini-s">Paiement direct au professionnel. DIGIY n’encaisse pas l’argent du client.</div>
+      <aside class="hero-card hero-aside">
+        <div class="quick-hud">
+          <div class="hud-top">
+            <div class="hud-title">HUD PAY — lecture rapide</div>
+            <div class="hud-badge">0% commission</div>
+          </div>
+
+          <div class="hud-net">
+            <div class="hud-net-label">Ce que le pro veut voir d’abord</div>
+            <div class="hud-net-value">Le net. Pas le bruit.</div>
+            <div class="hud-net-sub">
+              PAY est pensé comme un affichage de décision :
+              voir l’essentiel, garder le cap, agir sans friction.
+            </div>
+          </div>
+
+          <div class="hud-grid">
+            <div class="hud-box in">
+              <div class="hud-box-k">Entrées</div>
+              <div class="hud-box-v">Recettes visibles</div>
+              <div class="hud-box-s">Ce qui rentre par module ou par saisie directe.</div>
+            </div>
+
+            <div class="hud-box out">
+              <div class="hud-box-k">Dépenses pro</div>
+              <div class="hud-box-v">Sorties utiles</div>
+              <div class="hud-box-s">Ce qui coûte à l’activité pour tourner proprement.</div>
+            </div>
+
+            <div class="hud-box save">
+              <div class="hud-box-k">Épargne</div>
+              <div class="hud-box-v">Protection réelle</div>
+              <div class="hud-box-s">Sécurité, projet, stock, véhicule, famille.</div>
+            </div>
+
+            <div class="hud-box mod">
+              <div class="hud-box-k">Modules</div>
+              <div class="hud-box-v">Vision DIGIY</div>
+              <div class="hud-box-s">Voir quel wagon alimente le mouvement.</div>
+            </div>
+          </div>
         </div>
 
-        <div class="mini-box">
-          <div class="mini-k">Lecture</div>
-          <div class="mini-v">Simple et utile</div>
-          <div class="mini-s">Entrées, dépenses pro, épargne, net, modules et canaux visibles dans un seul cockpit.</div>
-        </div>
+        <div class="quick-actions">
+          <a class="qa" href="./pin.html">
+            <div class="qa-left">
+              <div class="qa-k">Entrer par PIN</div>
+              <div class="qa-s">Session pro sécurisée avec ton accès PAY réel.</div>
+            </div>
+            <div class="qa-arrow">→</div>
+          </a>
 
-        <div class="mini-box">
-          <div class="mini-k">Position</div>
-          <div class="mini-v">0% commission</div>
-          <div class="mini-s">PAY fait partie des outils métiers DIGIYLYFE. Il pilote, il n’attrape pas l’argent.</div>
+          <a class="qa" href="./cockpit.html">
+            <div class="qa-left">
+              <div class="qa-k">Voir le cockpit</div>
+              <div class="qa-s">Lecture réelle du backbone PAY, sans démo parasite.</div>
+            </div>
+            <div class="qa-arrow">→</div>
+          </a>
+
+          <a class="qa" href="./admin.html">
+            <div class="qa-left">
+              <div class="qa-k">Ajouter un mouvement</div>
+              <div class="qa-s">Saisie simple d’une entrée, dépense ou épargne utile.</div>
+            </div>
+            <div class="qa-arrow">→</div>
+          </a>
         </div>
-      </div>
+      </aside>
     </section>
 
     <section class="section">
-      <div class="section-grid">
-        <article class="card">
-          <div class="card-ico">📈</div>
-          <div class="card-title">Entrées visibles</div>
-          <p>Les recettes remontées depuis PAY lui-même ou depuis les modules métiers comme DRIVER, COMMERCE et demain les autres wagons.</p>
+      <div class="section-title">
+        <h2>Ce que PAY fait vraiment</h2>
+        <p>Pas une banque. Pas un wallet custodial.<br>Un cockpit de lecture et de pilotage.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="panel">
+          <div class="panel-ico">📈</div>
+          <div class="panel-title">Voir les entrées</div>
+          <p>
+            Les recettes remontent depuis PAY lui-même ou depuis les modules métier.
+            Le pro voit ce qui rentre, d’où cela vient et quel canal pousse réellement l’activité.
+          </p>
         </article>
 
-        <article class="card">
-          <div class="card-ico">🛟</div>
-          <div class="card-title">Épargne utile</div>
-          <p>Une couche d’épargne claire pour la sécurité, le projet, le stock futur, l’investissement ou la famille.</p>
+        <article class="panel">
+          <div class="panel-ico">🛟</div>
+          <div class="panel-title">Protéger l’argent</div>
+          <p>
+            L’épargne n’est pas décorative.
+            Elle sert à tenir le terrain : sécurité, stock futur, investissement, projet, véhicule ou famille.
+          </p>
         </article>
 
-        <article class="card">
-          <div class="card-ico">📦</div>
-          <div class="card-title">Vision écosystème</div>
-          <p>Le cockpit montre quels modules alimentent le flux et par quels canaux l’activité se digitalise dans le temps.</p>
+        <article class="panel">
+          <div class="panel-ico">🧭</div>
+          <div class="panel-title">Aider la décision</div>
+          <p>
+            PAY aide à décider vite :
+            continuer, freiner, épargner, corriger une dépense ou voir quel module mérite plus d’attention.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="event-rail">
+      <div class="event-head">
+        <h2>Le rail de lecture utile</h2>
+        <p>Demain sur téléphone, cockpit compact,<br>ou futur HUD lunettes : même logique.</p>
+      </div>
+
+      <div class="event-grid">
+        <article class="event-card">
+          <div class="event-tag">Entrée</div>
+          <div class="event-title">“+ 21 000 FCFA — course chauffeur validée”</div>
+          <div class="event-text">
+            Une recette claire, lisible tout de suite, avec provenance métier visible.
+          </div>
+          <div class="event-meta">Lecture utile : quoi • combien • d’où</div>
+        </article>
+
+        <article class="event-card">
+          <div class="event-tag out">Dépense pro</div>
+          <div class="event-title">“− 3 000 FCFA — carburant / terrain”</div>
+          <div class="event-text">
+            Une sortie utile au business, visible sans noyer le professionnel sous des détails inutiles.
+          </div>
+          <div class="event-meta">Lecture utile : nature • montant • impact</div>
+        </article>
+
+        <article class="event-card">
+          <div class="event-tag save">Épargne</div>
+          <div class="event-title">“+ 5 000 FCFA — sécurité / projet”</div>
+          <div class="event-text">
+            Une couche de protection qui transforme le flux en stabilité et en force de reprise.
+          </div>
+          <div class="event-meta">Lecture utile : réserve • objectif • continuité</div>
+        </article>
+
+        <article class="event-card">
+          <div class="event-tag mod">Module</div>
+          <div class="event-title">“DRIVER pousse fort cette semaine”</div>
+          <div class="event-text">
+            Le cockpit doit montrer les wagons qui tirent réellement le business, pas seulement des chiffres isolés.
+          </div>
+          <div class="event-meta">Lecture utile : module • poids • tendance</div>
         </article>
       </div>
     </section>
@@ -478,7 +1043,7 @@
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-title">PIN</div>
-          <p>Le professionnel entre par PIN pour ouvrir sa session sécurisée.</p>
+          <p>Le professionnel entre par PIN pour ouvrir sa session sécurisée propre à PAY.</p>
         </div>
 
         <div class="step">
@@ -495,8 +1060,62 @@
       </div>
     </section>
 
+    <section class="doctrine">
+      <div class="quote-box">
+        <div class="quote-top">Doctrine PAY</div>
+        <h2 class="quote-main">L’argent reste chez le pro.<br>PAY apporte la vue.</h2>
+        <div class="quote-sub">
+          MON ARGENT by DIGIY fait partie des outils métiers DIGIYLYFE.
+          Il n’encaisse pas les fonds du client.
+          Il structure la lecture financière pour aider le professionnel à mieux voir,
+          mieux protéger et mieux décider.
+        </div>
+      </div>
+
+      <div class="rules-box">
+        <div class="rules-title">Règles simples à retenir</div>
+
+        <div class="rules">
+          <div class="rule">
+            <div class="rule-ico">1</div>
+            <div>
+              <strong>Paiement direct</strong>
+              <span>Le client paie directement le professionnel. DIGIY ne garde pas l’argent.</span>
+            </div>
+          </div>
+
+          <div class="rule">
+            <div class="rule-ico">2</div>
+            <div>
+              <strong>Lecture avant décoration</strong>
+              <span>Le cockpit doit d’abord faire comprendre vite, avant de faire joli.</span>
+            </div>
+          </div>
+
+          <div class="rule">
+            <div class="rule-ico">3</div>
+            <div>
+              <strong>Épargne obligatoire dans la logique</strong>
+              <span>Un business qui ne protège rien finit par subir tout.</span>
+            </div>
+          </div>
+
+          <div class="rule">
+            <div class="rule-ico">4</div>
+            <div>
+              <strong>Vision écosystème</strong>
+              <span>PAY aide à voir quels modules nourrissent réellement la dynamique DIGIY.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <div class="footer">
-      MON ARGENT by DIGIY ♾️ — paiement direct au professionnel • lecture claire • 0% commission
+      MON ARGENT by DIGIY ♾️ — cockpit financier terrain • 0% commission • paiement direct au professionnel •
+      <a href="./pin.html">Entrée PIN</a> •
+      <a href="./cockpit.html">Cockpit</a> •
+      <a href="./admin.html">Saisie</a>
     </div>
   </main>
 </body>
