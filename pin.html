@@ -846,6 +846,63 @@
       }catch(_){}
     }
 
+    function parsePostgresRecordString(txt, fallbackPhone){
+      const raw = String(txt || "").trim();
+      if(!raw.startsWith("(") || !raw.endsWith(")")) return null;
+
+      const inner = raw.slice(1, -1);
+      const parts = [];
+      let current = "";
+      let inQuotes = false;
+
+      for(let i = 0; i < inner.length; i++){
+        const ch = inner[i];
+
+        if(ch === '"' && inner[i - 1] !== "\\"){
+          inQuotes = !inQuotes;
+          current += ch;
+          continue;
+        }
+
+        if(ch === "," && !inQuotes){
+          parts.push(current.trim());
+          current = "";
+          continue;
+        }
+
+        current += ch;
+      }
+      parts.push(current.trim());
+
+      const first = String(parts[0] || "").trim().toLowerCase();
+      const module = String(parts[1] || "").trim().replace(/^"|"$/g, "");
+      const outPhone = String(parts[2] || "").trim().replace(/[^\d]/g, "");
+      const label = String(parts[3] || "").trim().replace(/^"|"$/g, "");
+      const id = String(parts[4] || "").trim().replace(/^"|"$/g, "");
+
+      if(first === "t" || first === "true"){
+        const finalPhone = outPhone || normalizePhone(fallbackPhone);
+        return {
+          ok: true,
+          module: module || "PAY",
+          phone: finalPhone,
+          slug: inferSlugFromPhone(finalPhone),
+          label,
+          id,
+          raw
+        };
+      }
+
+      return {
+        ok: false,
+        module: module || "PAY",
+        phone: outPhone || normalizePhone(fallbackPhone),
+        label,
+        id,
+        raw
+      };
+    }
+
     async function verifyPin(phone, pin){
       const { data, error } = await sb.rpc("digiy_verify_pin", {
         p_phone: phone,
@@ -855,11 +912,54 @@
 
       if(error) throw error;
 
-      const payload = coerceObject(data);
-      if(!payload){
-        throw new Error("Réponse PIN vide ou illisible.");
+      let payload = data;
+
+      if(Array.isArray(payload)){
+        payload = payload[0] || null;
       }
-      return payload;
+
+      if(typeof payload === "string"){
+        const txt = payload.trim();
+
+        const pgRecord = parsePostgresRecordString(txt, phone);
+        if(pgRecord){
+          if(pgRecord.ok === true) return pgRecord;
+          throw new Error("PIN incorrect ou accès PAY non valide.");
+        }
+
+        try{
+          payload = JSON.parse(txt);
+        }catch(_){}
+      }
+
+      if(payload && typeof payload === "object"){
+        if(payload.ok === true || payload.success === true || payload.valid === true || payload.is_valid === true){
+          const finalPhone = normalizePhone(payload.phone || phone);
+          return {
+            ok: true,
+            phone: finalPhone,
+            slug: normalizeSlug(payload.slug || inferSlugFromPhone(finalPhone)),
+            label: payload.label || payload.business_name || "MON ARGENT PRO",
+            raw: payload
+          };
+        }
+
+        if(payload.f1 === true){
+          const finalPhone = normalizePhone(payload.phone || phone);
+          return {
+            ok: true,
+            phone: finalPhone,
+            slug: normalizeSlug(payload.slug || inferSlugFromPhone(finalPhone)),
+            label: payload.label || "MON ARGENT PRO",
+            raw: payload
+          };
+        }
+      }
+
+      throw new Error(
+        (payload && (payload.error || payload.message)) ||
+        "PIN incorrect ou accès PAY non valide."
+      );
     }
 
     async function openAccess(evt){
