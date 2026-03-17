@@ -1,147 +1,302 @@
-# MON ARGENT by DIGIY ♾️
+# MON ARGENT by DIGIY ♾️ — README PAY HUD
 
-Cockpit financier transversal de l’écosystème DIGIYLYFE.
+## Vision
 
-## Doctrine
+MON ARGENT by DIGIY est le cockpit financier transversal de DIGIYLYFE.
 
-MON ARGENT by DIGIY n’est pas une banque.
-MON ARGENT by DIGIY n’est pas une monnaie électronique.
-MON ARGENT by DIGIY ne garde pas les fonds.
+PAY n’est **ni une banque**, ni un **wallet custodial**, ni une **monnaie électronique**.
 
-Le rôle de PAY est de **piloter**, **organiser** et **rendre visible** les flux financiers utiles du professionnel.
+PAY sert à :
 
-Le paiement reste direct au professionnel.
+- lire les entrées
+- lire les dépenses pro
+- lire l’épargne
+- lire le net
+- voir les modules qui poussent le business
+- voir les canaux utilisés
+- aider le professionnel à décider vite et proprement
+
+## Doctrine simple
+
+### 1. L’argent reste chez le pro
+Le client paie directement le professionnel.  
+DIGIY ne garde pas les fonds.
+
+### 2. PAY éclaire
+PAY organise la lecture financière.  
+Il ne “capture” pas l’argent, il montre le mouvement.
+
+### 3. Le net d’abord
+La lecture prioritaire n’est pas le décor.  
+La lecture prioritaire est :
+
+- net pro
+- épargne
+- disponible pro
+- reste après perso visible
+
+### 4. Lecture HUD
+Le front PAY doit toujours tendre vers une lecture **2 secondes** :
+
+- voir vite
+- comprendre vite
+- agir vite
+
+### 5. Zéro démo si le rail réel existe
+Le module doit lire les vraies données du rail PAY existant.  
+Pas de données fictives si le backend réel est posé.
 
 ---
 
-## Structure des fichiers
+## Pages du module
 
 ### `index.html`
-Vitrine publique de PAY.
+Rôle :
+- page d’entrée publique
+- présentation claire de la doctrine PAY
+- orientation rapide vers PIN / cockpit / saisie
 
-But :
-- présenter la doctrine
-- expliquer la promesse
-- diriger vers l’entrée PIN, le cockpit ou la saisie
-
-Ce fichier n’est **pas** un cockpit.
-Ce fichier n’est **pas** un admin.
+Objectif :
+- faire comprendre PAY en quelques secondes
+- préparer la logique HUD
 
 ---
 
 ### `pin.html`
-Entrée protégée du professionnel.
+Rôle :
+- entrée protégée du pro
+- vérification du PIN PAY
+- ouverture de session terrain
 
-But :
-- demander téléphone + PIN
-- vérifier l’accès PAY
-- retrouver le slug réel du module PAY
-- ouvrir la session
-- rediriger vers `cockpit.html`
+Objectif :
+- téléphone + PIN = accès rapide
+- zéro confusion
+- redirection propre vers cockpit ou saisie
 
-Ce fichier ne doit pas contenir de logique cockpit complète.
+Rail utilisé :
+- `digiy_verify_pin`
+- `session.js`
 
 ---
 
 ### `cockpit.html`
-Vrai cockpit PAY.
+Rôle :
+- lecture réelle du cockpit PAY
+- vision financière synthétique
+- lecture du business
 
-But :
-- lire les vraies données du backbone PAY
-- afficher :
-  - entrées
-  - dépenses pro
-  - net
-  - épargne
-  - répartition par module
-  - répartition par canal
-- ne rien inventer en local
-- ne pas écrire directement les mouvements
+Lecture prioritaire :
+- net pro
+- épargne du mois
+- disponible pro
+- reste après perso visible
+- modules qui poussent le business
+- canaux visibles
 
-Le cockpit doit lire le rail réel :
-
-- `public.digiy_pay_get_cockpit_by_slug(p_slug)`
+Rail utilisé :
+- `digiy_pay_get_cockpit_by_slug`
+- `digiy_pay_movements`
+- `session.js`
 
 ---
 
 ### `admin.html`
-Page de saisie manuelle.
+Rôle :
+- saisie manuelle des mouvements PAY
+- lecture rapide de l’historique
+- alimentation du cockpit
 
-But :
-- ajouter des mouvements
-- piloter la partie opérationnelle manuelle PAY
-- rester séparée du cockpit
+Types de mouvements :
+- entrée
+- sortie
+- épargne
 
-Ne pas mélanger `admin.html` avec `cockpit.html`.
-
----
-
-## Source de vérité
-
-Le cockpit PAY doit rester branché au backbone réel DIGIY.
-
-Rail principal attendu :
-- `digiy_pay_get_cockpit_by_slug`
-
-Session attendue :
-- `slug`
-- `phone`
-- `module = PAY`
-
-Stockage session front :
-- `digiy_pay_session`
-- éventuellement `digiy_session`
+Rail utilisé :
+- table `digiy_pay_movements`
+- `session.js`
 
 ---
 
-## Règle d’or
+## Structure mentale PAY HUD
 
-Ne plus refaire un faux cockpit local branché seulement sur une table front.
+Le module doit toujours être pensé comme un **cockpit de décision**, pas comme un simple formulaire.
 
-Le bon découpage est :
+### Ce qu’on veut voir d’abord
+- combien entre
+- combien sort
+- combien est protégé
+- combien reste
+- quel module pousse
+- quel canal domine
 
-- `index.html` = vitrine
-- `pin.html` = entrée sécurisée
-- `cockpit.html` = lecture réelle
-- `admin.html` = saisie manuelle
-
----
-
-## Flux normal
-
-1. Le pro arrive sur `index.html`
-2. Il ouvre `pin.html`
-3. Son PIN PAY est vérifié
-4. Le slug PAY réel est récupéré
-5. La session est enregistrée
-6. Redirection vers `cockpit.html`
-7. Le cockpit lit les vraies données via RPC
+### Ce qu’on veut éviter
+- bruit visuel
+- jargon inutile
+- logique administrative froide
+- navigation confuse
+- démo parasite
 
 ---
 
-## Positionnement public
+## Langage front recommandé
 
-Signature :
-**MON ARGENT by DIGIY**
-ou
-**MON ARGENT PRO — Cockpit DIGIY**
+Toujours privilégier un langage :
 
-Promesse :
-- lecture claire
-- paiement direct
-- 0% commission
-- pilotage utile terrain
+- simple
+- direct
+- terrain
+- lisible vite
+- utile au pro
+
+Exemples d’axe :
+- “Vois vite”
+- “Comprends vite”
+- “Agis juste”
+- “Le net d’abord”
+- “Le pro reste maître”
+- “PAY éclaire”
+
+Éviter :
+- discours trop technique
+- promesses floues
+- style bancaire froid
+- complexité inutile
 
 ---
 
-## Important
+## Calculs de lecture métier
 
-Si un fichier mélange :
-- vitrine
-- PIN
-- cockpit
-- admin
+### Net pro
+```text
+entrées pro - dépenses pro
+Disponible pro
+net pro - épargne du mois
+Reste après perso visible
+disponible pro - dépenses perso visibles
+Poids de l’épargne
+épargne du mois / entrées du mois
+Session
 
-alors on retombe dans la confusion.
+Le module PAY fonctionne avec une session locale légère via session.js.
 
-La couture propre du module PAY repose sur la séparation claire des rôles.
+Éléments clés :
+
+slug
+
+phone
+
+module = PAY
+
+Règles :
+
+si URL contient slug / phone, on les reprend
+
+si session absente, retour vers pin.html
+
+après validation PIN, sauvegarde session
+
+après chargement cockpit ou admin, réappliquer URL propre
+
+Backend déjà posé
+
+Le front ne doit pas réinventer le backend si le rail existe déjà.
+
+Rails connus
+
+digiy_verify_pin
+
+digiy_pay_get_cockpit_by_slug
+
+table digiy_pay_movements
+
+Doctrine
+
+ne pas refaire le SQL sans bug réel prouvé
+
+priorité au FRONT si le backend existe déjà
+
+zéro mélange entre ancien rail et nouveau rail
+
+Navigation croisée minimale
+
+Toutes les pages PAY doivent garder une navigation cohérente.
+
+Minimum attendu :
+
+retour accueil
+
+entrée PIN
+
+cockpit
+
+saisie
+
+quitter session
+
+Aucune page ne doit être isolée.
+
+Règles UX PAY HUD
+Règle 1
+
+Toujours montrer d’abord l’essentiel.
+
+Règle 2
+
+Une action importante doit être visible sans chercher.
+
+Règle 3
+
+Le professionnel doit comprendre la page en quelques secondes.
+
+Règle 4
+
+Le formulaire doit rester simple, même si le backend est riche.
+
+Règle 5
+
+Le cockpit doit parler résultat, pas administration.
+
+Identité publique
+
+Nom public :
+MON ARGENT by DIGIY
+
+Signature possible :
+MON ARGENT ELECTRONIQUE BY DIGIY
+à utiliser seulement si pertinent côté façade, sans glisser vers une promesse de conservation des fonds.
+
+Résumé frère-bâtisseur
+
+PAY = cockpit financier terrain.
+PAY = lecture utile.
+PAY = décision rapide.
+PAY ≠ banque.
+PAY ≠ wallet custodial.
+PAY = une couche de visibilité, d’orchestration et de pilotage pour les pros DIGIYLYFE.
+
+Continuité de travail
+
+Quand on retouche PAY :
+
+garder le rail réel
+
+garder la logique HUD
+
+garder la lecture 2 secondes
+
+garder la cohérence visuelle entre :
+
+index.html
+
+pin.html
+
+cockpit.html
+
+admin.html
+
+ne jamais revenir à une page froide ou purement administrative
+
+Formule courte à retenir
+
+L’argent reste chez le pro.
+PAY apporte la vue.
