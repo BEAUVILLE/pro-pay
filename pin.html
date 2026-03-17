@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Entrée PIN sécurisée MON ARGENT by DIGIY pour accéder au cockpit PAY."
+    content="Entrée PIN sécurisée MON ARGENT by DIGIY pour ouvrir le cockpit PAY avec une lecture rapide et une session terrain."
   />
 
   <script>
@@ -27,17 +27,22 @@
   <style>
     :root{
       --bg:#04110d;
+      --bg2:#071a13;
       --card:#0b1f18;
+      --card2:#102820;
       --line:rgba(255,255,255,.08);
+      --line-strong:rgba(255,255,255,.14);
       --line-g:rgba(34,197,94,.22);
       --text:#f3fff7;
       --muted:rgba(243,255,247,.66);
+      --muted2:rgba(243,255,247,.48);
       --green:#22c55e;
       --green2:#16a34a;
       --gold:#facc15;
       --danger:#f87171;
+      --danger-soft:rgba(248,113,113,.09);
       --shadow:0 24px 70px rgba(0,0,0,.45);
-      --max:980px;
+      --max:1040px;
       --ff-title:'Playfair Display', Georgia, serif;
       --ff-body:'Nunito', system-ui, sans-serif;
     }
@@ -53,66 +58,142 @@
         radial-gradient(circle at 100% 100%, rgba(250,204,21,.07), transparent 28%),
         linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
       -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
     }
 
     a{text-decoration:none;color:inherit}
     button,input{font-family:var(--ff-body)}
 
-    .wrap{width:min(var(--max), calc(100% - 24px));margin:0 auto}
+    .wrap{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
+    }
+
     .topbar{
-      position:sticky;top:0;z-index:40;
-      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      position:sticky;
+      top:0;
+      z-index:40;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
       background:rgba(4,17,13,.82);
       border-bottom:1px solid var(--line);
-      margin-bottom:20px;
+      margin-bottom:18px;
     }
+
     .topbar-in{
       width:min(var(--max), calc(100% - 24px));
-      margin:0 auto;min-height:72px;
-      display:flex;align-items:center;justify-content:space-between;
-      gap:12px;padding:8px 0;
+      margin:0 auto;
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
     }
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
     .brand-mark{
       width:42px;height:42px;border-radius:14px;
       background:linear-gradient(135deg,var(--green),var(--green2));
-      display:grid;place-items:center;font-size:20px;font-weight:900;
-      color:#032215;box-shadow:var(--shadow);flex-shrink:0;
+      display:grid;place-items:center;
+      font-size:20px;font-weight:900;
+      color:#032215;
+      box-shadow:var(--shadow);
+      flex-shrink:0;
     }
+
     .brand-title{
-      font-family:var(--ff-title);color:var(--gold);font-size:18px;line-height:1.05;
+      font-family:var(--ff-title);
+      color:var(--gold);
+      font-size:18px;
+      line-height:1.05;
     }
+
     .brand-sub{
-      color:var(--muted);font-size:11px;font-weight:800;margin-top:3px;word-break:break-word;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+      margin-top:3px;
+      word-break:break-word;
     }
 
-    .nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
     .pill{
-      padding:9px 13px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);color:var(--muted);
-      font-weight:800;font-size:12px;cursor:pointer;transition:.18s ease;
-    }
-    .pill:hover{
-      color:var(--gold);border-color:rgba(250,204,21,.28);background:rgba(250,204,21,.07);
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-weight:800;
+      font-size:12px;
+      cursor:pointer;
+      transition:.18s ease;
+      white-space:nowrap;
     }
 
-    .hero{display:grid;gap:14px;margin-bottom:18px}
+    .pill:hover{
+      color:var(--gold);
+      border-color:rgba(250,204,21,.28);
+      background:rgba(250,204,21,.07);
+    }
+
+    .hero{
+      display:grid;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
     .state{
-      min-height:62px;padding:14px 16px;border-radius:18px;border:1px solid var(--line);
-      background:rgba(255,255,255,.03);display:grid;gap:4px;align-content:center;
+      min-height:64px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:4px;
+      align-content:center;
     }
-    .state.ok{border-color:rgba(34,197,94,.24);background:rgba(34,197,94,.08)}
-    .state.bad{border-color:rgba(248,113,113,.24);background:rgba(248,113,113,.09)}
+
+    .state.ok{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.08);
+    }
+
+    .state.bad{
+      border-color:rgba(248,113,113,.24);
+      background:var(--danger-soft);
+    }
+
     .state-title{
-      font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
     }
+
     .state-txt{
-      font-size:13px;color:var(--muted);font-weight:800;line-height:1.45;word-break:break-word;
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.45;
+      word-break:break-word;
     }
 
     .grid{
       display:grid;
-      grid-template-columns:1.1fr .9fr;
+      grid-template-columns:1.06fr .94fr;
       gap:16px;
       align-items:start;
     }
@@ -126,121 +207,424 @@
     }
 
     .card-head{
-      padding:18px 18px 14px;border-bottom:1px solid var(--line);
-      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+      padding:18px 18px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
     .card-title{
-      font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#86efac;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#86efac;
     }
 
-    .card-body{padding:18px}
-    .intro{display:grid;gap:10px}
+    .card-body{
+      padding:18px;
+    }
+
+    .intro{
+      display:grid;
+      gap:10px;
+    }
+
     .big{
-      font-family:var(--ff-title);font-size:36px;line-height:1.04;color:var(--gold);margin:0;
+      font-family:var(--ff-title);
+      font-size:clamp(30px, 4.8vw, 48px);
+      line-height:1.02;
+      color:var(--gold);
+      margin:0;
     }
+
     .lead{
-      margin:0;font-size:15px;line-height:1.6;color:var(--muted);font-weight:800;
+      margin:0;
+      font-size:15px;
+      line-height:1.6;
+      color:var(--muted);
+      font-weight:800;
     }
 
-    .points{display:grid;gap:10px;margin-top:6px}
+    .hud-read{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .hud-box{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      padding:14px;
+      display:grid;
+      gap:5px;
+      align-content:start;
+      min-height:112px;
+    }
+
+    .hud-k{
+      font-size:11px;
+      color:var(--muted2);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .hud-v{
+      font-size:20px;
+      line-height:1.05;
+      font-weight:900;
+      color:#fff8dc;
+    }
+
+    .hud-s{
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .points{
+      display:grid;
+      gap:10px;
+      margin-top:16px;
+    }
+
     .point{
-      display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:18px;
-      border:1px solid var(--line);background:rgba(255,255,255,.03);
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
     }
-    .point-ico{
-      width:34px;height:34px;border-radius:12px;display:grid;place-items:center;
-      background:rgba(34,197,94,.11);border:1px solid rgba(34,197,94,.2);flex-shrink:0;
-    }
-    .point strong{display:block;font-size:13px;margin-bottom:2px}
-    .point span{font-size:12px;line-height:1.45;color:var(--muted);font-weight:700}
 
-    .form{display:grid;gap:14px}
-    .field{display:grid;gap:7px}
+    .point-ico{
+      width:34px;height:34px;
+      border-radius:12px;
+      display:grid;place-items:center;
+      background:rgba(34,197,94,.11);
+      border:1px solid rgba(34,197,94,.2);
+      flex-shrink:0;
+    }
+
+    .point strong{
+      display:block;
+      font-size:13px;
+      margin-bottom:2px;
+      color:#fff;
+    }
+
+    .point span{
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .mini-line{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:14px;
+    }
+
+    .tag{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      font-size:11px;
+      font-weight:800;
+      color:var(--muted);
+      max-width:100%;
+      word-break:break-word;
+    }
+
+    .form{
+      display:grid;
+      gap:14px;
+    }
+
+    .focus-box{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:
+        radial-gradient(circle at right top, rgba(34,197,94,.08), transparent 42%),
+        linear-gradient(160deg, rgba(16,40,32,.9), rgba(8,24,18,.95));
+      padding:14px;
+      display:grid;
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .focus-top{
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#bbf7d0;
+    }
+
+    .focus-main{
+      font-size:20px;
+      line-height:1.08;
+      font-weight:900;
+      color:#fff8dc;
+    }
+
+    .focus-sub{
+      font-size:13px;
+      line-height:1.5;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .field{
+      display:grid;
+      gap:7px;
+    }
+
     .label{
-      font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      color:var(--muted);
     }
 
     .input{
-      width:100%;min-height:52px;border-radius:18px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);color:var(--text);padding:0 16px;
-      font-size:16px;font-weight:800;outline:none;
+      width:100%;
+      min-height:54px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:0 16px;
+      font-size:16px;
+      font-weight:800;
+      outline:none;
       transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
     }
+
     .input:focus{
       border-color:rgba(34,197,94,.38);
       box-shadow:0 0 0 4px rgba(34,197,94,.12);
       background:rgba(255,255,255,.05);
     }
-    .input::placeholder{color:rgba(243,255,247,.35);font-weight:700}
 
-    .pin-row{
-      display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+    .input::placeholder{
+      color:rgba(243,255,247,.35);
+      font-weight:700;
     }
 
-    .hint{font-size:12px;color:var(--muted);font-weight:700;line-height:1.45}
+    .pin-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .msg{
+      min-height:52px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      padding:12px 14px;
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      font-weight:800;
+      line-height:1.5;
+      color:var(--muted);
+      display:grid;
+      align-items:center;
+    }
+
+    .msg.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.08);
+    }
+
+    .msg.bad{
+      color:#fecaca;
+      border-color:rgba(248,113,113,.24);
+      background:var(--danger-soft);
+    }
 
     .actions{
-      display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:4px;
     }
 
     .btn{
-      min-height:52px;border:none;border-radius:18px;padding:0 16px;
-      font-size:15px;font-weight:900;cursor:pointer;
-      transition:transform .06s ease, opacity .18s ease, border-color .18s ease, background .18s ease;
+      min-height:54px;
+      border:none;
+      border-radius:18px;
+      padding:0 16px;
+      font-size:15px;
+      font-weight:900;
+      cursor:pointer;
+      transition:transform .06s ease, opacity .18s ease, border-color .18s ease, background .18s ease, filter .18s ease;
     }
+
     .btn:active{transform:translateY(1px)}
     .btn[disabled]{opacity:.55;cursor:not-allowed}
 
     .btn-primary{
-      color:#052516;background:linear-gradient(135deg,var(--gold),#fde68a);box-shadow:var(--shadow);
+      color:#052516;
+      background:linear-gradient(135deg,var(--gold),#fde68a);
+      box-shadow:var(--shadow);
     }
+
+    .btn-primary:hover{filter:brightness(1.03)}
+
     .btn-secondary{
-      color:var(--text);background:rgba(255,255,255,.04);border:1px solid var(--line);
+      color:var(--text);
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
     }
 
-    .mini-line{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    .tag{
-      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(255,255,255,.03);font-size:11px;font-weight:800;color:var(--muted);
-    }
-
-    .msg{
-      min-height:48px;border-radius:18px;border:1px solid var(--line);padding:12px 14px;
-      background:rgba(255,255,255,.03);font-size:13px;font-weight:800;line-height:1.5;color:var(--muted);
-    }
-    .msg.ok{
-      color:#bbf7d0;border-color:rgba(34,197,94,.24);background:rgba(34,197,94,.08);
-    }
-    .msg.bad{
-      color:#fecaca;border-color:rgba(248,113,113,.24);background:rgba(248,113,113,.09);
+    .btn-secondary:hover{
+      background:rgba(255,255,255,.06);
+      border-color:var(--line-strong);
     }
 
     .loader{
-      display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;font-weight:800;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
     }
+
     .spinner{
-      width:15px;height:15px;border:2px solid rgba(255,255,255,.12);border-top-color:var(--green);
-      border-radius:50%;animation:spin .7s linear infinite;
+      width:15px;height:15px;
+      border:2px solid rgba(255,255,255,.12);
+      border-top-color:var(--green);
+      border-radius:50%;
+      animation:spin .7s linear infinite;
     }
-    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    .quick-links{
+      margin-top:14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .quick-link{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      transition:.18s ease;
+    }
+
+    .quick-link:hover{
+      border-color:var(--line-strong);
+      background:rgba(255,255,255,.05);
+      transform:translateY(-1px);
+    }
+
+    .ql-left{
+      display:grid;
+      gap:2px;
+    }
+
+    .ql-k{
+      font-size:13px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .ql-s{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      line-height:1.4;
+    }
+
+    .ql-arrow{
+      color:var(--gold);
+      font-size:18px;
+      font-weight:900;
+      flex-shrink:0;
+    }
 
     #toast{
-      position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
-      z-index:9999;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:800;
-      background:var(--card);border:1px solid var(--line-g);color:#bbf7d0;opacity:0;
-      transition:opacity .25s, transform .25s;pointer-events:none;white-space:nowrap;
-      max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis;
+      position:fixed;
+      bottom:24px;
+      left:50%;
+      transform:translateX(-50%) translateY(20px);
+      z-index:9999;
+      padding:10px 20px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      background:var(--card);
+      border:1px solid var(--line-g);
+      color:#bbf7d0;
+      opacity:0;
+      transition:opacity .25s, transform .25s;
+      pointer-events:none;
+      white-space:nowrap;
+      max-width:calc(100vw - 24px);
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    @media (max-width:920px){.grid{grid-template-columns:1fr}}
-    @media (max-width:700px){
-      .topbar-in,.wrap{width:min(var(--max), calc(100% - 16px))}
+    #toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    @media (max-width:920px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:760px){
+      .hud-read{grid-template-columns:1fr}
       .actions{grid-template-columns:1fr}
       .pin-row{grid-template-columns:1fr}
-      .big{font-size:30px}
     }
+
+    @media (max-width:700px){
+      .topbar-in,.wrap{
+        width:min(var(--max), calc(100% - 16px));
+      }
+      .topbar-in{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+      .nav{
+        width:100%;
+        justify-content:flex-start;
+      }
+    }
+
     @media (max-width:480px){
       .brand-title{font-size:16px}
       .big{font-size:26px}
@@ -254,7 +638,7 @@
         <div class="brand-mark">₣</div>
         <div>
           <div class="brand-title">MON ARGENT PRO ♾️</div>
-          <div class="brand-sub">Entrée protégée PAY</div>
+          <div class="brand-sub">Entrée protégée PAY • session terrain • accès rapide</div>
         </div>
       </div>
 
@@ -270,21 +654,43 @@
     <section class="hero">
       <div class="state" id="stateBox">
         <div class="state-title">Entrée PIN</div>
-        <div class="state-txt">Vérification sécurisée de l’accès PAY…</div>
+        <div class="state-txt">Vérification sécurisée de l’accès PAY avant ouverture du cockpit réel.</div>
       </div>
     </section>
 
     <section class="grid">
       <article class="card">
         <div class="card-head">
-          <div class="card-title">🔐 Accès sécurisé</div>
+          <div class="card-title">🔐 Accès sécurisé PAY</div>
         </div>
+
         <div class="card-body">
           <div class="intro">
-            <h1 class="big">Entre dans ton cockpit PAY</h1>
+            <h1 class="big">Entre vite.<br>Lis clair.<br>Pilote propre.</h1>
             <p class="lead">
-              Une fois le PIN validé, la session reste active pendant la journée de travail.
+              Le PIN ouvre ta session PAY pour la journée de travail.
+              Une fois validé, tu accèdes à ton cockpit réel : entrées, dépenses pro, épargne, net et modules.
             </p>
+          </div>
+
+          <div class="hud-read">
+            <div class="hud-box">
+              <div class="hud-k">En 2 secondes</div>
+              <div class="hud-v">Voir le net</div>
+              <div class="hud-s">Ce qui reste vraiment après les mouvements utiles.</div>
+            </div>
+
+            <div class="hud-box">
+              <div class="hud-k">En 1 geste</div>
+              <div class="hud-v">Ajouter</div>
+              <div class="hud-s">Saisir une entrée, une dépense ou une épargne sans détour.</div>
+            </div>
+
+            <div class="hud-box">
+              <div class="hud-k">En 1 lecture</div>
+              <div class="hud-v">Voir le wagon fort</div>
+              <div class="hud-s">Comprendre quel module pousse réellement le business.</div>
+            </div>
           </div>
 
           <div class="points">
@@ -292,7 +698,7 @@
               <div class="point-ico">💼</div>
               <div>
                 <strong>Pilotage pro</strong>
-                <span>Entrées, dépenses pro, net, modules, canaux et couche épargne.</span>
+                <span>Entrées, dépenses pro, net, modules, canaux et couche épargne dans le même rail PAY.</span>
               </div>
             </div>
 
@@ -300,7 +706,7 @@
               <div class="point-ico">🛟</div>
               <div>
                 <strong>Épargne visible</strong>
-                <span>PAY aide à voir clair. Il ne garde pas les fonds.</span>
+                <span>PAY aide à protéger l’activité. Il ne garde pas les fonds du client.</span>
               </div>
             </div>
 
@@ -308,7 +714,7 @@
               <div class="point-ico">♾️</div>
               <div>
                 <strong>Rail réel DIGIY</strong>
-                <span>Zéro démo. Le vrai accès PAY, avec session terrain.</span>
+                <span>Zéro démo locale. Vérification sur le vrai accès PAY avec session terrain.</span>
               </div>
             </div>
           </div>
@@ -325,18 +731,27 @@
         <div class="card-head">
           <div class="card-title">🔑 Vérification PIN</div>
         </div>
+
         <div class="card-body">
           <form class="form" id="pinForm" novalidate>
+            <div class="focus-box">
+              <div class="focus-top">Ce qu’il faut pour entrer</div>
+              <div class="focus-main">Téléphone + PIN = cockpit ouvert</div>
+              <div class="focus-sub">
+                Le slug PAY peut être reconstruit automatiquement à partir du téléphone principal du pro.
+              </div>
+            </div>
+
             <div class="field">
               <label class="label" for="phone">Téléphone</label>
               <input class="input" id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="221771342889" />
-              <div class="hint">Numéro principal du pro relié à l’abonnement PAY.</div>
+              <div class="hint">Numéro principal relié à l’abonnement PAY.</div>
             </div>
 
             <div class="field">
               <label class="label" for="slug">Slug PAY</label>
               <input class="input" id="slug" type="text" autocomplete="off" placeholder="pay-221771342889" />
-              <div class="hint">Le slug peut être reconstruit automatiquement depuis le téléphone.</div>
+              <div class="hint">Tu peux le laisser se remplir automatiquement depuis le téléphone.</div>
             </div>
 
             <div class="field">
@@ -349,7 +764,7 @@
             </div>
 
             <div class="msg" id="msgBox">
-              Renseigne ton téléphone et ton PIN pour ouvrir le cockpit.
+              Entre ton téléphone et ton PIN pour ouvrir le cockpit PAY.
             </div>
 
             <div class="actions">
@@ -362,6 +777,24 @@
               Vérification en cours…
             </div>
           </form>
+
+          <div class="quick-links">
+            <a class="quick-link" href="./cockpit.html">
+              <div class="ql-left">
+                <div class="ql-k">Voir la destination</div>
+                <div class="ql-s">Le cockpit PAY lit les vraies données agrégées du backbone.</div>
+              </div>
+              <div class="ql-arrow">→</div>
+            </a>
+
+            <a class="quick-link" href="./admin.html">
+              <div class="ql-left">
+                <div class="ql-k">Ajouter un mouvement</div>
+                <div class="ql-s">Entrée, dépense ou épargne utile, dans la logique terrain DIGIY.</div>
+              </div>
+              <div class="ql-arrow">→</div>
+            </a>
+          </div>
         </div>
       </article>
     </section>
