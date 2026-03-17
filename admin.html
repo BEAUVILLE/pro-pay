@@ -792,6 +792,27 @@
       return d.toLocaleDateString("fr-FR", { day:"2-digit", month:"short", year:"numeric" });
     }
 
+    function errText(err){
+      if(!err) return "Erreur inconnue.";
+      const parts = [
+        err.message,
+        err.details,
+        err.hint,
+        err.code ? ("code: " + err.code) : ""
+      ].filter(Boolean);
+      return parts.join(" · ") || "Erreur inconnue.";
+    }
+
+    function logErr(label, err){
+      console.error(label, {
+        message: err?.message,
+        details: err?.details,
+        hint: err?.hint,
+        code: err?.code,
+        raw: err
+      });
+    }
+
     function toast(msg, duration = 2200){
       const t = $("toast");
       if(!t) return;
@@ -1028,9 +1049,13 @@
         HISTORY = Array.isArray(data) ? data : [];
         renderStats(HISTORY);
         renderHistory(HISTORY);
+
+        setState("ok", "Saisie PAY prête", "Historique chargé sur le slug PAY actif.");
       }catch(err){
-        console.error("[PAY admin history]", err);
-        $("historyList").innerHTML = `<div class="empty">Impossible de charger l’historique.</div>`;
+        logErr("[PAY admin history]", err);
+        const msg = errText(err);
+        $("historyList").innerHTML = `<div class="empty">Impossible de charger l’historique.<br>${esc(msg)}</div>`;
+        setState("bad", "Lecture bloquée", msg);
       }
     }
 
@@ -1105,9 +1130,10 @@
         await loadHistory();
         setState("ok", "Saisie PAY prête", "Mouvement enregistré sur le slug PAY actif.");
       }catch(err){
-        console.error("[PAY admin save]", err);
+        logErr("[PAY admin save]", err);
+        const msg = errText(err);
         toast("❌ Erreur d’enregistrement");
-        setState("bad", "Erreur", err && err.message ? err.message : "Impossible d’enregistrer le mouvement.");
+        setState("bad", "Écriture bloquée", msg);
       }finally{
         setSaving(false);
       }
@@ -1126,8 +1152,10 @@
         toast("🗑 Mouvement supprimé");
         await loadHistory();
       }catch(err){
-        console.error("[PAY admin delete]", err);
+        logErr("[PAY admin delete]", err);
+        const msg = errText(err);
         toast("❌ Suppression impossible");
+        setState("bad", "Suppression bloquée", msg);
       }
     }
 
@@ -1198,8 +1226,8 @@
         setState("ok", "Saisie PAY prête", "Session chargée. Tu peux enregistrer des mouvements manuels.");
         await loadHistory();
       }catch(err){
-        console.error("[PAY admin boot]", err);
-        setState("bad", "Erreur de session", err && err.message ? err.message : "Impossible d’ouvrir la saisie PAY.");
+        logErr("[PAY admin boot]", err);
+        setState("bad", "Erreur de session", errText(err));
       }
     }
 
