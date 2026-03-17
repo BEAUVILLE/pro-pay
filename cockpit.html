@@ -204,6 +204,7 @@
       color:var(--muted);
       font-weight:800;
       line-height:1.45;
+      word-break:break-word;
     }
 
     .tabs{
@@ -517,6 +518,9 @@
       transition:opacity .25s, transform .25s;
       pointer-events:none;
       white-space:nowrap;
+      max-width:calc(100vw - 24px);
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     #toast.show{
       opacity:1;
@@ -557,8 +561,8 @@
         <a class="pill" href="./index.html">← Accueil</a>
         <a class="pill" href="./pin.html">🔐 PIN</a>
         <a class="pill" href="./admin.html">➕ Saisie</a>
-        <button class="pill" id="btnRefresh">🔄 Recharger</button>
-        <button class="pill" id="btnLogout">🚪 Quitter</button>
+        <button class="pill" id="btnRefresh" type="button">🔄 Recharger</button>
+        <button class="pill" id="btnLogout" type="button">🚪 Quitter</button>
       </nav>
     </div>
   </header>
@@ -578,14 +582,14 @@
       </div>
     </section>
 
-    <nav class="tabs" role="tablist">
-      <button class="tab active pro" data-tab="pro" role="tab">
+    <nav class="tabs" role="tablist" aria-label="Sections du cockpit PAY">
+      <button class="tab active pro" data-tab="pro" role="tab" type="button" aria-selected="true">
         <span class="ico">💼</span> PRO
       </button>
-      <button class="tab epargne" data-tab="epargne" role="tab">
+      <button class="tab epargne" data-tab="epargne" role="tab" type="button" aria-selected="false">
         <span class="ico">🛟</span> ÉPARGNE
       </button>
-      <button class="tab eco" data-tab="eco" role="tab">
+      <button class="tab eco" data-tab="eco" role="tab" type="button" aria-selected="false">
         <span class="ico">📊</span> ÉCOSYSTÈME
       </button>
     </nav>
@@ -752,8 +756,12 @@
   <div id="toast"></div>
 
   <script>
-    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+    const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL || "").trim();
+    const SUPABASE_ANON_KEY = String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim();
+
+    if(!window.supabase || !SUPABASE_URL || !SUPABASE_ANON_KEY){
+      console.error("[PAY cockpit] Supabase config manquante.");
+    }
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
@@ -773,6 +781,12 @@
     let PHONE = "";
     let COCKPIT = null;
 
+    const SESSION_KEYS = [
+      "digiy_pay_session",
+      "digiy_session",
+      "digiy_loc_pro_session"
+    ];
+
     function money(n){
       const v = Number(n || 0);
       return Math.round(v).toLocaleString("fr-FR") + " F CFA";
@@ -788,60 +802,179 @@
 
     function toast(msg, duration = 2200){
       const t = document.getElementById("toast");
-      t.textContent = msg;
+      if(!t) return;
+      t.textContent = String(msg || "");
       t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), duration);
+      window.clearTimeout(t._timer);
+      t._timer = window.setTimeout(() => t.classList.remove("show"), duration);
     }
 
-    function getSession(){
+    function normalizeSlug(v){
+      return String(v || "").trim().toLowerCase();
+    }
+
+    function normalizePhone(v){
+      return String(v || "").replace(/[^\d]/g, "");
+    }
+
+    function safeJsonParse(raw){
       try{
-        const raw =
-          localStorage.getItem("digiy_pay_session") ||
-          localStorage.getItem("digiy_session") ||
-          localStorage.getItem("digiy_loc_pro_session");
-
-        if(!raw) return null;
-        const s = JSON.parse(raw);
-        if(!s || !s.slug) return null;
-
-        const age = Date.now() - (s.ts || 0);
-        if(age > 8 * 60 * 60 * 1000) return null;
-
-        return s;
+        return JSON.parse(raw);
       }catch(_){
         return null;
       }
     }
 
-    function requireSession(){
+    function coerceObject(value){
+      if(!value) return null;
+      if(typeof value === "object") return value;
+      if(typeof value === "string"){
+        const trimmed = value.trim();
+        if(!trimmed) return null;
+        const parsed = safeJsonParse(trimmed);
+        return parsed && typeof parsed === "object" ? parsed : null;
+      }
+      return null;
+    }
+
+    function cleanupBrokenSessions(){
+      SESSION_KEYS.forEach(key => {
+        try{
+          const raw = localStorage.getItem(key);
+          if(raw == null) return;
+          if(!safeJsonParse(raw)){
+            localStorage.removeItem(key);
+          }
+        }catch(_){}
+      });
+    }
+
+    function persistPaySession(sessionLike){
+      const slug = normalizeSlug(sessionLike && sessionLike.slug);
+      const phone = normalizePhone(sessionLike && sessionLike.phone);
+      if(!slug) return null;
+
+      const payload = {
+        slug,
+        phone,
+        module: "PAY",
+        ts: Date.now()
+      };
+
+      try{
+        localStorage.setItem("digiy_pay_session", JSON.stringify(payload));
+      }catch(_){}
+
+      return payload;
+    }
+
+    function getSession(){
+      cleanupBrokenSessions();
+
+      for(const key of SESSION_KEYS){
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) continue;
+
+          const parsed = safeJsonParse(raw);
+          if(!parsed || typeof parsed !== "object") {
+            try{ localStorage.removeItem(key); }catch(_){}
+            continue;
+          }
+
+          const slug = normalizeSlug(parsed.slug);
+          const phone = normalizePhone(parsed.phone);
+          const module = String(parsed.module || "").trim().toUpperCase();
+          const ts = Number(parsed.ts || 0);
+
+          if(!slug){
+            continue;
+          }
+
+          if(module && module !== "PAY" && key === "digiy_pay_session"){
+            continue;
+          }
+
+          if(ts){
+            const age = Date.now() - ts;
+            if(age > 8 * 60 * 60 * 1000){
+              if(key === "digiy_pay_session"){
+                try{ localStorage.removeItem(key); }catch(_){}
+              }
+              continue;
+            }
+          }
+
+          return persistPaySession({ slug, phone });
+        }catch(_){}
+      }
+
+      return null;
+    }
+
+    function clearSessions(){
+      SESSION_KEYS.forEach(key => {
+        try{ localStorage.removeItem(key); }catch(_){}
+      });
+    }
+
+    function hasUrlSlug(){
+      try{
+        const url = new URL(window.location.href);
+        return !!normalizeSlug(url.searchParams.get("slug"));
+      }catch(_){
+        return false;
+      }
+    }
+
+    function redirectToPin(reason){
+      try{
+        const url = new URL("./pin.html", window.location.href);
+        url.searchParams.set("redirect", "cockpit");
+        if(reason) url.searchParams.set("reason", reason);
+        window.location.href = url.toString();
+      }catch(_){
+        window.location.href = "./pin.html?redirect=cockpit";
+      }
+    }
+
+    function requireSessionUnlessSlugInUrl(){
+      if(hasUrlSlug()) return true;
       const s = getSession();
       if(!s){
-        window.location.href = "./pin.html?redirect=cockpit";
-        return null;
+        redirectToPin("session_absente");
+        return false;
       }
-      return s;
+      SESSION = s;
+      return true;
     }
 
     async function resolveContext(){
       const url = new URL(window.location.href);
-      const qSlug = String(url.searchParams.get("slug") || "").trim().toLowerCase();
-      const qPhone = String(url.searchParams.get("phone") || "").trim();
+      const qSlug = normalizeSlug(url.searchParams.get("slug"));
+      const qPhone = normalizePhone(url.searchParams.get("phone"));
 
       if(qSlug){
-        return { slug: qSlug, phone: qPhone || "" };
+        const normalized = persistPaySession({ slug: qSlug, phone: qPhone });
+        if(normalized) SESSION = normalized;
+        return normalized || { slug: qSlug, phone: qPhone };
       }
 
-      const s = requireSession();
-      if(!s) return null;
+      const s = getSession();
+      if(!s || !s.slug){
+        return null;
+      }
 
+      SESSION = s;
       return {
-        slug: String(s.slug || "").trim().toLowerCase(),
-        phone: String(s.phone || "").trim()
+        slug: normalizeSlug(s.slug),
+        phone: normalizePhone(s.phone)
       };
     }
 
     function setState(kind, title, txt){
       const box = document.getElementById("stateBox");
+      if(!box) return;
       box.className = "state" + (kind ? " " + kind : "");
       box.innerHTML = `
         <div class="state-title">${esc(title || "État")}</div>
@@ -849,9 +982,22 @@
       `;
     }
 
+    function setEmptyEverywhere(message){
+      const safe = esc(message || "Aucune donnée chargée.");
+      const modules = document.getElementById("modulesList");
+      const channels = document.getElementById("channelsList");
+      const bars = document.getElementById("channelsBars");
+
+      if(modules) modules.innerHTML = `<div class="empty">${safe}</div>`;
+      if(channels) channels.innerHTML = `<div class="empty">${safe}</div>`;
+      if(bars) bars.innerHTML = `<div class="empty">${safe}</div>`;
+    }
+
     function renderModules(items){
       const el = document.getElementById("modulesList");
-      const arr = Array.isArray(items) ? items : [];
+      if(!el) return;
+
+      const arr = Array.isArray(items) ? items.filter(Boolean) : [];
 
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucun module visible pour l’instant.</div>`;
@@ -872,7 +1018,9 @@
 
     function renderChannels(items){
       const el = document.getElementById("channelsList");
-      const arr = Array.isArray(items) ? items : [];
+      if(!el) return;
+
+      const arr = Array.isArray(items) ? items.filter(Boolean) : [];
 
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucun canal visible pour l’instant.</div>`;
@@ -893,14 +1041,17 @@
 
     function renderChannelBars(items){
       const el = document.getElementById("channelsBars");
-      const arr = Array.isArray(items) ? items : [];
+      if(!el) return;
+
+      const arr = Array.isArray(items) ? items.filter(Boolean) : [];
 
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucune répartition canal pour l’instant.</div>`;
         return;
       }
 
-      const max = Math.max(...arr.map(x => Number(x.amount_xof || 0)), 1);
+      const amounts = arr.map(x => Number(x && x.amount_xof || 0)).filter(n => Number.isFinite(n) && n >= 0);
+      const max = Math.max(...amounts, 1);
 
       el.innerHTML = arr.map(row => {
         const amount = Number(row.amount_xof || 0);
@@ -915,6 +1066,16 @@
           </div>
         `;
       }).join("");
+    }
+
+    function updateUrl(slug, phone){
+      try{
+        const url = new URL(window.location.href);
+        if(slug) url.searchParams.set("slug", slug);
+        if(phone) url.searchParams.set("phone", phone);
+        if(!phone) url.searchParams.delete("phone");
+        window.history.replaceState({}, "", url.toString());
+      }catch(_){}
     }
 
     function renderCockpit(data){
@@ -959,16 +1120,23 @@
 
       document.getElementById("iboxBusiness").textContent = data.business_name || "DIGIY PAY";
       document.getElementById("iboxPlan").textContent = data.plan || "—";
-      document.getElementById("iboxPhone").textContent = data.phone || PHONE || "—";
+      document.getElementById("iboxPhone").textContent = normalizePhone(data.phone) || PHONE || "—";
       document.getElementById("iboxAccess").textContent = data.access_ok ? "ABONNEMENT OK" : "NON ACTIF";
 
       renderModules(modules);
       renderChannels(channels);
       renderChannelBars(channels);
 
-      document.getElementById("topSlug").textContent = data.slug || SLUG;
-      document.getElementById("badgeSlug").textContent = data.slug || SLUG;
+      const realSlug = normalizeSlug(data.slug || SLUG);
+      const realPhone = normalizePhone(data.phone || PHONE);
+
+      document.getElementById("topSlug").textContent = realSlug || "PAY";
+      document.getElementById("badgeSlug").textContent = realSlug || "PAY";
       document.getElementById("slugBadge").style.display = "flex";
+
+      SLUG = realSlug;
+      PHONE = realPhone;
+      SESSION = persistPaySession({ slug: realSlug, phone: realPhone }) || SESSION;
 
       if(data.access_ok){
         setState("ok", "Cockpit PAY connecté", "Lecture réelle chargée depuis le backbone DIGIY PAY.");
@@ -976,10 +1144,12 @@
         setState("bad", "Accès PAY non actif", "Le slug est lu mais l’abonnement PAY n’est pas actif ou est expiré.");
       }
 
-      const url = new URL(window.location.href);
-      url.searchParams.set("slug", data.slug || SLUG);
-      if(data.phone) url.searchParams.set("phone", data.phone);
-      window.history.replaceState({}, "", url.toString());
+      updateUrl(realSlug, realPhone);
+    }
+
+    function normalizeRpcPayload(payload){
+      const obj = coerceObject(payload);
+      return obj && typeof obj === "object" ? obj : null;
     }
 
     async function loadCockpit(){
@@ -987,13 +1157,16 @@
         setState("", "Chargement", "Connexion au rail réel PAY…");
 
         const ctx = await resolveContext();
-        if(!ctx || !ctx.slug) return;
+        if(!ctx || !ctx.slug){
+          redirectToPin("slug_absent");
+          return;
+        }
 
-        SLUG = ctx.slug;
-        PHONE = ctx.phone || "";
+        SLUG = normalizeSlug(ctx.slug);
+        PHONE = normalizePhone(ctx.phone);
 
-        document.getElementById("topSlug").textContent = SLUG;
-        document.getElementById("badgeSlug").textContent = SLUG;
+        document.getElementById("topSlug").textContent = SLUG || "PAY";
+        document.getElementById("badgeSlug").textContent = SLUG || "PAY";
         document.getElementById("slugBadge").style.display = "flex";
 
         const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", {
@@ -1001,44 +1174,68 @@
         });
 
         if(error) throw error;
-        if(!data || data.ok !== true){
-          throw new Error((data && (data.error || data.message)) || "Cockpit PAY invalide.");
+
+        const payload = normalizeRpcPayload(data);
+        if(!payload){
+          throw new Error("Réponse cockpit vide ou illisible.");
         }
 
-        renderCockpit(data);
+        if(payload.ok !== true){
+          throw new Error(String(payload.error || payload.message || "Cockpit PAY invalide."));
+        }
+
+        renderCockpit(payload);
       }catch(err){
         console.error("[PAY cockpit]", err);
-        setState("bad", "Erreur de chargement", err && err.message ? err.message : "Impossible de charger le cockpit PAY.");
-        document.getElementById("modulesList").innerHTML = `<div class="empty">Aucune donnée chargée.</div>`;
-        document.getElementById("channelsList").innerHTML = `<div class="empty">Aucune donnée chargée.</div>`;
-        document.getElementById("channelsBars").innerHTML = `<div class="empty">Aucune donnée chargée.</div>`;
+        const message = err && err.message ? err.message : "Impossible de charger le cockpit PAY.";
+        setState("bad", "Erreur de chargement", message);
+        setEmptyEverywhere("Aucune donnée chargée.");
       }
     }
 
-    document.querySelectorAll(".tab").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
-      });
-    });
+    function bindTabs(){
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(b => {
+            b.classList.remove("active");
+            b.setAttribute("aria-selected", "false");
+          });
+          document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
 
-    document.getElementById("btnRefresh").addEventListener("click", async () => {
-      toast("🔄 Rechargement...");
-      await loadCockpit();
-    });
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
 
-    document.getElementById("btnLogout").addEventListener("click", () => {
-      ["digiy_pay_session","digiy_session","digiy_loc_pro_session"].forEach(k => {
-        try { localStorage.removeItem(k); } catch(_) {}
+          const panel = document.getElementById("panel-" + btn.dataset.tab);
+          if(panel) panel.classList.add("active");
+        });
       });
-      window.location.href = "./pin.html";
-    });
+    }
+
+    function bindActions(){
+      const btnRefresh = document.getElementById("btnRefresh");
+      const btnLogout = document.getElementById("btnLogout");
+
+      if(btnRefresh){
+        btnRefresh.addEventListener("click", async () => {
+          toast("🔄 Rechargement…");
+          await loadCockpit();
+        });
+      }
+
+      if(btnLogout){
+        btnLogout.addEventListener("click", () => {
+          clearSessions();
+          window.location.href = "./pin.html";
+        });
+      }
+    }
 
     (async function boot(){
-      SESSION = requireSession();
-      if(!SESSION) return;
+      bindTabs();
+      bindActions();
+
+      if(!requireSessionUnlessSlugInUrl()) return;
+
       await loadCockpit();
     })();
   </script>
