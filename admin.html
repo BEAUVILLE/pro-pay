@@ -1,0 +1,1060 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>MON ARGENT PRO — Saisie DIGIY ♾️</title>
+  <meta name="theme-color" content="#04110d" />
+  <meta
+    name="description"
+    content="Saisie manuelle PAY : entrées, dépenses, épargne, mouvements et historique."
+  />
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "PAY";
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --bg:#04110d;
+      --card:#0b1f18;
+      --card2:#102820;
+      --line:rgba(255,255,255,.08);
+      --line-g:rgba(34,197,94,.22);
+      --text:#f3fff7;
+      --muted:rgba(243,255,247,.66);
+      --green:#22c55e;
+      --green2:#16a34a;
+      --gold:#facc15;
+      --danger:#f87171;
+      --blue:#60a5fa;
+      --shadow:0 24px 70px rgba(0,0,0,.45);
+      --r:24px;
+      --max:1120px;
+      --ff-title:'Playfair Display', Georgia, serif;
+      --ff-body:'Nunito', system-ui, sans-serif;
+    }
+
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      min-height:100vh;
+      color:var(--text);
+      font-family:var(--ff-body);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 36%),
+        radial-gradient(circle at 100% 100%, rgba(250,204,21,.07), transparent 28%),
+        linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input,select,textarea{font-family:var(--ff-body)}
+
+    .wrap{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      background:rgba(4,17,13,.82);
+      border-bottom:1px solid var(--line);
+      margin-bottom:18px;
+    }
+
+    .topbar-in{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .brand-mark{
+      width:42px;height:42px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      display:grid;place-items:center;
+      font-size:20px;font-weight:900;
+      color:#032215;
+      box-shadow:var(--shadow);
+      flex-shrink:0;
+    }
+
+    .brand-title{
+      font-family:var(--ff-title);
+      color:var(--gold);
+      font-size:18px;
+      line-height:1.05;
+    }
+
+    .brand-sub{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+      margin-top:3px;
+      word-break:break-word;
+    }
+
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-weight:800;
+      font-size:12px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .pill:hover{
+      color:var(--gold);
+      border-color:rgba(250,204,21,.28);
+      background:rgba(250,204,21,.07);
+    }
+
+    .hero{
+      display:grid;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .slug-badge{
+      display:none;
+      align-items:center;
+      gap:10px;
+      padding:10px 16px;
+      border-radius:16px;
+      border:1px solid var(--line-g);
+      background:rgba(34,197,94,.07);
+    }
+    .slug-badge .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 0 3px rgba(34,197,94,.2);
+      flex-shrink:0;
+    }
+    .slug-badge .info{
+      font-size:12px;
+      font-weight:800;
+      color:#bbf7d0;
+    }
+    .slug-badge .info span{
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .state{
+      min-height:62px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:4px;
+      align-content:center;
+    }
+    .state.ok{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.08);
+    }
+    .state.bad{
+      border-color:rgba(248,113,113,.24);
+      background:rgba(248,113,113,.09);
+    }
+    .state-title{
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .state-txt{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.45;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .card-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:15px 16px 13px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .card-title{
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      display:flex;
+      align-items:center;
+      gap:7px;
+      color:#fde68a;
+    }
+
+    .card-body{
+      padding:16px;
+    }
+
+    .form{
+      display:grid;
+      gap:14px;
+    }
+
+    .row2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .row3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:12px;
+    }
+
+    .field{
+      display:grid;
+      gap:7px;
+    }
+
+    .label{
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#bbf7d0;
+    }
+
+    input,select,textarea{
+      width:100%;
+      min-height:50px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:0 14px;
+      font-size:14px;
+      font-weight:800;
+      outline:none;
+      transition:border-color .15s, background .15s;
+    }
+
+    textarea{
+      min-height:90px;
+      padding-top:12px;
+      padding-bottom:12px;
+      resize:vertical;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(34,197,94,.38);
+      background:rgba(255,255,255,.05);
+    }
+
+    input::placeholder,textarea::placeholder{
+      color:rgba(243,255,247,.28);
+    }
+
+    select option{
+      background:#0d221b;
+      color:var(--text);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      min-height:50px;
+      padding:12px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border:1px solid var(--line);
+      font-weight:900;
+      font-size:14px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .btn.primary{
+      border:none;
+      color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+    }
+    .btn.primary:hover{filter:brightness(1.06)}
+    .btn.primary:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      filter:none;
+    }
+
+    .btn.secondary{
+      color:var(--text);
+      background:rgba(255,255,255,.04);
+    }
+    .btn.secondary:hover{
+      background:rgba(255,255,255,.07);
+      border-color:rgba(255,255,255,.16);
+    }
+
+    .helper{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+      font-weight:700;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .stat{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+
+    .stat-k{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .stat-v{
+      font-family:var(--ff-title);
+      font-size:22px;
+      line-height:1.05;
+      font-weight:700;
+    }
+    .stat-v.green{color:var(--green)}
+    .stat-v.danger{color:var(--danger)}
+    .stat-v.gold{color:var(--gold)}
+
+    .list{
+      min-height:80px;
+    }
+
+    .empty{
+      padding:20px 0;
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .item{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid var(--line);
+    }
+    .item:last-child{border-bottom:none}
+
+    .item-ico{
+      width:38px;height:38px;
+      border-radius:12px;
+      display:grid;place-items:center;
+      font-size:16px;
+      flex-shrink:0;
+    }
+    .item-ico.in{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2)}
+    .item-ico.out{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2)}
+    .item-ico.sav{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2)}
+
+    .item-body{
+      flex:1;
+      min-width:0;
+    }
+
+    .item-title{
+      font-size:13px;
+      font-weight:900;
+      color:var(--text);
+      line-height:1.35;
+      word-break:break-word;
+    }
+
+    .item-meta{
+      margin-top:3px;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .item-right{
+      flex-shrink:0;
+      display:grid;
+      gap:8px;
+      justify-items:end;
+      text-align:right;
+    }
+
+    .item-amount{
+      font-family:var(--ff-title);
+      font-size:16px;
+      font-weight:700;
+      line-height:1.05;
+    }
+    .item-amount.in{color:var(--green)}
+    .item-amount.out{color:var(--danger)}
+    .item-amount.sav{color:var(--blue)}
+
+    .btn-del{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(248,113,113,.22);
+      background:rgba(248,113,113,.08);
+      color:#fecaca;
+      font-size:11px;
+      font-weight:900;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .btn-del:hover{
+      background:rgba(248,113,113,.14);
+    }
+
+    .loader{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:20px 0;
+      font-size:13px;
+      font-weight:700;
+      color:var(--muted);
+    }
+
+    .spinner{
+      width:16px;height:16px;
+      border:2px solid rgba(255,255,255,.1);
+      border-top-color:var(--green);
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    #toast{
+      position:fixed;
+      bottom:24px;
+      left:50%;
+      transform:translateX(-50%) translateY(20px);
+      z-index:9999;
+      padding:10px 20px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      background:var(--card);
+      border:1px solid var(--line-g);
+      color:#bbf7d0;
+      opacity:0;
+      transition:opacity .25s, transform .25s;
+      pointer-events:none;
+      white-space:nowrap;
+    }
+    #toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    @media (max-width:980px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:700px){
+      .topbar-in,
+      .wrap{width:min(var(--max), calc(100% - 16px))}
+      .row2,.row3,.stats{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-in">
+      <div class="brand">
+        <div class="brand-mark">₣</div>
+        <div>
+          <div class="brand-title">MON ARGENT PRO — Saisie ♾️</div>
+          <div class="brand-sub" id="topSlug">Chargement…</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="pill" href="./index.html">← Accueil</a>
+        <a class="pill" href="./pin.html">🔐 PIN</a>
+        <a class="pill" href="./cockpit.html">📊 Cockpit</a>
+        <button class="pill" id="btnRefresh">🔄 Recharger</button>
+        <button class="pill" id="btnLogout">🚪 Quitter</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="slug-badge" id="slugBadge">
+        <div class="dot"></div>
+        <div class="info">
+          Session active — <span id="badgeSlug"></span> · <span>Module PAY</span>
+        </div>
+      </div>
+
+      <div class="state" id="stateBox">
+        <div class="state-title">Chargement</div>
+        <div class="state-txt">Connexion à la saisie PAY…</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title">➕ Nouveau mouvement</div>
+        </div>
+
+        <div class="card-body">
+          <form class="form" id="payForm">
+            <div class="row3">
+              <div class="field">
+                <label class="label" for="direction">Direction</label>
+                <select id="direction" required>
+                  <option value="in">Entrée</option>
+                  <option value="out">Sortie</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="label" for="scope">Scope</label>
+                <select id="scope" required>
+                  <option value="pro">PRO</option>
+                  <option value="personal">PERSO</option>
+                  <option value="savings">ÉPARGNE</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="label" for="amount">Montant</label>
+                <input id="amount" type="number" min="1" step="1" placeholder="15000" required />
+              </div>
+            </div>
+
+            <div class="row2">
+              <div class="field">
+                <label class="label" for="kind">Nature</label>
+                <select id="kind" required>
+                  <option value="sale">Vente / recette</option>
+                  <option value="expense">Dépense</option>
+                  <option value="saving">Épargne</option>
+                  <option value="transfer">Transfert</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="label" for="channel">Canal</label>
+                <select id="channel" required>
+                  <option value="wave">Wave</option>
+                  <option value="cash">Cash</option>
+                  <option value="orange_money">Orange Money</option>
+                  <option value="bank">Banque</option>
+                  <option value="manual">Manuel</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row2">
+              <div class="field">
+                <label class="label" for="category">Catégorie</label>
+                <input id="category" type="text" maxlength="60" placeholder="ride_income, stock, famille, carburant..." />
+              </div>
+
+              <div class="field">
+                <label class="label" for="movementDate">Date du mouvement</label>
+                <input id="movementDate" type="date" required />
+              </div>
+            </div>
+
+            <div class="row2">
+              <div class="field">
+                <label class="label" for="sourceModule">Module source</label>
+                <select id="sourceModule">
+                  <option value="PAY">PAY</option>
+                  <option value="DRIVER">DRIVER</option>
+                  <option value="COMMERCE">COMMERCE</option>
+                  <option value="LOC">LOC</option>
+                  <option value="MARKET">MARKET</option>
+                  <option value="BUILD">BUILD</option>
+                  <option value="RESA">RESA</option>
+                  <option value="OTHER">AUTRE</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="label" for="sourceId">ID source</label>
+                <input id="sourceId" type="text" maxlength="120" placeholder="optionnel" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="labelText">Libellé</label>
+              <input id="labelText" type="text" maxlength="100" placeholder="Ex : Recette chauffeur, Carburant, Épargne sécurité..." required />
+            </div>
+
+            <div class="field">
+              <label class="label" for="noteText">Note</label>
+              <textarea id="noteText" maxlength="300" placeholder="Petite précision utile..."></textarea>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary" id="btnSave" type="submit">💾 Enregistrer</button>
+              <button class="btn secondary" id="btnReset" type="button">🧹 Vider</button>
+            </div>
+
+            <div class="helper">
+              Cette page sert à la saisie manuelle PAY. Le cockpit, lui, reste une lecture réelle séparée.
+            </div>
+          </form>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title">🧾 Derniers mouvements saisis</div>
+        </div>
+
+        <div class="card-body">
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-k">Entrées visibles</div>
+              <div class="stat-v green" id="statIn">—</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-k">Sorties visibles</div>
+              <div class="stat-v danger" id="statOut">—</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-k">Épargne visible</div>
+              <div class="stat-v gold" id="statSavings">—</div>
+            </div>
+          </div>
+
+          <div class="list" id="historyList">
+            <div class="loader"><div class="spinner"></div> Chargement…</div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storage: {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {}
+        }
+      }
+    });
+
+    let GUARD = null;
+    let SLUG = "";
+    let PHONE = "";
+    let HISTORY = [];
+
+    function $(id){ return document.getElementById(id); }
+
+    function money(n){
+      const v = Number(n || 0);
+      return Math.round(v).toLocaleString("fr-FR") + " F CFA";
+    }
+
+    function esc(v){
+      return String(v == null ? "" : v)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function todayStr(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+
+    function fmtDate(v){
+      if(!v) return "—";
+      const d = new Date(v);
+      if(Number.isNaN(d.getTime())) return String(v);
+      return d.toLocaleDateString("fr-FR", { day:"2-digit", month:"short", year:"numeric" });
+    }
+
+    function toast(msg, duration = 2200){
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), duration);
+    }
+
+    function setState(kind, title, txt){
+      const box = $("stateBox");
+      box.className = "state" + (kind ? " " + kind : "");
+      box.innerHTML = `
+        <div class="state-title">${esc(title || "État")}</div>
+        <div class="state-txt">${esc(txt || "")}</div>
+      `;
+    }
+
+    function setSaving(on){
+      const btn = $("btnSave");
+      btn.disabled = !!on;
+      btn.textContent = on ? "⏳ Enregistrement..." : "💾 Enregistrer";
+    }
+
+    function resetForm(){
+      $("direction").value = "in";
+      $("scope").value = "pro";
+      $("amount").value = "";
+      $("kind").value = "sale";
+      $("channel").value = "wave";
+      $("category").value = "";
+      $("movementDate").value = todayStr();
+      $("sourceModule").value = "PAY";
+      $("sourceId").value = "";
+      $("labelText").value = "";
+      $("noteText").value = "";
+    }
+
+    function syncKindByScope(){
+      const scope = $("scope").value;
+      const kind = $("kind");
+
+      if(scope === "savings"){
+        kind.value = "saving";
+      } else if(scope === "pro" && kind.value === "saving") {
+        kind.value = "sale";
+      } else if(scope === "personal" && kind.value === "saving") {
+        kind.value = "other";
+      }
+    }
+
+    function iconFor(item){
+      const scope = String(item.scope || "");
+      const direction = String(item.direction || "");
+
+      if(scope === "savings") return { cls:"sav", emoji:"🛟" };
+      if(direction === "out") return { cls:"out", emoji:"📉" };
+      return { cls:"in", emoji:"📈" };
+    }
+
+    function amountClass(item){
+      const scope = String(item.scope || "");
+      const direction = String(item.direction || "");
+
+      if(scope === "savings") return "sav";
+      if(direction === "out") return "out";
+      return "in";
+    }
+
+    function renderStats(items){
+      const arr = Array.isArray(items) ? items : [];
+
+      const totalIn = arr
+        .filter(x => String(x.direction || "") === "in" && String(x.scope || "") !== "savings")
+        .reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+
+      const totalOut = arr
+        .filter(x => String(x.direction || "") === "out" && String(x.scope || "") !== "savings")
+        .reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+
+      const totalSavings = arr
+        .filter(x => String(x.scope || "") === "savings")
+        .reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+
+      $("statIn").textContent = money(totalIn);
+      $("statOut").textContent = money(totalOut);
+      $("statSavings").textContent = money(totalSavings);
+    }
+
+    function renderHistory(items){
+      const box = $("historyList");
+      const arr = Array.isArray(items) ? items : [];
+
+      if(!arr.length){
+        box.innerHTML = `<div class="empty">Aucun mouvement manuel visible pour l’instant.</div>`;
+        return;
+      }
+
+      box.innerHTML = arr.map(item => {
+        const icon = iconFor(item);
+        const aClass = amountClass(item);
+        const sign = String(item.direction || "") === "out" ? "−" : "+";
+        const note = item.note ? `<br>${esc(item.note)}` : "";
+        return `
+          <div class="item">
+            <div class="item-ico ${icon.cls}">${icon.emoji}</div>
+
+            <div class="item-body">
+              <div class="item-title">${esc(item.label || "Mouvement")}</div>
+              <div class="item-meta">
+                ${esc((item.scope || "").toUpperCase())}
+                · ${esc(item.kind || "other")}
+                · ${esc(item.channel || "manual")}
+                · ${esc(item.source_module || "PAY")}
+                · ${fmtDate(item.movement_date)}
+                ${note}
+              </div>
+            </div>
+
+            <div class="item-right">
+              <div class="item-amount ${aClass}">
+                ${sign} ${money(item.amount_xof)}
+              </div>
+              <button class="btn-del" data-id="${esc(item.id)}">Supprimer</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      box.querySelectorAll(".btn-del").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id") || "";
+          if(!id) return;
+          const ok = window.confirm("Supprimer ce mouvement ?");
+          if(!ok) return;
+          await deleteMovement(id);
+        });
+      });
+    }
+
+    async function loadHistory(){
+      try{
+        const { data, error } = await sb
+          .from("digiy_pay_mouvements")
+          .select("id,slug,direction,scope,kind,category,amount_xof,channel,label,note,source_module,source_id,movement_date,created_at,status")
+          .eq("slug", SLUG)
+          .order("movement_date", { ascending: false })
+          .order("created_at", { ascending: false })
+          .limit(30);
+
+        if(error) throw error;
+
+        HISTORY = data || [];
+        renderStats(HISTORY);
+        renderHistory(HISTORY);
+      }catch(err){
+        console.error("[PAY admin history]", err);
+        $("historyList").innerHTML = `<div class="empty">Impossible de charger l’historique.</div>`;
+      }
+    }
+
+    async function saveMovement(evt){
+      evt.preventDefault();
+
+      const direction = $("direction").value;
+      const scope = $("scope").value;
+      const amount = Number($("amount").value || 0);
+      const kind = $("kind").value;
+      const channel = $("channel").value;
+      const category = String($("category").value || "").trim();
+      const movementDate = $("movementDate").value;
+      const sourceModule = $("sourceModule").value;
+      const sourceId = String($("sourceId").value || "").trim();
+      const label = String($("labelText").value || "").trim();
+      const note = String($("noteText").value || "").trim();
+
+      if(!SLUG){
+        toast("❌ Slug PAY manquant");
+        return;
+      }
+      if(!label){
+        toast("❌ Libellé manquant");
+        $("labelText").focus();
+        return;
+      }
+      if(!amount || amount <= 0){
+        toast("❌ Montant invalide");
+        $("amount").focus();
+        return;
+      }
+      if(!movementDate){
+        toast("❌ Date manquante");
+        $("movementDate").focus();
+        return;
+      }
+
+      try{
+        setSaving(true);
+
+        const payload = {
+          slug: SLUG,
+          phone: PHONE || null,
+          direction,
+          scope,
+          kind,
+          category: category || null,
+          amount_xof: Math.round(amount),
+          channel,
+          label,
+          note: note || null,
+          source_module: sourceModule === "OTHER" ? "OTHER" : sourceModule,
+          source_id: sourceId || null,
+          origin: "manual",
+          movement_date: movementDate,
+          status: "posted"
+        };
+
+        const { error } = await sb
+          .from("digiy_pay_mouvements")
+          .insert([payload]);
+
+        if(error) throw error;
+
+        toast("✅ Mouvement enregistré");
+        resetForm();
+        await loadHistory();
+        setState("ok", "Saisie PAY prête", "Mouvement enregistré sur le slug PAY actif.");
+      }catch(err){
+        console.error("[PAY admin save]", err);
+        toast("❌ Erreur d’enregistrement");
+        setState("bad", "Erreur", err?.message || "Impossible d’enregistrer le mouvement.");
+      }finally{
+        setSaving(false);
+      }
+    }
+
+    async function deleteMovement(id){
+      try{
+        const { error } = await sb
+          .from("digiy_pay_mouvements")
+          .delete()
+          .eq("id", id)
+          .eq("slug", SLUG);
+
+        if(error) throw error;
+
+        toast("🗑 Mouvement supprimé");
+        await loadHistory();
+      }catch(err){
+        console.error("[PAY admin delete]", err);
+        toast("❌ Suppression impossible");
+      }
+    }
+
+    async function boot(){
+      try{
+        GUARD = await window.DIGIY_GUARD.ready({ requireAuth: true, redirect: "admin" });
+        if(!GUARD || !GUARD.ok) return;
+
+        SLUG = GUARD.slug || "";
+        PHONE = GUARD.phone || "";
+
+        $("topSlug").textContent = SLUG;
+        $("badgeSlug").textContent = SLUG;
+        $("slugBadge").style.display = "flex";
+        $("movementDate").value = todayStr();
+
+        setState("ok", "Saisie PAY prête", "Session chargée. Tu peux enregistrer des mouvements manuels.");
+        await loadHistory();
+      }catch(err){
+        console.error("[PAY admin boot]", err);
+        setState("bad", "Erreur de session", err?.message || "Impossible d’ouvrir la saisie PAY.");
+      }
+    }
+
+    $("scope").addEventListener("change", syncKindByScope);
+    $("btnReset").addEventListener("click", resetForm);
+    $("payForm").addEventListener("submit", saveMovement);
+
+    $("btnRefresh").addEventListener("click", async () => {
+      toast("🔄 Rechargement...");
+      await loadHistory();
+    });
+
+    $("btnLogout").addEventListener("click", () => {
+      window.DIGIY_GUARD.logout();
+    });
+
+    resetForm();
+    boot();
+  </script>
+</body>
+</html>
