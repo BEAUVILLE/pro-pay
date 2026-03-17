@@ -18,7 +18,6 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -205,6 +204,7 @@
       color:var(--muted);
       font-weight:800;
       line-height:1.45;
+      word-break:break-word;
     }
 
     .grid{
@@ -445,6 +445,7 @@
       font-size:11px;
       font-weight:700;
       line-height:1.45;
+      word-break:break-word;
     }
 
     .item-right{
@@ -517,6 +518,9 @@
       transition:opacity .25s, transform .25s;
       pointer-events:none;
       white-space:nowrap;
+      max-width:calc(100vw - 24px);
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     #toast.show{
       opacity:1;
@@ -549,8 +553,8 @@
         <a class="pill" href="./index.html">← Accueil</a>
         <a class="pill" href="./pin.html">🔐 PIN</a>
         <a class="pill" href="./cockpit.html">📊 Cockpit</a>
-        <button class="pill" id="btnRefresh">🔄 Recharger</button>
-        <button class="pill" id="btnLogout">🚪 Quitter</button>
+        <button class="pill" id="btnRefresh" type="button">🔄 Recharger</button>
+        <button class="pill" id="btnLogout" type="button">🚪 Quitter</button>
       </nav>
     </div>
   </header>
@@ -716,8 +720,8 @@
   <div id="toast"></div>
 
   <script>
-    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+    const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL || "").trim();
+    const SUPABASE_ANON_KEY = String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim();
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
@@ -732,10 +736,15 @@
       }
     });
 
-    let GUARD = null;
     let SLUG = "";
     let PHONE = "";
     let HISTORY = [];
+
+    const SESSION_KEYS = [
+      "digiy_pay_session",
+      "digiy_session",
+      "digiy_loc_pro_session"
+    ];
 
     function $(id){ return document.getElementById(id); }
 
@@ -750,6 +759,22 @@
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
+    }
+
+    function normalizeSlug(v){
+      return String(v || "").trim().toLowerCase();
+    }
+
+    function normalizePhone(v){
+      return String(v || "").replace(/[^\d]/g, "");
+    }
+
+    function safeJsonParse(raw){
+      try{
+        return JSON.parse(raw);
+      }catch(_){
+        return null;
+      }
     }
 
     function todayStr(){
@@ -769,13 +794,16 @@
 
     function toast(msg, duration = 2200){
       const t = $("toast");
-      t.textContent = msg;
+      if(!t) return;
+      t.textContent = String(msg || "");
       t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), duration);
+      window.clearTimeout(t._timer);
+      t._timer = window.setTimeout(() => t.classList.remove("show"), duration);
     }
 
     function setState(kind, title, txt){
       const box = $("stateBox");
+      if(!box) return;
       box.className = "state" + (kind ? " " + kind : "");
       box.innerHTML = `
         <div class="state-title">${esc(title || "État")}</div>
@@ -785,8 +813,80 @@
 
     function setSaving(on){
       const btn = $("btnSave");
+      if(!btn) return;
       btn.disabled = !!on;
       btn.textContent = on ? "⏳ Enregistrement..." : "💾 Enregistrer";
+    }
+
+    function cleanupBrokenSessions(){
+      SESSION_KEYS.forEach(key => {
+        try{
+          const raw = localStorage.getItem(key);
+          if(raw == null) return;
+          if(!safeJsonParse(raw)){
+            localStorage.removeItem(key);
+          }
+        }catch(_){}
+      });
+    }
+
+    function persistPaySession(sessionLike){
+      const slug = normalizeSlug(sessionLike && sessionLike.slug);
+      const phone = normalizePhone(sessionLike && sessionLike.phone);
+      if(!slug) return null;
+
+      const payload = {
+        slug,
+        phone,
+        module: "PAY",
+        ts: Date.now()
+      };
+
+      try{
+        localStorage.setItem("digiy_pay_session", JSON.stringify(payload));
+      }catch(_){}
+
+      return payload;
+    }
+
+    function getSession(){
+      cleanupBrokenSessions();
+
+      for(const key of SESSION_KEYS){
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) continue;
+
+          const parsed = safeJsonParse(raw);
+          if(!parsed || typeof parsed !== "object"){
+            try{ localStorage.removeItem(key); }catch(_){}
+            continue;
+          }
+
+          const slug = normalizeSlug(parsed.slug);
+          const phone = normalizePhone(parsed.phone);
+          const ts = Number(parsed.ts || 0);
+
+          if(!slug) continue;
+
+          if(ts){
+            const age = Date.now() - ts;
+            if(age > 8 * 60 * 60 * 1000 && key === "digiy_pay_session"){
+              try{ localStorage.removeItem(key); }catch(_){}
+              continue;
+            }
+          }
+
+          return persistPaySession({ slug, phone });
+        }catch(_){}
+      }
+      return null;
+    }
+
+    function clearSessions(){
+      SESSION_KEYS.forEach(key => {
+        try{ localStorage.removeItem(key); }catch(_){}
+      });
     }
 
     function resetForm(){
@@ -868,6 +968,7 @@
         const aClass = amountClass(item);
         const sign = String(item.direction || "") === "out" ? "−" : "+";
         const note = item.note ? `<br>${esc(item.note)}` : "";
+
         return `
           <div class="item">
             <div class="item-ico ${icon.cls}">${icon.emoji}</div>
@@ -888,7 +989,7 @@
               <div class="item-amount ${aClass}">
                 ${sign} ${money(item.amount_xof)}
               </div>
-              <button class="btn-del" data-id="${esc(item.id)}">Supprimer</button>
+              <button class="btn-del" data-id="${esc(item.id)}" type="button">Supprimer</button>
             </div>
           </div>
         `;
@@ -906,7 +1007,14 @@
     }
 
     async function loadHistory(){
+      if(!SLUG){
+        $("historyList").innerHTML = `<div class="empty">Slug PAY manquant.</div>`;
+        return;
+      }
+
       try{
+        $("historyList").innerHTML = `<div class="loader"><div class="spinner"></div> Chargement…</div>`;
+
         const { data, error } = await sb
           .from("digiy_pay_mouvements")
           .select("id,slug,direction,scope,kind,category,amount_xof,channel,label,note,source_module,source_id,movement_date,created_at,status")
@@ -917,7 +1025,7 @@
 
         if(error) throw error;
 
-        HISTORY = data || [];
+        HISTORY = Array.isArray(data) ? data : [];
         renderStats(HISTORY);
         renderHistory(HISTORY);
       }catch(err){
@@ -943,18 +1051,22 @@
 
       if(!SLUG){
         toast("❌ Slug PAY manquant");
+        setState("bad", "Slug manquant", "Aucun slug PAY actif pour enregistrer le mouvement.");
         return;
       }
+
       if(!label){
         toast("❌ Libellé manquant");
         $("labelText").focus();
         return;
       }
+
       if(!amount || amount <= 0){
         toast("❌ Montant invalide");
         $("amount").focus();
         return;
       }
+
       if(!movementDate){
         toast("❌ Date manquante");
         $("movementDate").focus();
@@ -995,7 +1107,7 @@
       }catch(err){
         console.error("[PAY admin save]", err);
         toast("❌ Erreur d’enregistrement");
-        setState("bad", "Erreur", err?.message || "Impossible d’enregistrer le mouvement.");
+        setState("bad", "Erreur", err && err.message ? err.message : "Impossible d’enregistrer le mouvement.");
       }finally{
         setSaving(false);
       }
@@ -1019,24 +1131,75 @@
       }
     }
 
+    function resolveContext(){
+      try{
+        const url = new URL(window.location.href);
+        const qSlug = normalizeSlug(url.searchParams.get("slug"));
+        const qPhone = normalizePhone(url.searchParams.get("phone"));
+
+        if(qSlug){
+          persistPaySession({ slug: qSlug, phone: qPhone });
+          return { slug: qSlug, phone: qPhone };
+        }
+
+        const s = getSession();
+        if(s && s.slug){
+          return {
+            slug: normalizeSlug(s.slug),
+            phone: normalizePhone(s.phone)
+          };
+        }
+
+        return null;
+      }catch(_){
+        const s = getSession();
+        if(s && s.slug){
+          return {
+            slug: normalizeSlug(s.slug),
+            phone: normalizePhone(s.phone)
+          };
+        }
+        return null;
+      }
+    }
+
+    function updateUrl(slug, phone){
+      try{
+        const url = new URL(window.location.href);
+        if(slug) url.searchParams.set("slug", slug);
+        if(phone) url.searchParams.set("phone", phone);
+        if(!phone) url.searchParams.delete("phone");
+        window.history.replaceState({}, "", url.toString());
+      }catch(_){}
+    }
+
     async function boot(){
       try{
-        GUARD = await window.DIGIY_GUARD.ready({ requireAuth: true, redirect: "admin" });
-        if(!GUARD || !GUARD.ok) return;
+        const ctx = resolveContext();
 
-        SLUG = GUARD.slug || "";
-        PHONE = GUARD.phone || "";
+        if(!ctx || !ctx.slug){
+          setState("bad", "Session absente", "Aucun slug PAY actif. Passe d’abord par l’entrée PIN.");
+          $("topSlug").textContent = "Session absente";
+          $("historyList").innerHTML = `<div class="empty">Ouvre d’abord PAY via pin.html.</div>`;
+          return;
+        }
+
+        SLUG = normalizeSlug(ctx.slug);
+        PHONE = normalizePhone(ctx.phone);
+
+        persistPaySession({ slug: SLUG, phone: PHONE });
 
         $("topSlug").textContent = SLUG;
         $("badgeSlug").textContent = SLUG;
         $("slugBadge").style.display = "flex";
         $("movementDate").value = todayStr();
 
+        updateUrl(SLUG, PHONE);
         setState("ok", "Saisie PAY prête", "Session chargée. Tu peux enregistrer des mouvements manuels.");
         await loadHistory();
       }catch(err){
         console.error("[PAY admin boot]", err);
-        setState("bad", "Erreur de session", err?.message || "Impossible d’ouvrir la saisie PAY.");
+        setState("bad", "Erreur de session", err && err.message ? err.message : "Impossible d’ouvrir la saisie PAY.");
       }
     }
 
@@ -1050,7 +1213,8 @@
     });
 
     $("btnLogout").addEventListener("click", () => {
-      window.DIGIY_GUARD.logout();
+      clearSessions();
+      window.location.href = "./pin.html";
     });
 
     resetForm();
