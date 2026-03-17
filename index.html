@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>MON ARGENT PRO — Entrée PIN</title>
+  <meta name="theme-color" content="#04110d" />
+  <meta
+    name="description"
+    content="Entrée protégée MON ARGENT by DIGIY. Vérification PIN PAY et redirection vers le cockpit."
+  />
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "PAY";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --bg:#04110d;
+      --card:#0b1f18;
+      --card2:#102820;
+      --line:rgba(255,255,255,.08);
+      --line-g:rgba(34,197,94,.22);
+      --text:#f3fff7;
+      --muted:rgba(243,255,247,.66);
+      --green:#22c55e;
+      --green2:#16a34a;
+      --gold:#facc15;
+      --danger:#f87171;
+      --shadow:0 24px 70px rgba(0,0,0,.45);
+      --r:28px;
+      --ff-title:'Playfair Display', Georgia, serif;
+      --ff-body:'Nunito', system-ui, sans-serif;
+    }
+
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:18px;
+      color:var(--text);
+      font-family:var(--ff-body);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(34,197,94,.12), transparent 35%),
+        radial-gradient(circle at 100% 100%, rgba(250,204,21,.08), transparent 28%),
+        linear-gradient(180deg, #04110d, #061710 58%, #04110d);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .card{
+      width:min(560px, 100%);
+      border-radius:var(--r);
+      border:1px solid var(--line);
+      background:linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.94));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .head{
+      padding:24px 22px 18px;
+      border-bottom:1px solid var(--line);
+      display:grid;
+      gap:12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .mark{
+      width:48px;height:48px;
+      border-radius:16px;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      display:grid;place-items:center;
+      color:#032215;
+      font-size:22px;font-weight:900;
+      flex-shrink:0;
+    }
+
+    .t1{
+      font-family:var(--ff-title);
+      font-size:24px;
+      line-height:1;
+      color:var(--gold);
+    }
+
+    .t2{
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .intro{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      font-weight:700;
+    }
+
+    .body{
+      padding:20px 22px 22px;
+      display:grid;
+      gap:14px;
+    }
+
+    .field{display:grid;gap:7px}
+
+    .label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:900;
+      color:#bbf7d0;
+    }
+
+    input{
+      width:100%;
+      min-height:52px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:0 16px;
+      font-size:16px;
+      font-weight:800;
+      outline:none;
+      transition:border-color .15s, background .15s;
+      font-family:var(--ff-body);
+    }
+
+    input:focus{
+      border-color:rgba(34,197,94,.38);
+      background:rgba(255,255,255,.05);
+    }
+
+    input::placeholder{
+      color:rgba(243,255,247,.28);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .btn{
+      min-height:52px;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:900;
+      font-family:var(--ff-body);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      transition:.18s ease;
+    }
+
+    .btn.primary{
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#032215;
+    }
+    .btn.primary:hover{filter:brightness(1.06)}
+    .btn.primary:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      filter:none;
+    }
+
+    .btn.secondary{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+    }
+    .btn.secondary:hover{
+      background:rgba(255,255,255,.06);
+      border-color:rgba(255,255,255,.16);
+    }
+
+    .status{
+      min-height:54px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      padding:12px 14px;
+      display:grid;
+      align-content:center;
+      gap:3px;
+    }
+
+    .status.ok{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.08);
+    }
+
+    .status.bad{
+      border-color:rgba(248,113,113,.24);
+      background:rgba(248,113,113,.09);
+    }
+
+    .status-title{
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .status-txt{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.45;
+    }
+
+    .foot{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      padding-top:4px;
+    }
+
+    .foot a{color:#fde68a}
+
+    .spinner{
+      width:16px;height:16px;
+      border:2px solid rgba(0,0,0,.15);
+      border-top-color:#032215;
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media (max-width:560px){
+      .row{grid-template-columns:1fr}
+      .head,.body{padding-left:16px;padding-right:16px}
+      .t1{font-size:22px}
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section class="head">
+      <div class="brand">
+        <div class="mark">₣</div>
+        <div>
+          <div class="t1">MON ARGENT PRO ♾️</div>
+          <div class="t2">Entrée sécurisée vers le cockpit PAY</div>
+        </div>
+      </div>
+
+      <div class="intro">
+        Entre ton téléphone et ton PIN PAY pour ouvrir la session pro.
+        Après validation, tu es redirigé vers le vrai cockpit.
+      </div>
+    </section>
+
+    <section class="body">
+      <div class="field">
+        <label class="label" for="phone">Téléphone</label>
+        <input id="phone" type="tel" inputmode="numeric" placeholder="221771342889" autocomplete="tel" />
+      </div>
+
+      <div class="field">
+        <label class="label" for="pin">PIN PAY</label>
+        <input id="pin" type="password" inputmode="numeric" placeholder="••••" maxlength="10" autocomplete="current-password" />
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="btnSubmit">
+          <span id="btnLabel">🔐 Ouvrir mon cockpit</span>
+        </button>
+        <a class="btn secondary" href="./index.html">← Retour accueil</a>
+      </div>
+
+      <div class="status" id="statusBox">
+        <div class="status-title">Prêt</div>
+        <div class="status-txt">Saisis ton téléphone et ton PIN PAY.</div>
+      </div>
+
+      <div class="foot">
+        <div>Module : PAY</div>
+        <div><a href="./admin.html">Aller vers la saisie manuelle</a></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storage: {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {}
+        }
+      }
+    });
+
+    const $ = (id) => document.getElementById(id);
+
+    function cleanPhone(v){
+      return String(v || "").replace(/\D+/g, "");
+    }
+
+    function setStatus(kind, title, txt){
+      const box = $("statusBox");
+      box.className = "status" + (kind ? " " + kind : "");
+      box.innerHTML = `
+        <div class="status-title">${escapeHtml(title || "État")}</div>
+        <div class="status-txt">${escapeHtml(txt || "")}</div>
+      `;
+    }
+
+    function setLoading(on){
+      const btn = $("btnSubmit");
+      const lbl = $("btnLabel");
+      btn.disabled = !!on;
+      if(on){
+        lbl.innerHTML = `<span class="spinner"></span> Vérification...`;
+      }else{
+        lbl.textContent = "🔐 Ouvrir mon cockpit";
+      }
+    }
+
+    function escapeHtml(v){
+      return String(v == null ? "" : v)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;");
+    }
+
+    async function resolvePaySlug(phone){
+      const { data, error } = await sb
+        .from("digiy_subscriptions_public")
+        .select("slug,module,phone")
+        .eq("phone", phone)
+        .eq("module", "PAY")
+        .limit(1)
+        .maybeSingle();
+
+      if(error) throw error;
+      return data?.slug || "";
+    }
+
+    async function verifyPin(phone, pin){
+      const rpcNames = [
+        "digiy_verify_pin",
+        "digiy_pay_verify_pin"
+      ];
+
+      let lastError = null;
+
+      for(const fn of rpcNames){
+        try{
+          const { data, error } = await sb.rpc(fn, {
+            p_phone: phone,
+            p_module: "PAY",
+            p_pin: pin
+          });
+
+          if(error){
+            lastError = error;
+            continue;
+          }
+
+          return { ok: true, data, fn };
+        }catch(err){
+          lastError = err;
+        }
+      }
+
+      throw lastError || new Error("Aucune fonction de vérification PIN PAY n'a répondu.");
+    }
+
+    function saveSession(payload){
+      const session = {
+        slug: payload.slug,
+        phone: payload.phone,
+        module: "PAY",
+        ts: Date.now()
+      };
+
+      localStorage.setItem("digiy_pay_session", JSON.stringify(session));
+      localStorage.setItem("digiy_session", JSON.stringify(session));
+    }
+
+    async function submit(){
+      const phone = cleanPhone($("phone").value);
+      const pin = String($("pin").value || "").trim();
+
+      if(!phone){
+        setStatus("bad", "Téléphone manquant", "Renseigne le téléphone du compte PAY.");
+        $("phone").focus();
+        return;
+      }
+
+      if(!pin){
+        setStatus("bad", "PIN manquant", "Renseigne le PIN PAY.");
+        $("pin").focus();
+        return;
+      }
+
+      try{
+        setLoading(true);
+        setStatus("", "Contrôle", "Vérification du PIN PAY en cours...");
+
+        const pinResult = await verifyPin(phone, pin);
+
+        const pinData = pinResult?.data || {};
+        const isOk = pinData?.ok === true || pinData === true;
+
+        if(!isOk){
+          setStatus("bad", "Accès refusé", "PIN incorrect ou accès PAY non valide.");
+          return;
+        }
+
+        const slug =
+          (pinData && pinData.slug) ||
+          await resolvePaySlug(phone);
+
+        if(!slug){
+          setStatus("bad", "Slug introuvable", "Le PIN est accepté mais aucun slug PAY actif n’a été trouvé.");
+          return;
+        }
+
+        saveSession({ slug, phone });
+
+        setStatus("ok", "Accès accordé", "Session PAY ouverte. Redirection vers le cockpit...");
+        window.location.href = "./cockpit.html?slug=" + encodeURIComponent(slug) + "&phone=" + encodeURIComponent(phone);
+      }catch(err){
+        console.error("[PAY pin]", err);
+        setStatus("bad", "Erreur", err?.message || "Impossible de vérifier le PIN PAY.");
+      }finally{
+        setLoading(false);
+      }
+    }
+
+    $("btnSubmit").addEventListener("click", submit);
+
+    $("pin").addEventListener("keydown", (e) => {
+      if(e.key === "Enter") submit();
+    });
+
+    $("phone").addEventListener("keydown", (e) => {
+      if(e.key === "Enter") $("pin").focus();
+    });
+
+    (function boot(){
+      const u = new URL(window.location.href);
+      const qPhone = cleanPhone(u.searchParams.get("phone") || "");
+      if(qPhone) $("phone").value = qPhone;
+    })();
+  </script>
+</body>
+</html>
