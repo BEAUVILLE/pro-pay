@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT PRO — Entrée PIN</title>
+  <title>MON ARGENT PRO — Entrée PIN DIGIY ♾️</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Entrée protégée MON ARGENT by DIGIY. Vérification PIN PAY et redirection vers le cockpit."
+    content="Entrée PIN sécurisée MON ARGENT by DIGIY pour accéder au cockpit PAY."
   />
 
   <script>
@@ -16,6 +16,7 @@
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "PAY";
   </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -26,7 +27,9 @@
     :root{
       --bg:#04110d;
       --card:#0b1f18;
+      --card2:#102820;
       --line:rgba(255,255,255,.08);
+      --line-g:rgba(34,197,94,.22);
       --text:#f3fff7;
       --muted:rgba(243,255,247,.66);
       --green:#22c55e;
@@ -34,7 +37,8 @@
       --gold:#facc15;
       --danger:#f87171;
       --shadow:0 24px 70px rgba(0,0,0,.45);
-      --r:28px;
+      --r:26px;
+      --max:980px;
       --ff-title:'Playfair Display', Georgia, serif;
       --ff-body:'Nunito', system-ui, sans-serif;
     }
@@ -43,271 +47,576 @@
     html,body{margin:0;padding:0}
     body{
       min-height:100vh;
-      display:grid;
-      place-items:center;
-      padding:18px;
       color:var(--text);
       font-family:var(--ff-body);
       background:
-        radial-gradient(circle at 15% 0%, rgba(34,197,94,.12), transparent 35%),
-        radial-gradient(circle at 100% 100%, rgba(250,204,21,.08), transparent 28%),
-        linear-gradient(180deg, #04110d, #061710 58%, #04110d);
+        radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 36%),
+        radial-gradient(circle at 100% 100%, rgba(250,204,21,.07), transparent 28%),
+        linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
       -webkit-font-smoothing:antialiased;
     }
 
-    .card{
-      width:min(560px, 100%);
-      border-radius:var(--r);
-      border:1px solid var(--line);
-      background:linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.94));
-      box-shadow:var(--shadow);
-      overflow:hidden;
+    a{text-decoration:none;color:inherit}
+    button,input{font-family:var(--ff-body)}
+
+    .wrap{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
     }
 
-    .head{
-      padding:24px 22px 18px;
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:40;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      background:rgba(4,17,13,.82);
       border-bottom:1px solid var(--line);
-      display:grid;
+      margin-bottom:20px;
+    }
+
+    .topbar-in{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       gap:12px;
+      padding:8px 0;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:10px;
+      min-width:0;
     }
 
-    .mark{
-      width:48px;height:48px;
-      border-radius:16px;
+    .brand-mark{
+      width:42px;height:42px;
+      border-radius:14px;
       background:linear-gradient(135deg,var(--green),var(--green2));
       display:grid;place-items:center;
+      font-size:20px;font-weight:900;
       color:#032215;
-      font-size:22px;font-weight:900;
+      box-shadow:var(--shadow);
       flex-shrink:0;
     }
 
-    .t1{
+    .brand-title{
       font-family:var(--ff-title);
-      font-size:24px;
-      line-height:1;
       color:var(--gold);
+      font-size:18px;
+      line-height:1.05;
     }
 
-    .t2{
-      font-size:12px;
-      font-weight:800;
+    .brand-sub{
       color:var(--muted);
-      margin-top:4px;
+      font-size:11px;
+      font-weight:800;
+      margin-top:3px;
+      word-break:break-word;
+    }
+
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-weight:800;
+      font-size:12px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .pill:hover{
+      color:var(--gold);
+      border-color:rgba(250,204,21,.28);
+      background:rgba(250,204,21,.07);
+    }
+
+    .hero{
+      display:grid;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .state{
+      min-height:62px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:4px;
+      align-content:center;
+    }
+    .state.ok{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.08);
+    }
+    .state.bad{
+      border-color:rgba(248,113,113,.24);
+      background:rgba(248,113,113,.09);
+    }
+    .state-title{
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .state-txt{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.45;
+      word-break:break-word;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.92));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .card-head{
+      padding:18px 18px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .card-title{
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#86efac;
+    }
+
+    .card-body{
+      padding:18px;
     }
 
     .intro{
-      color:var(--muted);
-      font-size:14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .big{
+      font-family:var(--ff-title);
+      font-size:36px;
+      line-height:1.04;
+      color:var(--gold);
+      margin:0;
+    }
+
+    .lead{
+      margin:0;
+      font-size:15px;
       line-height:1.6;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    .points{
+      display:grid;
+      gap:10px;
+      margin-top:6px;
+    }
+
+    .point{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+
+    .point-ico{
+      width:34px;height:34px;
+      border-radius:12px;
+      display:grid;place-items:center;
+      background:rgba(34,197,94,.11);
+      border:1px solid rgba(34,197,94,.2);
+      flex-shrink:0;
+    }
+
+    .point strong{
+      display:block;
+      font-size:13px;
+      margin-bottom:2px;
+    }
+
+    .point span{
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
       font-weight:700;
     }
 
-    .body{
-      padding:20px 22px 22px;
+    .form{
       display:grid;
       gap:14px;
     }
 
-    .field{display:grid;gap:7px}
-
-    .label{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      font-weight:900;
-      color:#bbf7d0;
+    .field{
+      display:grid;
+      gap:7px;
     }
 
-    input{
+    .label{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .input{
       width:100%;
       min-height:52px;
-      border-radius:16px;
+      border-radius:18px;
       border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
+      background:rgba(255,255,255,.04);
       color:var(--text);
       padding:0 16px;
       font-size:16px;
       font-weight:800;
       outline:none;
-      transition:border-color .15s, background .15s;
-      font-family:var(--ff-body);
+      transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
     }
 
-    input:focus{
+    .input:focus{
       border-color:rgba(34,197,94,.38);
+      box-shadow:0 0 0 4px rgba(34,197,94,.12);
       background:rgba(255,255,255,.05);
     }
 
-    input::placeholder{
-      color:rgba(243,255,247,.28);
+    .input::placeholder{
+      color:rgba(243,255,247,.35);
+      font-weight:700;
     }
 
-    .row{
+    .pin-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .actions{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:12px;
+      gap:10px;
+      margin-top:4px;
     }
 
     .btn{
       min-height:52px;
       border:none;
-      border-radius:999px;
-      cursor:pointer;
+      border-radius:18px;
+      padding:0 16px;
       font-size:15px;
       font-weight:900;
-      font-family:var(--ff-body);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      transition:.18s ease;
-      text-decoration:none;
+      cursor:pointer;
+      transition:transform .06s ease, opacity .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn[disabled]{opacity:.55;cursor:not-allowed}
+
+    .btn-primary{
+      color:#052516;
+      background:linear-gradient(135deg,var(--gold),#fde68a);
+      box-shadow:var(--shadow);
     }
 
-    .btn.primary{
-      background:linear-gradient(135deg,var(--green),var(--green2));
-      color:#032215;
-    }
-    .btn.primary:hover{filter:brightness(1.06)}
-    .btn.primary:disabled{
-      opacity:.6;
-      cursor:not-allowed;
-      filter:none;
-    }
-
-    .btn.secondary{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
+    .btn-secondary{
       color:var(--text);
-    }
-    .btn.secondary:hover{
-      background:rgba(255,255,255,.06);
-      border-color:rgba(255,255,255,.16);
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
     }
 
-    .status{
-      min-height:62px;
-      border-radius:16px;
+    .mini-line{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .tag{
+      padding:8px 10px;
+      border-radius:999px;
       border:1px solid var(--line);
       background:rgba(255,255,255,.03);
-      padding:12px 14px;
-      display:grid;
-      align-content:center;
-      gap:3px;
+      font-size:11px;
+      font-weight:800;
+      color:var(--muted);
     }
 
-    .status.ok{
+    .msg{
+      min-height:48px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      padding:12px 14px;
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      font-weight:800;
+      line-height:1.5;
+      color:var(--muted);
+    }
+    .msg.ok{
+      color:#bbf7d0;
       border-color:rgba(34,197,94,.24);
       background:rgba(34,197,94,.08);
     }
-
-    .status.bad{
+    .msg.bad{
+      color:#fecaca;
       border-color:rgba(248,113,113,.24);
       background:rgba(248,113,113,.09);
     }
 
-    .status-title{
-      font-size:12px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-    }
-
-    .status-txt{
-      font-size:13px;
-      color:var(--muted);
-      font-weight:800;
-      line-height:1.45;
-      white-space:pre-line;
-    }
-
-    .foot{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
+    .loader{
+      display:inline-flex;
       align-items:center;
+      gap:8px;
       color:var(--muted);
       font-size:12px;
       font-weight:800;
-      padding-top:4px;
     }
-
-    .foot a{color:#fde68a}
 
     .spinner{
-      width:16px;height:16px;
-      border:2px solid rgba(0,0,0,.15);
-      border-top-color:#032215;
+      width:15px;height:15px;
+      border:2px solid rgba(255,255,255,.12);
+      border-top-color:var(--green);
       border-radius:50%;
-      animation:spin .8s linear infinite;
+      animation:spin .7s linear infinite;
     }
-
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    @media (max-width:560px){
-      .row{grid-template-columns:1fr}
-      .head,.body{padding-left:16px;padding-right:16px}
-      .t1{font-size:22px}
+    #toast{
+      position:fixed;
+      bottom:24px;
+      left:50%;
+      transform:translateX(-50%) translateY(20px);
+      z-index:9999;
+      padding:10px 20px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      background:var(--card);
+      border:1px solid var(--line-g);
+      color:#bbf7d0;
+      opacity:0;
+      transition:opacity .25s, transform .25s;
+      pointer-events:none;
+      white-space:nowrap;
+      max-width:calc(100vw - 24px);
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    #toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    @media (max-width:920px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:700px){
+      .topbar-in,
+      .wrap{width:min(var(--max), calc(100% - 16px))}
+      .actions{grid-template-columns:1fr}
+      .pin-row{grid-template-columns:1fr}
+      .big{font-size:30px}
+    }
+
+    @media (max-width:480px){
+      .brand-title{font-size:16px}
+      .big{font-size:26px}
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <section class="head">
+  <header class="topbar">
+    <div class="topbar-in">
       <div class="brand">
-        <div class="mark">₣</div>
+        <div class="brand-mark">₣</div>
         <div>
-          <div class="t1">MON ARGENT PRO ♾️</div>
-          <div class="t2">Entrée sécurisée vers le cockpit PAY</div>
+          <div class="brand-title">MON ARGENT PRO ♾️</div>
+          <div class="brand-sub" id="subline">Entrée protégée PAY</div>
         </div>
       </div>
 
-      <div class="intro">
-        Entre ton téléphone et ton PIN PAY pour ouvrir la session pro.
-        Après validation, tu es redirigé vers le vrai cockpit.
+      <nav class="nav">
+        <a class="pill" href="./index.html">← Accueil</a>
+        <a class="pill" href="./cockpit.html">📊 Cockpit</a>
+        <a class="pill" href="./admin.html">➕ Saisie</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="state" id="stateBox">
+        <div class="state-title">Entrée PIN</div>
+        <div class="state-txt">Vérification sécurisée de l’accès PAY…</div>
       </div>
     </section>
 
-    <section class="body">
-      <div class="field">
-        <label class="label" for="phone">Téléphone</label>
-        <input id="phone" type="tel" inputmode="numeric" placeholder="221771342889" autocomplete="tel" />
-      </div>
+    <section class="grid">
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title">🔐 Accès sécurisé</div>
+        </div>
+        <div class="card-body">
+          <div class="intro">
+            <h1 class="big">Entre dans ton cockpit PAY</h1>
+            <p class="lead">
+              Ici on verrouille l’accès pro avec le vrai rail PIN, puis on ouvre le cockpit réel
+              relié au backbone DIGIY PAY.
+            </p>
+          </div>
 
-      <div class="field">
-        <label class="label" for="pin">PIN PAY</label>
-        <input id="pin" type="password" inputmode="numeric" placeholder="••••" maxlength="10" autocomplete="current-password" />
-      </div>
+          <div class="points">
+            <div class="point">
+              <div class="point-ico">💼</div>
+              <div>
+                <strong>Pilotage pro</strong>
+                <span>Entrées, dépenses pro, net, modules, canaux et couche épargne.</span>
+              </div>
+            </div>
 
-      <div class="row">
-        <button class="btn primary" id="btnSubmit" type="button">
-          <span id="btnLabel">🔐 Ouvrir mon cockpit</span>
-        </button>
-        <a class="btn secondary" href="./index.html">← Retour accueil</a>
-      </div>
+            <div class="point">
+              <div class="point-ico">🛟</div>
+              <div>
+                <strong>Épargne visible</strong>
+                <span>PAY aide à voir clair. Il n’est ni une banque ni une caisse qui garde les fonds.</span>
+              </div>
+            </div>
 
-      <div class="status" id="statusBox">
-        <div class="status-title">Prêt</div>
-        <div class="status-txt">Saisis ton téléphone et ton PIN PAY.</div>
-      </div>
+            <div class="point">
+              <div class="point-ico">♾️</div>
+              <div>
+                <strong>Rail réel DIGIY</strong>
+                <span>Zéro démo. Zéro mélange ancien rail. On s’appuie sur le vrai accès PAY.</span>
+              </div>
+            </div>
+          </div>
 
-      <div class="foot">
-        <div>Module : PAY</div>
-        <div><a href="./admin.html">Aller vers la saisie manuelle</a></div>
-      </div>
+          <div class="mini-line">
+            <div class="tag" id="tagModule">MODULE : PAY</div>
+            <div class="tag" id="tagSlug">SLUG : —</div>
+            <div class="tag" id="tagPhone">PHONE : —</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title">🔑 Vérification PIN</div>
+        </div>
+        <div class="card-body">
+          <form class="form" id="pinForm" novalidate>
+            <div class="field">
+              <label class="label" for="phone">Téléphone</label>
+              <input
+                class="input"
+                id="phone"
+                name="phone"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel"
+                placeholder="221771342889"
+              />
+              <div class="hint">Numéro principal du pro relié à l’abonnement PAY.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="slug">Slug PAY</label>
+              <input
+                class="input"
+                id="slug"
+                name="slug"
+                type="text"
+                autocomplete="off"
+                placeholder="pay-221771342889"
+              />
+              <div class="hint">Tu peux entrer le slug directement ou laisser le rail session le reprendre.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="pin">PIN</label>
+              <div class="pin-row">
+                <input
+                  class="input"
+                  id="pin"
+                  name="pin"
+                  type="password"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  maxlength="12"
+                  placeholder="••••"
+                />
+                <button class="btn btn-secondary" id="btnTogglePin" type="button">👁 Voir</button>
+              </div>
+              <div class="hint">Code PIN DIGIY PAY pour ouvrir le cockpit protégé.</div>
+            </div>
+
+            <div class="msg" id="msgBox">
+              Renseigne ton téléphone, ton slug PAY si besoin, puis ton PIN pour ouvrir le cockpit.
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" id="btnSubmit" type="submit">Ouvrir le cockpit</button>
+              <button class="btn btn-secondary" id="btnClear" type="button">Effacer</button>
+            </div>
+
+            <div class="loader" id="loader" style="display:none">
+              <div class="spinner"></div>
+              Vérification en cours…
+            </div>
+          </form>
+        </div>
+      </article>
     </section>
   </main>
 
+  <div id="toast"></div>
+
   <script>
-    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+    const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL || "").trim();
+    const SUPABASE_ANON_KEY = String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim();
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
@@ -322,265 +631,349 @@
       }
     });
 
+    const SESSION_KEYS = [
+      "digiy_pay_session",
+      "digiy_session",
+      "digiy_loc_pro_session"
+    ];
+
     const $ = (id) => document.getElementById(id);
 
-    function cleanPhone(v){
-      return String(v || "").replace(/\D+/g, "");
-    }
-
-    function escapeHtml(v){
+    function esc(v){
       return String(v == null ? "" : v)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;");
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
-    function setStatus(kind, title, txt){
-      const box = $("statusBox");
-      box.className = "status" + (kind ? " " + kind : "");
+    function normalizeSlug(v){
+      return String(v || "").trim().toLowerCase();
+    }
+
+    function normalizePhone(v){
+      return String(v || "").replace(/[^\d]/g, "");
+    }
+
+    function normalizePin(v){
+      return String(v || "").replace(/[^\dA-Za-z_-]/g, "").trim();
+    }
+
+    function safeJsonParse(raw){
+      try{
+        return JSON.parse(raw);
+      }catch(_){
+        return null;
+      }
+    }
+
+    function coerceObject(value){
+      if(!value) return null;
+      if(typeof value === "object") return value;
+      if(typeof value === "string"){
+        const parsed = safeJsonParse(value.trim());
+        return parsed && typeof parsed === "object" ? parsed : null;
+      }
+      return null;
+    }
+
+    function toast(msg, duration = 2200){
+      const t = $("toast");
+      if(!t) return;
+      t.textContent = String(msg || "");
+      t.classList.add("show");
+      window.clearTimeout(t._timer);
+      t._timer = window.setTimeout(() => t.classList.remove("show"), duration);
+    }
+
+    function setState(kind, title, txt){
+      const box = $("stateBox");
+      if(!box) return;
+      box.className = "state" + (kind ? " " + kind : "");
       box.innerHTML = `
-        <div class="status-title">${escapeHtml(title || "État")}</div>
-        <div class="status-txt">${escapeHtml(txt || "")}</div>
+        <div class="state-title">${esc(title || "État")}</div>
+        <div class="state-txt">${esc(txt || "")}</div>
       `;
     }
 
+    function setMsg(text, kind){
+      const box = $("msgBox");
+      if(!box) return;
+      box.className = "msg" + (kind ? " " + kind : "");
+      box.textContent = String(text || "");
+    }
+
     function setLoading(on){
-      const btn = $("btnSubmit");
-      const lbl = $("btnLabel");
-      btn.disabled = !!on;
-      if(on){
-        lbl.innerHTML = `<span class="spinner"></span> Vérification...`;
-      }else{
-        lbl.textContent = "🔐 Ouvrir mon cockpit";
-      }
+      const loader = $("loader");
+      const btnSubmit = $("btnSubmit");
+      const btnClear = $("btnClear");
+      const btnTogglePin = $("btnTogglePin");
+      const phone = $("phone");
+      const slug = $("slug");
+      const pin = $("pin");
+
+      if(loader) loader.style.display = on ? "inline-flex" : "none";
+      [btnSubmit, btnClear, btnTogglePin, phone, slug, pin].forEach(el => {
+        if(el) el.disabled = !!on;
+      });
     }
 
-    async function resolvePaySlug(phone){
-      const { data, error } = await sb
-        .from("digiy_subscriptions_public")
-        .select("slug,module,phone")
-        .eq("phone", phone)
-        .eq("module", "PAY")
-        .limit(1)
-        .maybeSingle();
-
-      if(error) throw error;
-      return data?.slug || "";
-    }
-
-    async function verifyPin(phone, pin){
-      const rpcNames = [
-        "digiy_verify_pin",
-        "digiy_pay_verify_pin"
-      ];
-
-      let lastError = null;
-
-      for(const fn of rpcNames){
+    function cleanupBrokenSessions(){
+      SESSION_KEYS.forEach(key => {
         try{
-          const { data, error } = await sb.rpc(fn, {
-            p_phone: phone,
-            p_module: "PAY",
-            p_pin: pin
-          });
-
-          if(error){
-            lastError = error;
-            continue;
+          const raw = localStorage.getItem(key);
+          if(raw == null) return;
+          if(!safeJsonParse(raw)){
+            localStorage.removeItem(key);
           }
-
-          return { ok: true, data, fn };
-        }catch(err){
-          lastError = err;
-        }
-      }
-
-      throw lastError || new Error("Aucune fonction de vérification PIN PAY n'a répondu.");
+        }catch(_){}
+      });
     }
 
-    function parseTupleString(raw){
-      if(typeof raw !== "string") return { ok:false, slug:"" };
-      const s = raw.trim();
+    function persistPaySession(sessionLike){
+      const slug = normalizeSlug(sessionLike && sessionLike.slug);
+      const phone = normalizePhone(sessionLike && sessionLike.phone);
+      if(!slug) return null;
 
-      if(!s.startsWith("(") || !s.endsWith(")")) return { ok:false, slug:"" };
-      if(!(s.startsWith("(t,") || s.startsWith("(true,"))) return { ok:false, slug:"" };
-
-      // slug/uuid souvent en dernière position
-      const inside = s.slice(1, -1);
-      const parts = inside.split(",");
-      const last = (parts[parts.length - 1] || "").replace(/^"|"$/g, "").trim();
-
-      return {
-        ok: true,
-        slug: /^[0-9a-f-]{36}$/i.test(last) ? "" : last
-      };
-    }
-
-    function parsePinResult(raw){
-      let ok = false;
-      let slug = "";
-      let debug = "";
-
-      if(raw === true){
-        ok = true;
-        debug = "bool true";
-      }
-
-      else if(typeof raw === "string"){
-        const tuple = parseTupleString(raw);
-        ok = tuple.ok;
-        slug = tuple.slug || "";
-        debug = "string";
-      }
-
-      else if(Array.isArray(raw)){
-        if(raw[0] === true || raw[0] === "t" || raw[0] === "true"){
-          ok = true;
-          if(raw[4] && typeof raw[4] === "string" && !/^[0-9a-f-]{36}$/i.test(raw[4])){
-            slug = raw[4];
-          }
-        }
-        debug = "array";
-      }
-
-      else if(raw && typeof raw === "object"){
-        if(raw.ok === true || raw.success === true){
-          ok = true;
-        }
-
-        if(raw.slug && typeof raw.slug === "string"){
-          slug = raw.slug;
-        }
-
-        // Cas composite PostgREST : colonnes anonymes / valeurs éparses
-        const values = Object.values(raw);
-
-        if(!ok){
-          ok = values.some(v => v === true || v === "t" || v === "true");
-        }
-
-        if(!slug){
-          const slugCandidate = values.find(v =>
-            typeof v === "string" &&
-            v.toLowerCase().startsWith("pay-")
-          );
-          if(slugCandidate) slug = slugCandidate;
-        }
-
-        // Cas objet emballé contenant un tuple string
-        if(!ok){
-          const tupleStr = values.find(v => typeof v === "string" && v.trim().startsWith("(t,"));
-          if(tupleStr){
-            const tuple = parseTupleString(tupleStr);
-            ok = tuple.ok;
-            if(!slug) slug = tuple.slug || "";
-          }
-        }
-
-        debug = "object";
-      }
-
-      return { ok, slug, debug, raw };
-    }
-
-    function saveSession(payload){
-      const session = {
-        slug: String(payload.slug || "").trim().toLowerCase(),
-        phone: cleanPhone(payload.phone),
+      const payload = {
+        slug,
+        phone,
         module: "PAY",
         ts: Date.now()
       };
 
-      localStorage.setItem("digiy_pay_session", JSON.stringify(session));
-      localStorage.setItem("digiy_session", JSON.stringify(session));
+      try{
+        localStorage.setItem("digiy_pay_session", JSON.stringify(payload));
+      }catch(_){}
+
+      return payload;
     }
 
-    async function submit(){
-      const phone = cleanPhone($("phone").value);
-      const pin = String($("pin").value || "").trim();
+    function clearSessions(){
+      SESSION_KEYS.forEach(key => {
+        try{ localStorage.removeItem(key); }catch(_){}
+      });
+    }
+
+    function getAnySession(){
+      cleanupBrokenSessions();
+
+      for(const key of SESSION_KEYS){
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) continue;
+
+          const parsed = safeJsonParse(raw);
+          if(!parsed || typeof parsed !== "object"){
+            try{ localStorage.removeItem(key); }catch(_){}
+            continue;
+          }
+
+          const slug = normalizeSlug(parsed.slug);
+          const phone = normalizePhone(parsed.phone);
+          if(!slug && !phone) continue;
+
+          return { slug, phone, module: String(parsed.module || "").trim().toUpperCase() };
+        }catch(_){}
+      }
+      return null;
+    }
+
+    function readQuery(){
+      try{
+        const url = new URL(window.location.href);
+        return {
+          slug: normalizeSlug(url.searchParams.get("slug")),
+          phone: normalizePhone(url.searchParams.get("phone")),
+          redirect: String(url.searchParams.get("redirect") || "cockpit").trim().toLowerCase(),
+          reason: String(url.searchParams.get("reason") || "").trim()
+        };
+      }catch(_){
+        return { slug:"", phone:"", redirect:"cockpit", reason:"" };
+      }
+    }
+
+    function updateTags(slug, phone){
+      $("tagSlug").textContent = "SLUG : " + (slug || "—");
+      $("tagPhone").textContent = "PHONE : " + (phone || "—");
+    }
+
+    function autofill(){
+      const q = readQuery();
+      const s = getAnySession();
+
+      const slug = q.slug || normalizeSlug(s && s.slug);
+      const phone = q.phone || normalizePhone(s && s.phone);
+
+      if(slug) $("slug").value = slug;
+      if(phone) $("phone").value = phone;
+
+      updateTags(slug, phone);
+
+      if(q.reason === "session_absente"){
+        setState("bad", "Session absente", "Aucune session PAY valide n’a été trouvée. Entre ton PIN pour rouvrir le cockpit.");
+        setMsg("Session expirée ou absente. Vérifie le téléphone, le slug PAY et le PIN.", "bad");
+      }else if(q.reason === "slug_absent"){
+        setState("bad", "Slug absent", "Le cockpit n’a pas trouvé de slug PAY à ouvrir. On repart proprement par l’entrée PIN.");
+        setMsg("Slug PAY manquant. Renseigne le slug ou le téléphone, puis entre le PIN.", "bad");
+      }else{
+        setState("", "Entrée PIN", "Vérification sécurisée de l’accès PAY avant ouverture du cockpit réel.");
+      }
+    }
+
+    function inferSlugFromPhone(phone){
+      const clean = normalizePhone(phone);
+      return clean ? ("pay-" + clean) : "";
+    }
+
+    function chooseRedirectTarget(redirectName){
+      switch(String(redirectName || "").trim().toLowerCase()){
+        case "admin":
+        case "admin.html":
+          return "./admin.html";
+        case "cockpit":
+        case "cockpit.html":
+        default:
+          return "./cockpit.html";
+      }
+    }
+
+    function focusBadField(el){
+      try{
+        if(!el) return;
+        el.focus({ preventScroll:false });
+        el.scrollIntoView({ behavior:"smooth", block:"center" });
+      }catch(_){}
+    }
+
+    async function verifyPin(phone, pin){
+      const { data, error } = await sb.rpc("digiy_verify_pin", {
+        p_phone: phone,
+        p_module: "PAY",
+        p_pin: pin
+      });
+
+      if(error) throw error;
+
+      const payload = coerceObject(data);
+      if(!payload){
+        throw new Error("Réponse PIN vide ou illisible.");
+      }
+      return payload;
+    }
+
+    async function openAccess(evt){
+      evt.preventDefault();
+
+      const q = readQuery();
+      const rawPhone = $("phone").value;
+      const rawSlug = $("slug").value;
+      const rawPin = $("pin").value;
+
+      const phone = normalizePhone(rawPhone);
+      const pin = normalizePin(rawPin);
+      const slug = normalizeSlug(rawSlug) || inferSlugFromPhone(phone);
+
+      updateTags(slug, phone);
 
       if(!phone){
-        setStatus("bad", "Téléphone manquant", "Renseigne le téléphone du compte PAY.");
-        $("phone").focus();
+        setState("bad", "Téléphone requis", "Le rail PIN PAY a besoin du téléphone principal du pro.");
+        setMsg("Entre d’abord le téléphone du pro.", "bad");
+        focusBadField($("phone"));
+        return;
+      }
+
+      if(!slug){
+        setState("bad", "Slug requis", "Le cockpit PAY a besoin d’un slug pour l’ouverture propre.");
+        setMsg("Entre le slug PAY ou laisse le téléphone permettre sa reconstitution.", "bad");
+        focusBadField($("slug"));
         return;
       }
 
       if(!pin){
-        setStatus("bad", "PIN manquant", "Renseigne le PIN PAY.");
-        $("pin").focus();
+        setState("bad", "PIN requis", "Le code PIN PAY est nécessaire pour déverrouiller l’accès.");
+        setMsg("Entre le PIN PAY pour continuer.", "bad");
+        focusBadField($("pin"));
         return;
       }
 
       try{
         setLoading(true);
-        setStatus("", "Contrôle", "Vérification du PIN PAY en cours...");
+        setState("", "Vérification", "Contrôle du PIN sur le vrai rail DIGIY PAY…");
+        setMsg("Vérification du PIN en cours…", "");
 
-        const pinResult = await verifyPin(phone, pin);
-        const parsed = parsePinResult(pinResult?.data);
-
-        if(!parsed.ok){
-          console.log("[PAY PIN raw result]", pinResult?.data);
-          setStatus(
-            "bad",
-            "Accès refusé",
-            "PIN incorrect ou accès PAY non valide."
-          );
-          return;
+        const payload = await verifyPin(phone, pin);
+        if(payload.ok !== true){
+          throw new Error(String(payload.error || payload.message || "PIN incorrect ou accès PAY non valide."));
         }
 
-        let slug = parsed.slug || "";
+        const finalPhone = normalizePhone(payload.phone || phone);
+        const finalSlug = normalizeSlug(payload.slug || slug) || slug;
 
-        if(!slug){
-          slug = await resolvePaySlug(phone);
-        }
+        persistPaySession({
+          slug: finalSlug,
+          phone: finalPhone
+        });
 
-        if(!slug){
-          setStatus(
-            "bad",
-            "Slug introuvable",
-            "Le PIN est accepté mais aucun slug PAY actif n’a été trouvé."
-          );
-          return;
-        }
+        setState("ok", "Accès validé", "PIN correct. Ouverture du cockpit PAY en cours.");
+        setMsg("Accès PAY validé. Redirection vers le cockpit…", "ok");
+        toast("✅ Accès PAY validé");
 
-        saveSession({ slug, phone });
+        const target = new URL(chooseRedirectTarget(q.redirect), window.location.href);
+        target.searchParams.set("slug", finalSlug);
+        if(finalPhone) target.searchParams.set("phone", finalPhone);
 
-        setStatus(
-          "ok",
-          "Accès accordé",
-          "Session PAY ouverte. Redirection vers le cockpit..."
-        );
-
-        window.location.href =
-          "./cockpit.html?slug=" + encodeURIComponent(slug) +
-          "&phone=" + encodeURIComponent(phone);
+        window.setTimeout(() => {
+          window.location.href = target.toString();
+        }, 450);
       }catch(err){
         console.error("[PAY pin]", err);
-        setStatus(
-          "bad",
-          "Erreur",
-          err?.message || "Impossible de vérifier le PIN PAY."
-        );
+        const message = err && err.message ? err.message : "Vérification PIN impossible.";
+        setState("bad", "Accès refusé", message);
+        setMsg(message, "bad");
       }finally{
         setLoading(false);
       }
     }
 
-    $("btnSubmit").addEventListener("click", submit);
+    function bind(){
+      $("pinForm").addEventListener("submit", openAccess);
 
-    $("pin").addEventListener("keydown", (e) => {
-      if(e.key === "Enter") submit();
-    });
+      $("btnClear").addEventListener("click", () => {
+        $("phone").value = "";
+        $("slug").value = "";
+        $("pin").value = "";
+        updateTags("", "");
+        setState("", "Entrée PIN", "Vérification sécurisée de l’accès PAY avant ouverture du cockpit réel.");
+        setMsg("Champs effacés. Tu peux repartir proprement.", "");
+      });
 
-    $("phone").addEventListener("keydown", (e) => {
-      if(e.key === "Enter") $("pin").focus();
-    });
+      $("btnTogglePin").addEventListener("click", () => {
+        const input = $("pin");
+        const btn = $("btnTogglePin");
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        btn.textContent = isHidden ? "🙈 Cacher" : "👁 Voir";
+      });
+
+      $("phone").addEventListener("input", () => {
+        const phone = normalizePhone($("phone").value);
+        const currentSlug = normalizeSlug($("slug").value);
+        if(!currentSlug || currentSlug.startsWith("pay-")){
+          $("slug").value = inferSlugFromPhone(phone);
+        }
+        updateTags(normalizeSlug($("slug").value), phone);
+      });
+
+      $("slug").addEventListener("input", () => {
+        updateTags(normalizeSlug($("slug").value), normalizePhone($("phone").value));
+      });
+    }
 
     (function boot(){
-      const u = new URL(window.location.href);
-      const qPhone = cleanPhone(u.searchParams.get("phone") || "");
-      if(qPhone) $("phone").value = qPhone;
+      clearSessions();
+      autofill();
+      bind();
     })();
   </script>
 </body>
