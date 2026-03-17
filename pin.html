@@ -431,25 +431,31 @@
         setLoading(true);
         setStatus("", "Contrôle", "Vérification du PIN PAY en cours...");
 
-        const pinResult = await verifyPin(phone, pin);
+       const pinResult = await verifyPin(phone, pin);
+const raw = pinResult?.data;
 
-        const pinData = pinResult?.data || {};
-        const isOk = pinData?.ok === true || pinData === true;
+const isOk =
+  raw === true ||
+  (raw && raw.ok === true) ||
+  (typeof raw === "string" && raw.startsWith("(t,")) ||
+  (Array.isArray(raw) && (raw[0] === true || raw[0] === "t"));
 
-        if(!isOk){
-          setStatus("bad", "Accès refusé", "PIN incorrect ou accès PAY non valide.");
-          return;
-        }
+if(!isOk){
+  setStatus("bad", "Accès refusé", "PIN incorrect ou accès PAY non valide.");
+  return;
+}
 
-        const slug =
-          (pinData && pinData.slug) ||
-          await resolvePaySlug(phone);
-
-        if(!slug){
-          setStatus("bad", "Slug introuvable", "Le PIN est accepté mais aucun slug PAY actif n’a été trouvé.");
-          return;
-        }
-
+let slug = "";
+if(raw && typeof raw === "object" && !Array.isArray(raw) && raw.slug){
+  slug = raw.slug;
+}
+if(!slug){
+  slug = await resolvePaySlug(phone);
+}
+if(!slug){
+  setStatus("bad", "Slug introuvable", "Le PIN est accepté mais aucun slug PAY actif n’a été trouvé.");
+  return;
+}
         saveSession({ slug, phone });
 
         setStatus("ok", "Accès accordé", "Session PAY ouverte. Redirection vers le cockpit...");
