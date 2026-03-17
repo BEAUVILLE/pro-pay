@@ -26,9 +26,7 @@
     :root{
       --bg:#04110d;
       --card:#0b1f18;
-      --card2:#102820;
       --line:rgba(255,255,255,.08);
-      --line-g:rgba(34,197,94,.22);
       --text:#f3fff7;
       --muted:rgba(243,255,247,.66);
       --green:#22c55e;
@@ -169,6 +167,7 @@
       justify-content:center;
       gap:8px;
       transition:.18s ease;
+      text-decoration:none;
     }
 
     .btn.primary{
@@ -193,7 +192,7 @@
     }
 
     .status{
-      min-height:54px;
+      min-height:62px;
       border-radius:16px;
       border:1px solid var(--line);
       background:rgba(255,255,255,.03);
@@ -225,6 +224,7 @@
       color:var(--muted);
       font-weight:800;
       line-height:1.45;
+      white-space:pre-line;
     }
 
     .foot{
@@ -287,7 +287,7 @@
       </div>
 
       <div class="row">
-        <button class="btn primary" id="btnSubmit">
+        <button class="btn primary" id="btnSubmit" type="button">
           <span id="btnLabel">🔐 Ouvrir mon cockpit</span>
         </button>
         <a class="btn secondary" href="./index.html">← Retour accueil</a>
@@ -328,6 +328,14 @@
       return String(v || "").replace(/\D+/g, "");
     }
 
+    function escapeHtml(v){
+      return String(v == null ? "" : v)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;");
+    }
+
     function setStatus(kind, title, txt){
       const box = $("statusBox");
       box.className = "status" + (kind ? " " + kind : "");
@@ -346,14 +354,6 @@
       }else{
         lbl.textContent = "🔐 Ouvrir mon cockpit";
       }
-    }
-
-    function escapeHtml(v){
-      return String(v == null ? "" : v)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;");
     }
 
     async function resolvePaySlug(phone){
@@ -399,10 +399,95 @@
       throw lastError || new Error("Aucune fonction de vérification PIN PAY n'a répondu.");
     }
 
+    function parseTupleString(raw){
+      if(typeof raw !== "string") return { ok:false, slug:"" };
+      const s = raw.trim();
+
+      if(!s.startsWith("(") || !s.endsWith(")")) return { ok:false, slug:"" };
+      if(!(s.startsWith("(t,") || s.startsWith("(true,"))) return { ok:false, slug:"" };
+
+      // slug/uuid souvent en dernière position
+      const inside = s.slice(1, -1);
+      const parts = inside.split(",");
+      const last = (parts[parts.length - 1] || "").replace(/^"|"$/g, "").trim();
+
+      return {
+        ok: true,
+        slug: /^[0-9a-f-]{36}$/i.test(last) ? "" : last
+      };
+    }
+
+    function parsePinResult(raw){
+      let ok = false;
+      let slug = "";
+      let debug = "";
+
+      if(raw === true){
+        ok = true;
+        debug = "bool true";
+      }
+
+      else if(typeof raw === "string"){
+        const tuple = parseTupleString(raw);
+        ok = tuple.ok;
+        slug = tuple.slug || "";
+        debug = "string";
+      }
+
+      else if(Array.isArray(raw)){
+        if(raw[0] === true || raw[0] === "t" || raw[0] === "true"){
+          ok = true;
+          if(raw[4] && typeof raw[4] === "string" && !/^[0-9a-f-]{36}$/i.test(raw[4])){
+            slug = raw[4];
+          }
+        }
+        debug = "array";
+      }
+
+      else if(raw && typeof raw === "object"){
+        if(raw.ok === true || raw.success === true){
+          ok = true;
+        }
+
+        if(raw.slug && typeof raw.slug === "string"){
+          slug = raw.slug;
+        }
+
+        // Cas composite PostgREST : colonnes anonymes / valeurs éparses
+        const values = Object.values(raw);
+
+        if(!ok){
+          ok = values.some(v => v === true || v === "t" || v === "true");
+        }
+
+        if(!slug){
+          const slugCandidate = values.find(v =>
+            typeof v === "string" &&
+            v.toLowerCase().startsWith("pay-")
+          );
+          if(slugCandidate) slug = slugCandidate;
+        }
+
+        // Cas objet emballé contenant un tuple string
+        if(!ok){
+          const tupleStr = values.find(v => typeof v === "string" && v.trim().startsWith("(t,"));
+          if(tupleStr){
+            const tuple = parseTupleString(tupleStr);
+            ok = tuple.ok;
+            if(!slug) slug = tuple.slug || "";
+          }
+        }
+
+        debug = "object";
+      }
+
+      return { ok, slug, debug, raw };
+    }
+
     function saveSession(payload){
       const session = {
-        slug: payload.slug,
-        phone: payload.phone,
+        slug: String(payload.slug || "").trim().toLowerCase(),
+        phone: cleanPhone(payload.phone),
         module: "PAY",
         ts: Date.now()
       };
@@ -431,38 +516,52 @@
         setLoading(true);
         setStatus("", "Contrôle", "Vérification du PIN PAY en cours...");
 
-       const pinResult = await verifyPin(phone, pin);
-const raw = pinResult?.data;
+        const pinResult = await verifyPin(phone, pin);
+        const parsed = parsePinResult(pinResult?.data);
 
-const isOk =
-  raw === true ||
-  (raw && raw.ok === true) ||
-  (typeof raw === "string" && raw.startsWith("(t,")) ||
-  (Array.isArray(raw) && (raw[0] === true || raw[0] === "t"));
+        if(!parsed.ok){
+          console.log("[PAY PIN raw result]", pinResult?.data);
+          setStatus(
+            "bad",
+            "Accès refusé",
+            "PIN incorrect ou accès PAY non valide."
+          );
+          return;
+        }
 
-if(!isOk){
-  setStatus("bad", "Accès refusé", "PIN incorrect ou accès PAY non valide.");
-  return;
-}
+        let slug = parsed.slug || "";
 
-let slug = "";
-if(raw && typeof raw === "object" && !Array.isArray(raw) && raw.slug){
-  slug = raw.slug;
-}
-if(!slug){
-  slug = await resolvePaySlug(phone);
-}
-if(!slug){
-  setStatus("bad", "Slug introuvable", "Le PIN est accepté mais aucun slug PAY actif n’a été trouvé.");
-  return;
-}
+        if(!slug){
+          slug = await resolvePaySlug(phone);
+        }
+
+        if(!slug){
+          setStatus(
+            "bad",
+            "Slug introuvable",
+            "Le PIN est accepté mais aucun slug PAY actif n’a été trouvé."
+          );
+          return;
+        }
+
         saveSession({ slug, phone });
 
-        setStatus("ok", "Accès accordé", "Session PAY ouverte. Redirection vers le cockpit...");
-        window.location.href = "./cockpit.html?slug=" + encodeURIComponent(slug) + "&phone=" + encodeURIComponent(phone);
+        setStatus(
+          "ok",
+          "Accès accordé",
+          "Session PAY ouverte. Redirection vers le cockpit..."
+        );
+
+        window.location.href =
+          "./cockpit.html?slug=" + encodeURIComponent(slug) +
+          "&phone=" + encodeURIComponent(phone);
       }catch(err){
         console.error("[PAY pin]", err);
-        setStatus("bad", "Erreur", err?.message || "Impossible de vérifier le PIN PAY.");
+        setStatus(
+          "bad",
+          "Erreur",
+          err?.message || "Impossible de vérifier le PIN PAY."
+        );
       }finally{
         setLoading(false);
       }
