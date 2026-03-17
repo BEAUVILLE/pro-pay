@@ -1,4 +1,3 @@
-<script>
 (function(){
   "use strict";
 
@@ -81,10 +80,10 @@
     }catch(_){}
   }
 
-  function requireSession(pinUrl = "./pin.html"){
+  function requireSession(pinUrl){
     const s = get();
     if(!s){
-      window.location.href = pinUrl;
+      window.location.href = pinUrl || "./pin.html";
       return null;
     }
     return s;
@@ -109,6 +108,7 @@
       const url = new URL(window.location.href);
       const slug = normalizeSlug(url.searchParams.get("slug"));
       const phone = normalizePhone(url.searchParams.get("phone"));
+
       if(!slug) return null;
       return { slug, phone };
     }catch(_){
@@ -127,4 +127,3 @@
     normalizePhone
   };
 })();
-</script>
