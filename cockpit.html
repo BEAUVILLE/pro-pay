@@ -816,6 +816,121 @@
       background:rgba(251,146,60,.09);
     }
 
+    .synth-box{
+      padding:16px;
+      border-radius:24px;
+      border:1px solid rgba(250,204,21,.16);
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.10), transparent 28%),
+        linear-gradient(160deg, rgba(16,40,32,.94), rgba(8,24,18,.96));
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
+      display:grid;
+      gap:12px;
+    }
+
+    .synth-head{
+      display:grid;
+      gap:6px;
+    }
+
+    .synth-kicker{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#fde68a;
+    }
+
+    .synth-title{
+      font-family:var(--ff-title);
+      font-size:28px;
+      line-height:1.05;
+      color:#fff8dc;
+    }
+
+    .synth-sub{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.5;
+    }
+
+    .synth-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .synth-card{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:6px;
+    }
+
+    .synth-label{
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+    }
+
+    .synth-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:max-content;
+      max-width:100%;
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .synth-badge.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.26);
+      background:rgba(34,197,94,.09);
+    }
+
+    .synth-badge.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.24);
+      background:rgba(250,204,21,.08);
+    }
+
+    .synth-badge.bad{
+      color:#fecaca;
+      border-color:rgba(248,113,113,.26);
+      background:rgba(248,113,113,.09);
+    }
+
+    .synth-badge.orange{
+      color:#fed7aa;
+      border-color:rgba(251,146,60,.26);
+      background:rgba(251,146,60,.09);
+    }
+
+    .synth-main{
+      font-size:17px;
+      font-weight:900;
+      color:#fff;
+      line-height:1.25;
+    }
+
+    .synth-text{
+      font-size:12px;
+      line-height:1.5;
+      color:var(--muted);
+      font-weight:800;
+    }
+
     .status-grid{
       display:grid;
       grid-template-columns:repeat(2,1fr);
@@ -976,6 +1091,7 @@
 
     @media (max-width:1100px){
       .hero-grid{grid-template-columns:1fr}
+      .synth-grid{grid-template-columns:1fr 1fr}
     }
 
     @media (max-width:980px){
@@ -986,6 +1102,7 @@
 
     @media (max-width:760px){
       .hero-mini{grid-template-columns:1fr}
+      .synth-grid{grid-template-columns:1fr}
     }
 
     @media (max-width:700px){
@@ -1011,6 +1128,7 @@
       .tabs{grid-template-columns:1fr}
       .decision-main{font-size:24px}
       .status-main{font-size:17px}
+      .synth-title{font-size:24px}
     }
   </style>
 </head>
@@ -1318,6 +1436,44 @@
     </section>
 
     <section class="panel" id="panel-engagements">
+      <div class="synth-box">
+        <div class="synth-head">
+          <div class="synth-kicker">🧭 Synthèse patron</div>
+          <div class="synth-title" id="synthTitle">Chargement de la sentence…</div>
+          <div class="synth-sub" id="synthSub">Lecture ultra-rapide du mois, de la pression et des projets.</div>
+        </div>
+
+        <div class="synth-grid">
+          <div class="synth-card">
+            <div class="synth-label">Respiration</div>
+            <div class="synth-badge" id="synthBreathBadge">—</div>
+            <div class="synth-main" id="synthBreathMain">—</div>
+            <div class="synth-text" id="synthBreathText">—</div>
+          </div>
+
+          <div class="synth-card">
+            <div class="synth-label">Mois</div>
+            <div class="synth-badge" id="synthMonthBadge">—</div>
+            <div class="synth-main" id="synthMonthMain">—</div>
+            <div class="synth-text" id="synthMonthText">—</div>
+          </div>
+
+          <div class="synth-card">
+            <div class="synth-label">Projet</div>
+            <div class="synth-badge" id="synthProjectBadge">—</div>
+            <div class="synth-main" id="synthProjectMain">—</div>
+            <div class="synth-text" id="synthProjectText">—</div>
+          </div>
+
+          <div class="synth-card">
+            <div class="synth-label">Priorité</div>
+            <div class="synth-badge" id="synthPriorityBadge">—</div>
+            <div class="synth-main" id="synthPriorityMain">—</div>
+            <div class="synth-text" id="synthPriorityText">—</div>
+          </div>
+        </div>
+      </div>
+
       <div class="decision-box">
         <div class="decision-title">Lecture décisionnelle</div>
         <div class="decision-main" id="decisionMain">—</div>
@@ -1669,7 +1825,7 @@
 
     function renderCredits(items){
       const el = document.getElementById("creditsList");
-      const arr = normalizeArray(items);
+      const arr = normalizeArray(items).filter(x => x && x.active !== false);
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucun crédit déclaré dans le JSON.</div>`;
         return;
@@ -1692,7 +1848,7 @@
 
     function renderDebts(items){
       const el = document.getElementById("debtsList");
-      const arr = normalizeArray(items);
+      const arr = normalizeArray(items).filter(x => x && x.active !== false);
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucune dette déclarée dans le JSON.</div>`;
         return;
@@ -1715,7 +1871,7 @@
 
     function renderProjects(items){
       const el = document.getElementById("projectsList");
-      const arr = normalizeArray(items);
+      const arr = normalizeArray(items).filter(x => x && x.active !== false);
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucun projet déclaré dans le JSON.</div>`;
         return;
@@ -1781,30 +1937,34 @@
       }
     }
 
+    function activeItems(arr){
+      return normalizeArray(arr).filter(x => x && x.active !== false);
+    }
+
     function sumCreditsLeft(brain){
-      return normalizeArray(brain?.credits).reduce((s, x) => s + Number(x.amount_left_xof || 0), 0);
+      return activeItems(brain?.credits).reduce((s, x) => s + Number(x.amount_left_xof || 0), 0);
     }
 
     function sumCreditsMonthly(brain){
-      return normalizeArray(brain?.credits).reduce((s, x) => s + Number(x.monthly_payment_xof || 0), 0);
+      return activeItems(brain?.credits).reduce((s, x) => s + Number(x.monthly_payment_xof || 0), 0);
     }
 
     function sumDebtsTotal(brain){
-      return normalizeArray(brain?.debts).reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+      return activeItems(brain?.debts).reduce((s, x) => s + Number(x.amount_xof || 0), 0);
     }
 
     function sumDebtsSoon(brain){
-      return normalizeArray(brain?.debts)
+      return activeItems(brain?.debts)
         .filter(x => Number(x.due_in_days || 999999) <= 30)
         .reduce((s, x) => s + Number(x.amount_xof || 0), 0);
     }
 
     function sumProjectsTotal(brain){
-      return normalizeArray(brain?.projects).reduce((s, x) => s + Number(x.target_xof || 0), 0);
+      return activeItems(brain?.projects).reduce((s, x) => s + Number(x.target_xof || 0), 0);
     }
 
     function highestPriorityProject(brain){
-      const arr = normalizeArray(brain?.projects).slice().sort((a,b) => {
+      const arr = activeItems(brain?.projects).slice().sort((a,b) => {
         const pa = Number(a.priority || 999);
         const pb = Number(b.priority || 999);
         if(pa !== pb) return pa - pb;
@@ -2047,16 +2207,160 @@
           : "Montant estimé à trouver avant de lancer le projet proprement.";
     }
 
+    function renderSynthesePatron(calc, brain){
+      const titleEl = document.getElementById("synthTitle");
+      const subEl = document.getElementById("synthSub");
+
+      const setBlock = (prefix, badgeClass, badgeText, main, text) => {
+        const badge = document.getElementById(prefix + "Badge");
+        const mainEl = document.getElementById(prefix + "Main");
+        const textEl = document.getElementById(prefix + "Text");
+        if(badge){
+          badge.className = "synth-badge " + badgeClass;
+          badge.textContent = badgeText;
+        }
+        if(mainEl) mainEl.textContent = main;
+        if(textEl) textEl.textContent = text;
+      };
+
+      const topProject = highestPriorityProject(brain);
+      const decision = computeDecision(calc, brain);
+
+      if(calc.afterCommitments < 0){
+        titleEl.textContent = "Mois sous pression forte";
+        subEl.textContent = "Le business existe, mais les engagements étouffent la marge. Il faut défendre la caisse avant de penser expansion.";
+      }else if(calc.afterCommitments < calc.safetyReserve){
+        titleEl.textContent = "Respiration courte";
+        subEl.textContent = "Le mois tient encore, mais la marge reste trop faible pour jouer avec les projets ou les sorties non utiles.";
+      }else{
+        titleEl.textContent = "Zone de pilotage plus respirable";
+        subEl.textContent = "Le pro garde une marge après engagements. La discipline reste nécessaire, mais le mois n’est pas étranglé.";
+      }
+
+      if(calc.afterCommitments < 0){
+        setBlock(
+          "synthBreath",
+          "bad",
+          "Rouge",
+          "Respiration cassée",
+          `Le reste après engagements tombe à ${money(calc.afterCommitments)}.`
+        );
+      }else if(calc.afterCommitments < calc.safetyReserve){
+        setBlock(
+          "synthBreath",
+          "orange",
+          "Orange",
+          "Respiration courte",
+          `La marge existe encore mais reste sous la réserve de sécurité de ${money(calc.safetyReserve)}.`
+        );
+      }else{
+        setBlock(
+          "synthBreath",
+          "ok",
+          "Vert",
+          "Respiration correcte",
+          `Le pro garde ${money(calc.afterCommitments)} après les engagements proches.`
+        );
+      }
+
+      if(decision.chipClass === "bad"){
+        setBlock(
+          "synthMonth",
+          "bad",
+          "Tension",
+          "Mois mangé",
+          "Les dettes proches et le crédit du mois prennent l’avantage sur la marge."
+        );
+      }else if(decision.chipClass === "warn"){
+        setBlock(
+          "synthMonth",
+          "warn",
+          "Fragile",
+          "Mois serré",
+          "Le mois n’est pas à l’aise. La discipline doit rester stricte."
+        );
+      }else{
+        setBlock(
+          "synthMonth",
+          "ok",
+          "Stable",
+          "Mois tenable",
+          "La structure du mois reste pilotable sans étouffer le pro."
+        );
+      }
+
+      if(!topProject){
+        setBlock(
+          "synthProject",
+          "warn",
+          "Vide",
+          "Pas de projet prioritaire",
+          "Aucun projet n’est déclaré dans le JSON pour l’instant."
+        );
+      }else if(calc.afterCommitments < 0){
+        setBlock(
+          "synthProject",
+          "bad",
+          "Gel",
+          "Projet gelé",
+          `Le projet "${topProject.label}" doit attendre pendant la remise à flot.`
+        );
+      }else if(calc.afterCommitments < Number(topProject.target_xof || 0)){
+        setBlock(
+          "synthProject",
+          "warn",
+          "Attente",
+          "Projet à ralentir",
+          `Le projet "${topProject.label}" n’est pas encore absorbable proprement.`
+        );
+      }else{
+        setBlock(
+          "synthProject",
+          "ok",
+          "Go",
+          "Projet finançable",
+          `Le projet "${topProject.label}" peut être envisagé sans casser la caisse.`
+        );
+      }
+
+      if(calc.debtsSoon > 0){
+        setBlock(
+          "synthPriority",
+          "orange",
+          "Action",
+          "Désendettement d’abord",
+          `Priorité à ${money(calc.debtsSoon)} de dettes proches et ${money(calc.creditsMonthly)} de crédit mensuel.`
+        );
+      }else if(calc.monthSavings <= 0){
+        setBlock(
+          "synthPriority",
+          "warn",
+          "Vigilance",
+          "Rebâtir l’épargne",
+          "Le pro doit remettre une petite couche de réserve avant d’ouvrir un nouveau front."
+        );
+      }else{
+        setBlock(
+          "synthPriority",
+          "ok",
+          "Cap",
+          "Tenir la discipline",
+          "Consolider le net, garder l’épargne et avancer sans fuite."
+        );
+      }
+    }
+
     function renderEngagements(calc, brain){
-      const credits = normalizeArray(brain?.credits);
-      const debts = normalizeArray(brain?.debts);
-      const projects = normalizeArray(brain?.projects);
+      const credits = activeItems(brain?.credits);
+      const debts = activeItems(brain?.debts);
+      const projects = activeItems(brain?.projects);
 
       renderCredits(credits);
       renderDebts(debts);
       renderProjects(projects);
       renderRescuePlan(calc, brain);
       renderProjectStatus(calc, brain);
+      renderSynthesePatron(calc, brain);
 
       document.getElementById("cakeCreditsLeft").textContent = money(calc.creditsLeft);
       document.getElementById("cakeCreditsMonthly").textContent = money(calc.creditsMonthly);
@@ -2089,6 +2393,21 @@
       if(rescueEl){
         rescueEl.innerHTML = `<div class="empty">Le plan de sauvetage a besoin du fichier data/pay-brain.json.</div>`;
       }
+
+      document.getElementById("synthTitle").textContent = "Synthèse indisponible";
+      document.getElementById("synthSub").textContent = "Le bandeau patron a besoin du fichier data/pay-brain.json.";
+
+      ["synthBreath","synthMonth","synthProject","synthPriority"].forEach(prefix => {
+        const badge = document.getElementById(prefix + "Badge");
+        const main = document.getElementById(prefix + "Main");
+        const text = document.getElementById(prefix + "Text");
+        if(badge){
+          badge.className = "synth-badge warn";
+          badge.textContent = "JSON manquant";
+        }
+        if(main) main.textContent = "Lecture indisponible";
+        if(text) text.textContent = "Le cockpit a besoin du JSON pour produire cette synthèse.";
+      });
 
       document.getElementById("projectStatusBadge").className = "status-badge warn";
       document.getElementById("projectStatusBadge").textContent = "JSON manquant";
