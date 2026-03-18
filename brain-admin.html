@@ -1,0 +1,1429 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>MON ARGENT PRO — Cerveau PAY</title>
+  <meta name="theme-color" content="#04110d" />
+  <meta
+    name="description"
+    content="Moule vierge du cerveau PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale et export JSON."
+  />
+
+  <style>
+    :root{
+      --bg:#04110d;
+      --bg2:#071a13;
+      --card:#0b1f18;
+      --card2:#102820;
+      --line:rgba(255,255,255,.08);
+      --line-strong:rgba(255,255,255,.14);
+      --line-g:rgba(34,197,94,.22);
+      --text:#f3fff7;
+      --muted:rgba(243,255,247,.66);
+      --muted2:rgba(243,255,247,.48);
+      --green:#22c55e;
+      --green2:#16a34a;
+      --gold:#facc15;
+      --danger:#f87171;
+      --blue:#60a5fa;
+      --orange:#fb923c;
+      --violet:#a78bfa;
+      --shadow:0 24px 70px rgba(0,0,0,.45);
+      --max:1180px;
+      --ff-title:Georgia, serif;
+      --ff-body:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      min-height:100vh;
+      color:var(--text);
+      font-family:var(--ff-body);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 36%),
+        radial-gradient(circle at 100% 100%, rgba(250,204,21,.07), transparent 28%),
+        linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input,textarea,select{font:inherit}
+
+    .wrap{
+      width:min(var(--max), calc(100% - 20px));
+      margin:0 auto;
+      padding:18px 0 40px;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:40;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      background:rgba(4,17,13,.82);
+      border-bottom:1px solid var(--line);
+      margin-bottom:18px;
+    }
+
+    .topbar-in{
+      width:min(var(--max), calc(100% - 20px));
+      margin:0 auto;
+      min-height:70px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .mark{
+      width:42px;height:42px;border-radius:14px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#032215;
+      font-weight:900;
+      box-shadow:var(--shadow);
+      flex-shrink:0;
+    }
+
+    .brand-title{
+      font-size:18px;
+      font-weight:900;
+      color:#fff8dc;
+      font-family:var(--ff-title);
+      line-height:1.05;
+    }
+
+    .brand-sub{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-top:3px;
+    }
+
+    .nav{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-weight:800;
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .pill:hover{color:var(--gold);border-color:rgba(250,204,21,.25)}
+    .pill.primary{
+      border:none;
+      color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+    }
+
+    .hero,
+    .card{
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.92));
+      box-shadow:var(--shadow);
+    }
+
+    .hero{
+      padding:22px 18px;
+      display:grid;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:max-content;
+      max-width:100%;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line-g);
+      background:rgba(34,197,94,.08);
+      color:#bbf7d0;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:0;
+      font-family:var(--ff-title);
+      font-size:clamp(28px, 5vw, 44px);
+      line-height:1.03;
+      color:#fff8dc;
+    }
+
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+      font-weight:800;
+      max-width:70ch;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+
+    .mini{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:5px;
+    }
+
+    .mini-k{
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted2);
+      font-weight:900;
+    }
+
+    .mini-v{
+      font-size:18px;
+      color:#fff8dc;
+      font-weight:900;
+    }
+
+    .mini-s{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .stack{display:grid;gap:16px}
+
+    .card-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:16px 16px 12px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .card-title{
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#fde68a;
+    }
+
+    .card-body{padding:16px}
+
+    .section-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .field{
+      display:grid;
+      gap:7px;
+    }
+
+    .field.full{grid-column:1 / -1}
+
+    .label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+
+    .input,.textarea,.select{
+      width:100%;
+      min-width:0;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:12px 14px;
+      outline:none;
+    }
+
+    .textarea{min-height:92px;resize:vertical}
+    .input:focus,.textarea:focus,.select:focus{
+      border-color:rgba(34,197,94,.35);
+      box-shadow:0 0 0 3px rgba(34,197,94,.10);
+    }
+
+    .hint{
+      font-size:11px;
+      color:var(--muted2);
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      padding:11px 14px;
+      border:none;
+      border-radius:16px;
+      cursor:pointer;
+      font-weight:900;
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+    }
+
+    .btn:hover{filter:brightness(1.04)}
+    .btn.green{background:linear-gradient(135deg,var(--green),var(--green2));color:#032215}
+    .btn.gold{background:linear-gradient(135deg,var(--gold),#fde68a);color:#2b2100}
+    .btn.red{background:linear-gradient(135deg,#ef4444,#f87171);color:white}
+    .btn.blue{background:linear-gradient(135deg,#3b82f6,#60a5fa);color:white}
+    .btn.outline{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    .items{
+      display:grid;
+      gap:10px;
+    }
+
+    .item{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:rgba(255,255,255,.03);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .item-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .item-title{
+      font-size:14px;
+      font-weight:900;
+      color:#fff8dc;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      width:max-content;
+      max-width:100%;
+    }
+
+    .badge.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.26);
+      background:rgba(34,197,94,.09);
+    }
+
+    .badge.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.24);
+      background:rgba(250,204,21,.08);
+    }
+
+    .badge.bad{
+      color:#fecaca;
+      border-color:rgba(248,113,113,.26);
+      background:rgba(248,113,113,.09);
+    }
+
+    .item-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+
+    .item-box{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(255,255,255,.025);
+      padding:10px;
+      display:grid;
+      gap:4px;
+    }
+
+    .item-k{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted2);
+      font-weight:900;
+    }
+
+    .item-v{
+      font-size:13px;
+      font-weight:800;
+      color:var(--text);
+      word-break:break-word;
+      line-height:1.4;
+    }
+
+    .item-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .preview{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:#071811;
+      padding:14px;
+      overflow:auto;
+      max-height:420px;
+      white-space:pre-wrap;
+      word-break:break-word;
+      font-size:12px;
+      line-height:1.55;
+      color:#d7ffe6;
+    }
+
+    .status{
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      font-weight:800;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .status.ok{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.08);
+      color:#bbf7d0;
+    }
+
+    .status.warn{
+      border-color:rgba(250,204,21,.24);
+      background:rgba(250,204,21,.08);
+      color:#fde68a;
+    }
+
+    .status.bad{
+      border-color:rgba(248,113,113,.24);
+      background:rgba(248,113,113,.09);
+      color:#fecaca;
+    }
+
+    .file-input{display:none}
+
+    @media (max-width:980px){
+      .grid{grid-template-columns:1fr}
+      .hero-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width:700px){
+      .section-grid,.item-grid,.hero-grid{grid-template-columns:1fr}
+      .wrap,.topbar-in{width:min(var(--max), calc(100% - 16px))}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-in">
+      <div class="brand">
+        <div class="mark">₣</div>
+        <div>
+          <div class="brand-title">Cerveau PAY — Moule vierge</div>
+          <div class="brand-sub" id="brainMeta">LocalStorage actif · Brouillon local</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="pill" href="./index.html">← Accueil</a>
+        <a class="pill" href="./cockpit.html">📊 Cockpit</a>
+        <a class="pill" href="./admin.html">➕ Mouvements</a>
+        <button class="pill primary" id="btnSaveTop" type="button">💾 Sauvegarder</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">🧠 PAY BRAIN — base stratégique locale</div>
+      <h1>Remplis le cerveau une fois.<br>Le cockpit parlera plus vrai.</h1>
+      <p>
+        Ce moule vierge sert à poser la base du pro : réserve, charges fixes, crédits,
+        dettes et projets. Tout reste d’abord dans le navigateur du pro. Ensuite tu peux
+        exporter le JSON proprement.
+      </p>
+
+      <div class="hero-grid">
+        <div class="mini">
+          <div class="mini-k">Étape 1</div>
+          <div class="mini-v">Protéger</div>
+          <div class="mini-s">Réserve de sécurité + charges fixes.</div>
+        </div>
+        <div class="mini">
+          <div class="mini-k">Étape 2</div>
+          <div class="mini-v">Tenir</div>
+          <div class="mini-s">Crédits et dettes à pression rapide.</div>
+        </div>
+        <div class="mini">
+          <div class="mini-k">Étape 3</div>
+          <div class="mini-v">Choisir</div>
+          <div class="mini-s">Projets utiles avant projets d’image.</div>
+        </div>
+        <div class="mini">
+          <div class="mini-k">Étape 4</div>
+          <div class="mini-v">Exporter</div>
+          <div class="mini-s">Télécharger le fichier pay-brain.json.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="stack">
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title">Base commune</div>
+            <div class="toolbar">
+              <button class="btn outline" id="btnResetTemplate" type="button">Moule vierge</button>
+              <button class="btn gold" id="btnLoadDemo" type="button">Charger démo</button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="section-grid">
+              <div class="field">
+                <label class="label" for="currency">Devise</label>
+                <select class="select" id="currency">
+                  <option value="XOF">XOF</option>
+                  <option value="EUR">EUR</option>
+                  <option value="USD">USD</option>
+                </select>
+                <div class="hint">Pour DIGIY Sénégal, garde XOF.</div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="safetyReserve">Réserve de sécurité</label>
+                <input class="input" id="safetyReserve" type="number" min="0" step="1000" placeholder="150000" />
+                <div class="hint">Le coussin minimum à protéger.</div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="monthlyFixedCosts">Charges fixes mensuelles</label>
+                <input class="input" id="monthlyFixedCosts" type="number" min="0" step="1000" placeholder="85000" />
+                <div class="hint">Loyer, internet, structure, etc.</div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="dangerDebtRatio">Seuil dette dangereuse (%)</label>
+                <input class="input" id="dangerDebtRatio" type="number" min="0" step="1" placeholder="35" />
+                <div class="hint">Seuil où la dette devient trop lourde.</div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="minimumCash">Cash mini après engagements</label>
+                <input class="input" id="minimumCash" type="number" min="0" step="1000" placeholder="50000" />
+                <div class="hint">Plancher de sécurité après pression du mois.</div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="recommendedSavings">Épargne recommandée (%)</label>
+                <input class="input" id="recommendedSavings" type="number" min="0" step="1" placeholder="15" />
+                <div class="hint">Objectif d’épargne visible du mois.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title">Ajouter un crédit</div>
+            <button class="btn green" id="btnAddCredit" type="button">+ Ajouter</button>
+          </div>
+
+          <div class="card-body">
+            <div class="section-grid">
+              <div class="field">
+                <label class="label" for="creditLabel">Nom du crédit</label>
+                <input class="input" id="creditLabel" type="text" placeholder="Moto livraison" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="creditAmountLeft">Montant restant</label>
+                <input class="input" id="creditAmountLeft" type="number" min="0" step="1000" placeholder="240000" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="creditMonthly">Mensualité</label>
+                <input class="input" id="creditMonthly" type="number" min="0" step="1000" placeholder="40000" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="creditPriority">Priorité</label>
+                <select class="select" id="creditPriority">
+                  <option value="1">1 — Haute</option>
+                  <option value="2">2 — Moyenne</option>
+                  <option value="3">3 — Normale</option>
+                </select>
+              </div>
+
+              <div class="field full">
+                <label class="label" for="creditNotes">Notes</label>
+                <textarea class="textarea" id="creditNotes" placeholder="Crédit principal à tenir sans retard"></textarea>
+              </div>
+            </div>
+
+            <div class="items" id="creditsList"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title">Ajouter une dette</div>
+            <button class="btn green" id="btnAddDebt" type="button">+ Ajouter</button>
+          </div>
+
+          <div class="card-body">
+            <div class="section-grid">
+              <div class="field">
+                <label class="label" for="debtLabel">Nom de la dette</label>
+                <input class="input" id="debtLabel" type="text" placeholder="Fournisseur boissons" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="debtAmount">Montant</label>
+                <input class="input" id="debtAmount" type="number" min="0" step="1000" placeholder="75000" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="debtDueDays">Échéance (jours)</label>
+                <input class="input" id="debtDueDays" type="number" min="0" step="1" placeholder="7" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="debtPriority">Priorité</label>
+                <select class="select" id="debtPriority">
+                  <option value="1">1 — Haute</option>
+                  <option value="2">2 — Moyenne</option>
+                  <option value="3">3 — Normale</option>
+                </select>
+              </div>
+
+              <div class="field full">
+                <label class="label" for="debtNotes">Notes</label>
+                <textarea class="textarea" id="debtNotes" placeholder="Dette courte à solder vite"></textarea>
+              </div>
+            </div>
+
+            <div class="items" id="debtsList"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title">Ajouter un projet</div>
+            <button class="btn green" id="btnAddProject" type="button">+ Ajouter</button>
+          </div>
+
+          <div class="card-body">
+            <div class="section-grid">
+              <div class="field">
+                <label class="label" for="projectLabel">Nom du projet</label>
+                <input class="input" id="projectLabel" type="text" placeholder="Acheter congélateur" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="projectTarget">Coût cible</label>
+                <input class="input" id="projectTarget" type="number" min="0" step="1000" placeholder="180000" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="projectDeadline">Horizon (jours)</label>
+                <input class="input" id="projectDeadline" type="number" min="0" step="1" placeholder="45" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="projectPriority">Priorité</label>
+                <select class="select" id="projectPriority">
+                  <option value="1">1 — Haute</option>
+                  <option value="2">2 — Moyenne</option>
+                  <option value="3">3 — Normale</option>
+                </select>
+              </div>
+
+              <div class="field full">
+                <label class="label" for="projectNotes">Notes</label>
+                <textarea class="textarea" id="projectNotes" placeholder="Projet utile mais à lancer seulement si la caisse respire"></textarea>
+              </div>
+            </div>
+
+            <div class="items" id="projectsList"></div>
+          </div>
+        </article>
+      </section>
+
+      <aside class="stack">
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title">Pilotage local</div>
+          </div>
+          <div class="card-body">
+            <div class="status ok" id="statusBox">
+              Brouillon local prêt. Rien n’est envoyé au serveur.
+            </div>
+
+            <div class="toolbar" style="margin-top:12px">
+              <button class="btn green" id="btnSave" type="button">💾 Sauvegarder localement</button>
+              <button class="btn blue" id="btnExport" type="button">⬇️ Export JSON</button>
+              <button class="btn outline" id="btnImportTrigger" type="button">⬆️ Import JSON</button>
+              <button class="btn red" id="btnClearLocal" type="button">🗑️ Effacer local</button>
+            </div>
+
+            <input class="file-input" id="fileImport" type="file" accept="application/json,.json" />
+
+            <div class="status warn" style="margin-top:12px">
+              Le navigateur garde le brouillon dans le localStorage.  
+              Pour la prod, exporte ensuite le fichier en <strong>pay-brain.json</strong>.
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title">Lecture rapide</div>
+          </div>
+          <div class="card-body">
+            <div class="items">
+              <div class="item">
+                <div class="item-top">
+                  <div class="item-title">Base</div>
+                  <div class="badge ok" id="badgeBase">À poser</div>
+                </div>
+                <div class="item-grid">
+                  <div class="item-box">
+                    <div class="item-k">Réserve</div>
+                    <div class="item-v" id="sumReserve">0 F CFA</div>
+                  </div>
+                  <div class="item-box">
+                    <div class="item-k">Charges fixes</div>
+                    <div class="item-v" id="sumFixed">0 F CFA</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="item-top">
+                  <div class="item-title">Pression</div>
+                  <div class="badge warn" id="badgePressure">Lecture</div>
+                </div>
+                <div class="item-grid">
+                  <div class="item-box">
+                    <div class="item-k">Crédits actifs</div>
+                    <div class="item-v" id="sumCreditsMonthly">0 F CFA / mois</div>
+                  </div>
+                  <div class="item-box">
+                    <div class="item-k">Dettes proches</div>
+                    <div class="item-v" id="sumDebtsSoon">0 F CFA</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="item-top">
+                  <div class="item-title">Projets</div>
+                  <div class="badge warn" id="badgeProjects">Lecture</div>
+                </div>
+                <div class="item-grid">
+                  <div class="item-box">
+                    <div class="item-k">Projet prioritaire</div>
+                    <div class="item-v" id="sumTopProject">Aucun</div>
+                  </div>
+                  <div class="item-box">
+                    <div class="item-k">Montant total</div>
+                    <div class="item-v" id="sumProjects">0 F CFA</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title">JSON généré</div>
+          </div>
+          <div class="card-body">
+            <div class="preview" id="jsonPreview">{}</div>
+          </div>
+        </article>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const LS_KEY = "digiy_pay_brain_draft_v1";
+
+    const TEMPLATE = {
+      currency: "XOF",
+      safety_reserve_xof: 0,
+      monthly_fixed_costs_xof: 0,
+      credits: [],
+      debts: [],
+      projects: [],
+      rules: {
+        danger_debt_ratio_pct: 35,
+        minimum_cash_after_commitments_xof: 50000,
+        recommended_savings_pct: 15
+      }
+    };
+
+    const DEMO = {
+      currency: "XOF",
+      safety_reserve_xof: 100000,
+      monthly_fixed_costs_xof: 60000,
+      credits: [
+        {
+          label: "Moto activité",
+          amount_left_xof: 180000,
+          monthly_payment_xof: 30000,
+          priority: 1,
+          active: true,
+          notes: "Exemple de crédit principal à tenir"
+        }
+      ],
+      debts: [
+        {
+          label: "Fournisseur principal",
+          amount_xof: 50000,
+          due_in_days: 7,
+          priority: 1,
+          active: true,
+          notes: "Exemple de dette courte"
+        },
+        {
+          label: "Petit matériel",
+          amount_xof: 20000,
+          due_in_days: 21,
+          priority: 2,
+          active: true,
+          notes: "Exemple de dette du mois"
+        }
+      ],
+      projects: [
+        {
+          label: "Acheter équipement utile",
+          target_xof: 120000,
+          deadline_days: 45,
+          priority: 1,
+          active: true,
+          notes: "Projet utile à lancer seulement si la caisse respire"
+        },
+        {
+          label: "Amélioration image",
+          target_xof: 70000,
+          deadline_days: 30,
+          priority: 2,
+          active: true,
+          notes: "Projet image après urgences et base protégée"
+        }
+      ],
+      rules: {
+        danger_debt_ratio_pct: 35,
+        minimum_cash_after_commitments_xof: 50000,
+        recommended_savings_pct: 15
+      }
+    };
+
+    let brain = loadDraft();
+
+    function deepClone(obj){
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function money(n){
+      return Math.round(Number(n || 0)).toLocaleString("fr-FR") + " F CFA";
+    }
+
+    function safeParse(raw){
+      try{ return JSON.parse(raw); }catch(_){ return null; }
+    }
+
+    function loadDraft(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw) return deepClone(TEMPLATE);
+        const parsed = safeParse(raw);
+        if(!parsed || typeof parsed !== "object") return deepClone(TEMPLATE);
+        return normalizeBrain(parsed);
+      }catch(_){
+        return deepClone(TEMPLATE);
+      }
+    }
+
+    function saveDraft(showMessage = true){
+      localStorage.setItem(LS_KEY, JSON.stringify(brain));
+      if(showMessage) setStatus("ok", "Brouillon PAY sauvegardé localement.");
+      updateMeta();
+    }
+
+    function normalizeBrain(data){
+      const base = deepClone(TEMPLATE);
+      const out = Object.assign(base, data || {});
+      out.currency = String(out.currency || "XOF").trim() || "XOF";
+      out.safety_reserve_xof = num(out.safety_reserve_xof);
+      out.monthly_fixed_costs_xof = num(out.monthly_fixed_costs_xof);
+      out.credits = Array.isArray(out.credits) ? out.credits.map(normalizeCredit) : [];
+      out.debts = Array.isArray(out.debts) ? out.debts.map(normalizeDebt) : [];
+      out.projects = Array.isArray(out.projects) ? out.projects.map(normalizeProject) : [];
+      out.rules = Object.assign({}, TEMPLATE.rules, out.rules || {});
+      out.rules.danger_debt_ratio_pct = num(out.rules.danger_debt_ratio_pct);
+      out.rules.minimum_cash_after_commitments_xof = num(out.rules.minimum_cash_after_commitments_xof);
+      out.rules.recommended_savings_pct = num(out.rules.recommended_savings_pct);
+      return out;
+    }
+
+    function num(v){
+      const n = Number(v || 0);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function esc(v){
+      return String(v == null ? "" : v)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function normalizeCredit(item){
+      return {
+        label: String(item?.label || "").trim(),
+        amount_left_xof: num(item?.amount_left_xof),
+        monthly_payment_xof: num(item?.monthly_payment_xof),
+        priority: num(item?.priority || 1) || 1,
+        active: item?.active !== false,
+        notes: String(item?.notes || "").trim()
+      };
+    }
+
+    function normalizeDebt(item){
+      return {
+        label: String(item?.label || "").trim(),
+        amount_xof: num(item?.amount_xof),
+        due_in_days: num(item?.due_in_days),
+        priority: num(item?.priority || 1) || 1,
+        active: item?.active !== false,
+        notes: String(item?.notes || "").trim()
+      };
+    }
+
+    function normalizeProject(item){
+      return {
+        label: String(item?.label || "").trim(),
+        target_xof: num(item?.target_xof),
+        deadline_days: num(item?.deadline_days),
+        priority: num(item?.priority || 1) || 1,
+        active: item?.active !== false,
+        notes: String(item?.notes || "").trim()
+      };
+    }
+
+    function setStatus(kind, text){
+      const el = document.getElementById("statusBox");
+      el.className = "status " + kind;
+      el.innerHTML = text;
+    }
+
+    function updateMeta(){
+      const count = [
+        brain.credits.length,
+        brain.debts.length,
+        brain.projects.length
+      ].reduce((a,b)=>a+b,0);
+      document.getElementById("brainMeta").textContent =
+        `LocalStorage actif · ${count} élément(s) posés`;
+    }
+
+    function bindBaseFields(){
+      const map = {
+        currency: "currency",
+        safetyReserve: "safety_reserve_xof",
+        monthlyFixedCosts: "monthly_fixed_costs_xof",
+        dangerDebtRatio: "rules.danger_debt_ratio_pct",
+        minimumCash: "rules.minimum_cash_after_commitments_xof",
+        recommendedSavings: "rules.recommended_savings_pct"
+      };
+
+      Object.keys(map).forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener("input", () => {
+          writeField(map[id], el.value);
+          renderAll();
+          saveDraft(false);
+        });
+      });
+    }
+
+    function writeField(path, value){
+      if(path === "currency"){
+        brain.currency = String(value || "XOF").trim() || "XOF";
+        return;
+      }
+      if(path === "safety_reserve_xof"){
+        brain.safety_reserve_xof = num(value);
+        return;
+      }
+      if(path === "monthly_fixed_costs_xof"){
+        brain.monthly_fixed_costs_xof = num(value);
+        return;
+      }
+      if(path === "rules.danger_debt_ratio_pct"){
+        brain.rules.danger_debt_ratio_pct = num(value);
+        return;
+      }
+      if(path === "rules.minimum_cash_after_commitments_xof"){
+        brain.rules.minimum_cash_after_commitments_xof = num(value);
+        return;
+      }
+      if(path === "rules.recommended_savings_pct"){
+        brain.rules.recommended_savings_pct = num(value);
+      }
+    }
+
+    function syncBaseFields(){
+      document.getElementById("currency").value = brain.currency || "XOF";
+      document.getElementById("safetyReserve").value = brain.safety_reserve_xof || 0;
+      document.getElementById("monthlyFixedCosts").value = brain.monthly_fixed_costs_xof || 0;
+      document.getElementById("dangerDebtRatio").value = brain.rules?.danger_debt_ratio_pct ?? 35;
+      document.getElementById("minimumCash").value = brain.rules?.minimum_cash_after_commitments_xof ?? 50000;
+      document.getElementById("recommendedSavings").value = brain.rules?.recommended_savings_pct ?? 15;
+    }
+
+    function addCredit(){
+      const item = normalizeCredit({
+        label: document.getElementById("creditLabel").value,
+        amount_left_xof: document.getElementById("creditAmountLeft").value,
+        monthly_payment_xof: document.getElementById("creditMonthly").value,
+        priority: document.getElementById("creditPriority").value,
+        notes: document.getElementById("creditNotes").value,
+        active: true
+      });
+
+      if(!item.label){
+        setStatus("warn", "Donne un nom au crédit avant de l’ajouter.");
+        return;
+      }
+
+      brain.credits.push(item);
+      clearCreditForm();
+      renderAll();
+      saveDraft();
+    }
+
+    function addDebt(){
+      const item = normalizeDebt({
+        label: document.getElementById("debtLabel").value,
+        amount_xof: document.getElementById("debtAmount").value,
+        due_in_days: document.getElementById("debtDueDays").value,
+        priority: document.getElementById("debtPriority").value,
+        notes: document.getElementById("debtNotes").value,
+        active: true
+      });
+
+      if(!item.label){
+        setStatus("warn", "Donne un nom à la dette avant de l’ajouter.");
+        return;
+      }
+
+      brain.debts.push(item);
+      clearDebtForm();
+      renderAll();
+      saveDraft();
+    }
+
+    function addProject(){
+      const item = normalizeProject({
+        label: document.getElementById("projectLabel").value,
+        target_xof: document.getElementById("projectTarget").value,
+        deadline_days: document.getElementById("projectDeadline").value,
+        priority: document.getElementById("projectPriority").value,
+        notes: document.getElementById("projectNotes").value,
+        active: true
+      });
+
+      if(!item.label){
+        setStatus("warn", "Donne un nom au projet avant de l’ajouter.");
+        return;
+      }
+
+      brain.projects.push(item);
+      clearProjectForm();
+      renderAll();
+      saveDraft();
+    }
+
+    function clearCreditForm(){
+      document.getElementById("creditLabel").value = "";
+      document.getElementById("creditAmountLeft").value = "";
+      document.getElementById("creditMonthly").value = "";
+      document.getElementById("creditPriority").value = "1";
+      document.getElementById("creditNotes").value = "";
+    }
+
+    function clearDebtForm(){
+      document.getElementById("debtLabel").value = "";
+      document.getElementById("debtAmount").value = "";
+      document.getElementById("debtDueDays").value = "";
+      document.getElementById("debtPriority").value = "1";
+      document.getElementById("debtNotes").value = "";
+    }
+
+    function clearProjectForm(){
+      document.getElementById("projectLabel").value = "";
+      document.getElementById("projectTarget").value = "";
+      document.getElementById("projectDeadline").value = "";
+      document.getElementById("projectPriority").value = "1";
+      document.getElementById("projectNotes").value = "";
+    }
+
+    function removeItem(type, index){
+      if(!Array.isArray(brain[type])) return;
+      brain[type].splice(index, 1);
+      renderAll();
+      saveDraft();
+    }
+
+    function toggleItem(type, index){
+      const item = brain[type]?.[index];
+      if(!item) return;
+      item.active = item.active === false ? true : false;
+      renderAll();
+      saveDraft();
+    }
+
+    function priorityLabel(p){
+      const n = num(p || 1);
+      if(n <= 1) return "Priorité haute";
+      if(n === 2) return "Priorité moyenne";
+      return "Priorité normale";
+    }
+
+    function renderCredits(){
+      const el = document.getElementById("creditsList");
+      if(!brain.credits.length){
+        el.innerHTML = `<div class="status warn">Aucun crédit posé pour l’instant.</div>`;
+        return;
+      }
+
+      el.innerHTML = brain.credits.map((item, i) => `
+        <div class="item">
+          <div class="item-top">
+            <div class="item-title">${esc(item.label || "Crédit")}</div>
+            <div class="badge ${item.active !== false ? "ok" : "bad"}">${item.active !== false ? "Actif" : "Désactivé"}</div>
+          </div>
+
+          <div class="item-grid">
+            <div class="item-box">
+              <div class="item-k">Reste</div>
+              <div class="item-v">${money(item.amount_left_xof)}</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Mensuel</div>
+              <div class="item-v">${money(item.monthly_payment_xof)}</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Priorité</div>
+              <div class="item-v">${esc(priorityLabel(item.priority))}</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Notes</div>
+              <div class="item-v">${esc(item.notes || "—")}</div>
+            </div>
+          </div>
+
+          <div class="item-actions">
+            <button class="btn outline" type="button" onclick="toggleItem('credits', ${i})">${item.active !== false ? "Désactiver" : "Réactiver"}</button>
+            <button class="btn red" type="button" onclick="removeItem('credits', ${i})">Supprimer</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderDebts(){
+      const el = document.getElementById("debtsList");
+      if(!brain.debts.length){
+        el.innerHTML = `<div class="status warn">Aucune dette posée pour l’instant.</div>`;
+        return;
+      }
+
+      el.innerHTML = brain.debts.map((item, i) => `
+        <div class="item">
+          <div class="item-top">
+            <div class="item-title">${esc(item.label || "Dette")}</div>
+            <div class="badge ${item.active !== false ? "ok" : "bad"}">${item.active !== false ? "Active" : "Désactivée"}</div>
+          </div>
+
+          <div class="item-grid">
+            <div class="item-box">
+              <div class="item-k">Montant</div>
+              <div class="item-v">${money(item.amount_xof)}</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Échéance</div>
+              <div class="item-v">${esc(String(item.due_in_days))} jour(s)</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Priorité</div>
+              <div class="item-v">${esc(priorityLabel(item.priority))}</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Notes</div>
+              <div class="item-v">${esc(item.notes || "—")}</div>
+            </div>
+          </div>
+
+          <div class="item-actions">
+            <button class="btn outline" type="button" onclick="toggleItem('debts', ${i})">${item.active !== false ? "Désactiver" : "Réactiver"}</button>
+            <button class="btn red" type="button" onclick="removeItem('debts', ${i})">Supprimer</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderProjects(){
+      const el = document.getElementById("projectsList");
+      if(!brain.projects.length){
+        el.innerHTML = `<div class="status warn">Aucun projet posé pour l’instant.</div>`;
+        return;
+      }
+
+      el.innerHTML = brain.projects.map((item, i) => `
+        <div class="item">
+          <div class="item-top">
+            <div class="item-title">${esc(item.label || "Projet")}</div>
+            <div class="badge ${item.active !== false ? "ok" : "bad"}">${item.active !== false ? "Actif" : "Désactivé"}</div>
+          </div>
+
+          <div class="item-grid">
+            <div class="item-box">
+              <div class="item-k">Cible</div>
+              <div class="item-v">${money(item.target_xof)}</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Horizon</div>
+              <div class="item-v">${esc(String(item.deadline_days))} jour(s)</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Priorité</div>
+              <div class="item-v">${esc(priorityLabel(item.priority))}</div>
+            </div>
+            <div class="item-box">
+              <div class="item-k">Notes</div>
+              <div class="item-v">${esc(item.notes || "—")}</div>
+            </div>
+          </div>
+
+          <div class="item-actions">
+            <button class="btn outline" type="button" onclick="toggleItem('projects', ${i})">${item.active !== false ? "Désactiver" : "Réactiver"}</button>
+            <button class="btn red" type="button" onclick="removeItem('projects', ${i})">Supprimer</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function sortProjectsForSummary(items){
+      return items.slice().sort((a,b) => {
+        const pa = num(a.priority || 999);
+        const pb = num(b.priority || 999);
+        if(pa !== pb) return pa - pb;
+        return num(a.deadline_days || 999999) - num(b.deadline_days || 999999);
+      });
+    }
+
+    function renderSummary(){
+      const activeCredits = brain.credits.filter(x => x.active !== false);
+      const activeDebts = brain.debts.filter(x => x.active !== false);
+      const activeProjects = brain.projects.filter(x => x.active !== false);
+
+      const creditsMonthly = activeCredits.reduce((s,x)=>s + num(x.monthly_payment_xof), 0);
+      const debtsSoon = activeDebts
+        .filter(x => num(x.due_in_days) <= 30)
+        .reduce((s,x)=>s + num(x.amount_xof), 0);
+      const projectsTotal = activeProjects.reduce((s,x)=>s + num(x.target_xof), 0);
+      const topProject = sortProjectsForSummary(activeProjects)[0] || null;
+
+      document.getElementById("sumReserve").textContent = money(brain.safety_reserve_xof);
+      document.getElementById("sumFixed").textContent = money(brain.monthly_fixed_costs_xof);
+      document.getElementById("sumCreditsMonthly").textContent = money(creditsMonthly) + " / mois";
+      document.getElementById("sumDebtsSoon").textContent = money(debtsSoon);
+      document.getElementById("sumTopProject").textContent = topProject ? topProject.label : "Aucun";
+      document.getElementById("sumProjects").textContent = money(projectsTotal);
+
+      document.getElementById("badgeBase").textContent =
+        brain.safety_reserve_xof > 0 || brain.monthly_fixed_costs_xof > 0 ? "Posée" : "À poser";
+      document.getElementById("badgeBase").className =
+        "badge " + ((brain.safety_reserve_xof > 0 || brain.monthly_fixed_costs_xof > 0) ? "ok" : "warn");
+
+      document.getElementById("badgePressure").textContent =
+        creditsMonthly > 0 || debtsSoon > 0 ? "Visible" : "Calme";
+      document.getElementById("badgePressure").className =
+        "badge " + ((creditsMonthly > 0 || debtsSoon > 0) ? "warn" : "ok");
+
+      document.getElementById("badgeProjects").textContent =
+        activeProjects.length ? "Déclarés" : "Aucun";
+      document.getElementById("badgeProjects").className =
+        "badge " + (activeProjects.length ? "warn" : "ok");
+    }
+
+    function buildExportObject(){
+      return normalizeBrain(deepClone(brain));
+    }
+
+    function renderPreview(){
+      const data = buildExportObject();
+      document.getElementById("jsonPreview").textContent = JSON.stringify(data, null, 2);
+    }
+
+    function renderAll(){
+      syncBaseFields();
+      renderCredits();
+      renderDebts();
+      renderProjects();
+      renderSummary();
+      renderPreview();
+      updateMeta();
+    }
+
+    function downloadJson(filename, obj){
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJsonFile(file){
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const parsed = safeParse(String(reader.result || ""));
+          if(!parsed || typeof parsed !== "object"){
+            setStatus("bad", "Import refusé : JSON invalide.");
+            return;
+          }
+          brain = normalizeBrain(parsed);
+          renderAll();
+          saveDraft(false);
+          setStatus("ok", "JSON importé dans le brouillon local.");
+        }catch(_){
+          setStatus("bad", "Import refusé : fichier illisible.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function bindActions(){
+      document.getElementById("btnAddCredit").addEventListener("click", addCredit);
+      document.getElementById("btnAddDebt").addEventListener("click", addDebt);
+      document.getElementById("btnAddProject").addEventListener("click", addProject);
+
+      document.getElementById("btnSave").addEventListener("click", () => saveDraft(true));
+      document.getElementById("btnSaveTop").addEventListener("click", () => saveDraft(true));
+
+      document.getElementById("btnExport").addEventListener("click", () => {
+        downloadJson("pay-brain.json", buildExportObject());
+        setStatus("ok", "Fichier pay-brain.json exporté.");
+      });
+
+      document.getElementById("btnImportTrigger").addEventListener("click", () => {
+        document.getElementById("fileImport").click();
+      });
+
+      document.getElementById("fileImport").addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if(file) importJsonFile(file);
+        e.target.value = "";
+      });
+
+      document.getElementById("btnResetTemplate").addEventListener("click", () => {
+        brain = deepClone(TEMPLATE);
+        renderAll();
+        saveDraft(false);
+        setStatus("ok", "Moule vierge chargé dans le brouillon local.");
+      });
+
+      document.getElementById("btnLoadDemo").addEventListener("click", () => {
+        brain = deepClone(DEMO);
+        renderAll();
+        saveDraft(false);
+        setStatus("ok", "Démo chargée dans le brouillon local.");
+      });
+
+      document.getElementById("btnClearLocal").addEventListener("click", () => {
+        localStorage.removeItem(LS_KEY);
+        brain = deepClone(TEMPLATE);
+        renderAll();
+        setStatus("warn", "Brouillon local effacé. Moule vierge rechargé.");
+      });
+    }
+
+    bindBaseFields();
+    bindActions();
+    renderAll();
+  </script>
+</body>
+</html>
