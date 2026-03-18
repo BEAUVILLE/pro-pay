@@ -1435,270 +1435,271 @@
       </div>
     </section>
 
-    <section class="panel" id="panel-engagements">
-      <div class="synth-box">
-        <div class="synth-head">
-          <div class="synth-kicker">🧭 Synthèse patron</div>
-          <div class="synth-title" id="synthTitle">Chargement de la sentence…</div>
-          <div class="synth-sub" id="synthSub">Lecture ultra-rapide du mois, de la pression et des projets.</div>
-        </div>
-        <div class="scard">
-  <div class="scard-head">
-    <div class="scard-title orange">📈 Remontée nécessaire</div>
-  </div>
-
-  <div class="status-grid">
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Pour revenir à 0</div>
-        <div class="status-badge bad" id="recoveryZeroBadge">Calcul…</div>
-      </div>
-      <div class="status-main" id="recoveryZeroMain">—</div>
-      <div class="status-sub" id="recoveryZeroSub">Montant à retrouver pour que le mois ne soit plus négatif après engagements.</div>
+   <section class="panel" id="panel-engagements">
+  <div class="synth-box">
+    <div class="synth-head">
+      <div class="synth-kicker">🧭 Synthèse patron</div>
+      <div class="synth-title" id="synthTitle">Chargement de la sentence…</div>
+      <div class="synth-sub" id="synthSub">Lecture ultra-rapide du mois, de la pression et des projets.</div>
     </div>
 
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Pour retrouver la réserve</div>
-        <div class="status-badge orange" id="recoveryReserveBadge">Calcul…</div>
+    <div class="synth-grid">
+      <div class="synth-card">
+        <div class="synth-label">Respiration</div>
+        <div class="synth-badge" id="synthBreathBadge">—</div>
+        <div class="synth-main" id="synthBreathMain">—</div>
+        <div class="synth-text" id="synthBreathText">—</div>
       </div>
-      <div class="status-main" id="recoveryReserveMain">—</div>
-      <div class="status-sub" id="recoveryReserveSub">Montant à retrouver pour repasser au-dessus de la réserve de sécurité.</div>
-    </div>
 
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Lecture terrain</div>
-        <div class="status-badge" id="recoveryReadBadge">Analyse…</div>
+      <div class="synth-card">
+        <div class="synth-label">Mois</div>
+        <div class="synth-badge" id="synthMonthBadge">—</div>
+        <div class="synth-main" id="synthMonthMain">—</div>
+        <div class="synth-text" id="synthMonthText">—</div>
       </div>
-      <div class="status-main" id="recoveryReadMain">—</div>
-      <div class="status-sub" id="recoveryReadSub">Lecture simple de l’effort à fournir.</div>
-    </div>
 
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Cap à tenir</div>
-        <div class="status-badge" id="recoveryCapBadge">Cap…</div>
+      <div class="synth-card">
+        <div class="synth-label">Projet</div>
+        <div class="synth-badge" id="synthProjectBadge">—</div>
+        <div class="synth-main" id="synthProjectMain">—</div>
+        <div class="synth-text" id="synthProjectText">—</div>
       </div>
-      <div class="status-main" id="recoveryCapMain">—</div>
-      <div class="status-sub" id="recoveryCapSub">Rythme conseillé avant de relancer un projet.</div>
+
+      <div class="synth-card">
+        <div class="synth-label">Priorité</div>
+        <div class="synth-badge" id="synthPriorityBadge">—</div>
+        <div class="synth-main" id="synthPriorityMain">—</div>
+        <div class="synth-text" id="synthPriorityText">—</div>
+      </div>
     </div>
   </div>
-</div>
 
-        <div class="synth-grid">
-          <div class="synth-card">
-            <div class="synth-label">Respiration</div>
-            <div class="synth-badge" id="synthBreathBadge">—</div>
-            <div class="synth-main" id="synthBreathMain">—</div>
-            <div class="synth-text" id="synthBreathText">—</div>
-          </div>
-
-          <div class="synth-card">
-            <div class="synth-label">Mois</div>
-            <div class="synth-badge" id="synthMonthBadge">—</div>
-            <div class="synth-main" id="synthMonthMain">—</div>
-            <div class="synth-text" id="synthMonthText">—</div>
-          </div>
-
-          <div class="synth-card">
-            <div class="synth-label">Projet</div>
-            <div class="synth-badge" id="synthProjectBadge">—</div>
-            <div class="synth-main" id="synthProjectMain">—</div>
-            <div class="synth-text" id="synthProjectText">—</div>
-          </div>
-
-          <div class="synth-card">
-            <div class="synth-label">Priorité</div>
-            <div class="synth-badge" id="synthPriorityBadge">—</div>
-            <div class="synth-main" id="synthPriorityMain">—</div>
-            <div class="synth-text" id="synthPriorityText">—</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="decision-box">
-        <div class="decision-title">Lecture décisionnelle</div>
-        <div class="decision-main" id="decisionMain">—</div>
-        <div class="decision-sub" id="decisionSub">Chargement de la lecture stratégique…</div>
-        <div class="decision-chip" id="decisionChip">Analyse…</div>
-      </div>
-
-      <div class="hero-cake">
-        <div class="cake">
-          <div class="cake-title">🏦 Crédits restants</div>
-          <div class="cake-value violet" id="cakeCreditsLeft">—</div>
-          <div class="cake-sub">Montant restant à rembourser sur les crédits en cours.</div>
-        </div>
-
-        <div class="cake">
-          <div class="cake-title">📆 Pression crédit mensuelle</div>
-          <div class="cake-value violet" id="cakeCreditsMonthly">—</div>
-          <div class="cake-sub">Somme mensuelle à sortir pour tenir les échéances.</div>
-        </div>
-
-        <div class="cake">
-          <div class="cake-title">🧾 Dettes proches</div>
-          <div class="cake-value danger" id="cakeDebtsSoon">—</div>
-          <div class="cake-sub">Dettes à pression rapide selon l’échéance déclarée.</div>
-        </div>
-
-        <div class="cake">
-          <div class="cake-title">🧮 Dettes totales</div>
-          <div class="cake-value danger" id="cakeDebtsTotal">—</div>
-          <div class="cake-sub">Vue globale de toutes les dettes déclarées dans le JSON.</div>
-        </div>
-
-        <div class="cake">
-          <div class="cake-title">🚀 Projets à venir</div>
-          <div class="cake-value gold" id="cakeProjectsTotal">—</div>
-          <div class="cake-sub">Montant cible des projets visibles dans le JSON.</div>
-        </div>
-      </div>
-
-      <div class="kpi-strip">
-        <div class="kpi">
-          <div class="kpi-label">Reste après engagements</div>
-          <div class="kpi-val" id="kpiAfterCommitments">—</div>
-          <div class="kpi-sub">Disponible pro − crédits mensuels − dettes proches</div>
-        </div>
-
-        <div class="kpi">
-          <div class="kpi-label">Réserve de sécurité</div>
-          <div class="kpi-val blue" id="kpiSafetyReserve">—</div>
-          <div class="kpi-sub">Seuil terrain défini dans le JSON</div>
-        </div>
-
-        <div class="kpi">
-          <div class="kpi-label">Charges fixes prévues</div>
-          <div class="kpi-val danger" id="kpiFixedCosts">—</div>
-          <div class="kpi-sub">Pression mensuelle structurelle hors flux spontanés</div>
-        </div>
-      </div>
-
-      <div class="scard">
-        <div class="scard-head">
-          <div class="scard-title orange">🛟 Plan de sauvetage du mois</div>
-        </div>
-        <div class="rescue-list" id="rescuePlanList">
-          <div class="loader"><div class="spinner"></div> Lecture du plan…</div>
-        </div>
-      </div>
-
-      <div class="scard">
-        <div class="scard-head">
-          <div class="scard-title gold">🚦 Statut projet</div>
-        </div>
-        <div class="status-grid">
-          <div class="status-card">
-            <div class="status-top">
-              <div class="status-label">Statut global</div>
-              <div class="status-badge" id="projectStatusBadge">Analyse…</div>
-            </div>
-            <div class="status-main" id="projectStatusMain">—</div>
-            <div class="status-sub" id="projectStatusSub">Chargement…</div>
-          </div>
-
-          <div class="status-card">
-            <div class="status-top">
-              <div class="status-label">Projet prioritaire</div>
-              <div class="status-badge" id="projectTopBadge">—</div>
-            </div>
-            <div class="status-main" id="projectTopMain">—</div>
-            <div class="status-sub" id="projectTopSub">Chargement…</div>
-          </div>
-
-          <div class="status-card">
-            <div class="status-top">
-              <div class="status-label">Capacité actuelle</div>
-              <div class="status-badge ok" id="projectCapacityBadge">Lecture</div>
-            </div>
-            <div class="status-main" id="projectCapacityMain">—</div>
-            <div class="status-sub" id="projectCapacitySub">Reste manœuvrable après engagements.</div>
-          </div>
-
-          <div class="status-card">
-            <div class="status-top">
-              <div class="status-label">Écart à couvrir</div>
-              <div class="status-badge" id="projectGapBadge">—</div>
-            </div>
-            <div class="status-main" id="projectGapMain">—</div>
-            <div class="status-sub" id="projectGapSub">Montant manquant ou marge disponible sur le projet prioritaire.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="scard">
-        <div class="scard-head">
-          <div class="scard-title violet">🏦 Crédits en cours</div>
-        </div>
-        <div class="list" id="creditsList">
-          <div class="loader"><div class="spinner"></div> Chargement…</div>
-        </div>
-      </div>
-
-      <div class="scard">
-        <div class="scard-head">
-          <div class="scard-title red">🧾 Dettes à suivre</div>
-        </div>
-        <div class="list" id="debtsList">
-          <div class="loader"><div class="spinner"></div> Chargement…</div>
-        </div>
-      </div>
-
-      <div class="scard">
-        <div class="scard-head">
-          <div class="scard-title gold">🚀 Projets à venir</div>
-        </div>
-        <div class="list" id="projectsList">
-          <div class="loader"><div class="spinner"></div> Chargement…</div>
-        </div>
-      </div>
-<div class="scard">
-  <div class="scard-head">
-    <div class="scard-title gold">🎯 Redressement terrain</div>
-  </div>
-
-  <div class="status-grid">
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Objectif 7 jours</div>
-        <div class="status-badge bad" id="target7Badge">Calcul…</div>
-      </div>
-      <div class="status-main" id="target7Main">—</div>
-      <div class="status-sub" id="target7Sub">Montant à ramener vite pour calmer l’urgence.</div>
+  <div class="scard">
+    <div class="scard-head">
+      <div class="scard-title orange">📈 Remontée nécessaire</div>
     </div>
 
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Objectif 30 jours</div>
-        <div class="status-badge orange" id="target30Badge">Calcul…</div>
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Pour revenir à 0</div>
+          <div class="status-badge bad" id="recoveryZeroBadge">Calcul…</div>
+        </div>
+        <div class="status-main" id="recoveryZeroMain">—</div>
+        <div class="status-sub" id="recoveryZeroSub">Montant à retrouver pour que le mois ne soit plus négatif après engagements.</div>
       </div>
-      <div class="status-main" id="target30Main">—</div>
-      <div class="status-sub" id="target30Sub">Montant à retrouver pour sortir de la zone rouge du mois.</div>
-    </div>
 
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Lecture</div>
-        <div class="status-badge" id="targetReadBadge">Analyse…</div>
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Pour retrouver la réserve</div>
+          <div class="status-badge orange" id="recoveryReserveBadge">Calcul…</div>
+        </div>
+        <div class="status-main" id="recoveryReserveMain">—</div>
+        <div class="status-sub" id="recoveryReserveSub">Montant à retrouver pour repasser au-dessus de la réserve de sécurité.</div>
       </div>
-      <div class="status-main" id="targetReadMain">—</div>
-      <div class="status-sub" id="targetReadSub">Lecture courte du plan de redressement.</div>
-    </div>
 
-    <div class="status-card">
-      <div class="status-top">
-        <div class="status-label">Cap opérationnel</div>
-        <div class="status-badge" id="targetCapBadge">Cap…</div>
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Lecture terrain</div>
+          <div class="status-badge" id="recoveryReadBadge">Analyse…</div>
+        </div>
+        <div class="status-main" id="recoveryReadMain">—</div>
+        <div class="status-sub" id="recoveryReadSub">Lecture simple de l’effort à fournir.</div>
       </div>
-      <div class="status-main" id="targetCapMain">—</div>
-      <div class="status-sub" id="targetCapSub">Rythme conseillé pour piloter sans se mentir.</div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Cap à tenir</div>
+          <div class="status-badge" id="recoveryCapBadge">Cap…</div>
+        </div>
+        <div class="status-main" id="recoveryCapMain">—</div>
+        <div class="status-sub" id="recoveryCapSub">Rythme conseillé avant de relancer un projet.</div>
+      </div>
     </div>
   </div>
-</div>
-      
-    </section>
+
+  <div class="scard">
+    <div class="scard-head">
+      <div class="scard-title gold">🎯 Redressement terrain</div>
+    </div>
+
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Objectif 7 jours</div>
+          <div class="status-badge bad" id="target7Badge">Calcul…</div>
+        </div>
+        <div class="status-main" id="target7Main">—</div>
+        <div class="status-sub" id="target7Sub">Montant à ramener vite pour calmer l’urgence.</div>
+      </div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Objectif 30 jours</div>
+          <div class="status-badge orange" id="target30Badge">Calcul…</div>
+        </div>
+        <div class="status-main" id="target30Main">—</div>
+        <div class="status-sub" id="target30Sub">Montant à retrouver pour sortir de la zone rouge du mois.</div>
+      </div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Lecture</div>
+          <div class="status-badge" id="targetReadBadge">Analyse…</div>
+        </div>
+        <div class="status-main" id="targetReadMain">—</div>
+        <div class="status-sub" id="targetReadSub">Lecture courte du plan de redressement.</div>
+      </div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Cap opérationnel</div>
+          <div class="status-badge" id="targetCapBadge">Cap…</div>
+        </div>
+        <div class="status-main" id="targetCapMain">—</div>
+        <div class="status-sub" id="targetCapSub">Rythme conseillé pour piloter sans se mentir.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="decision-box">
+    <div class="decision-title">Lecture décisionnelle</div>
+    <div class="decision-main" id="decisionMain">—</div>
+    <div class="decision-sub" id="decisionSub">Chargement de la lecture stratégique…</div>
+    <div class="decision-chip" id="decisionChip">Analyse…</div>
+  </div>
+
+  <div class="hero-cake">
+    <div class="cake">
+      <div class="cake-title">🏦 Crédits restants</div>
+      <div class="cake-value violet" id="cakeCreditsLeft">—</div>
+      <div class="cake-sub">Montant restant à rembourser sur les crédits en cours.</div>
+    </div>
+
+    <div class="cake">
+      <div class="cake-title">📆 Pression crédit mensuelle</div>
+      <div class="cake-value violet" id="cakeCreditsMonthly">—</div>
+      <div class="cake-sub">Somme mensuelle à sortir pour tenir les échéances.</div>
+    </div>
+
+    <div class="cake">
+      <div class="cake-title">🧾 Dettes proches</div>
+      <div class="cake-value danger" id="cakeDebtsSoon">—</div>
+      <div class="cake-sub">Dettes à pression rapide selon l’échéance déclarée.</div>
+    </div>
+
+    <div class="cake">
+      <div class="cake-title">🧮 Dettes totales</div>
+      <div class="cake-value danger" id="cakeDebtsTotal">—</div>
+      <div class="cake-sub">Vue globale de toutes les dettes déclarées dans le JSON.</div>
+    </div>
+
+    <div class="cake">
+      <div class="cake-title">🚀 Projets à venir</div>
+      <div class="cake-value gold" id="cakeProjectsTotal">—</div>
+      <div class="cake-sub">Montant cible des projets visibles dans le JSON.</div>
+    </div>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-label">Reste après engagements</div>
+      <div class="kpi-val" id="kpiAfterCommitments">—</div>
+      <div class="kpi-sub">Disponible pro − crédits mensuels − dettes proches</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-label">Réserve de sécurité</div>
+      <div class="kpi-val blue" id="kpiSafetyReserve">—</div>
+      <div class="kpi-sub">Seuil terrain défini dans le JSON</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-label">Charges fixes prévues</div>
+      <div class="kpi-val danger" id="kpiFixedCosts">—</div>
+      <div class="kpi-sub">Pression mensuelle structurelle hors flux spontanés</div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-head">
+      <div class="scard-title orange">🛟 Plan de sauvetage du mois</div>
+    </div>
+    <div class="rescue-list" id="rescuePlanList">
+      <div class="loader"><div class="spinner"></div> Lecture du plan…</div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-head">
+      <div class="scard-title gold">🚦 Statut projet</div>
+    </div>
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Statut global</div>
+          <div class="status-badge" id="projectStatusBadge">Analyse…</div>
+        </div>
+        <div class="status-main" id="projectStatusMain">—</div>
+        <div class="status-sub" id="projectStatusSub">Chargement…</div>
+      </div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Projet prioritaire</div>
+          <div class="status-badge" id="projectTopBadge">—</div>
+        </div>
+        <div class="status-main" id="projectTopMain">—</div>
+        <div class="status-sub" id="projectTopSub">Chargement…</div>
+      </div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Capacité actuelle</div>
+          <div class="status-badge ok" id="projectCapacityBadge">Lecture</div>
+        </div>
+        <div class="status-main" id="projectCapacityMain">—</div>
+        <div class="status-sub" id="projectCapacitySub">Reste manœuvrable après engagements.</div>
+      </div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div class="status-label">Écart à couvrir</div>
+          <div class="status-badge" id="projectGapBadge">—</div>
+        </div>
+        <div class="status-main" id="projectGapMain">—</div>
+        <div class="status-sub" id="projectGapSub">Montant manquant ou marge disponible sur le projet prioritaire.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-head">
+      <div class="scard-title violet">🏦 Crédits en cours</div>
+    </div>
+    <div class="list" id="creditsList">
+      <div class="loader"><div class="spinner"></div> Chargement…</div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-head">
+      <div class="scard-title red">🧾 Dettes à suivre</div>
+    </div>
+    <div class="list" id="debtsList">
+      <div class="loader"><div class="spinner"></div> Chargement…</div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-head">
+      <div class="scard-title gold">🚀 Projets à venir</div>
+    </div>
+    <div class="list" id="projectsList">
+      <div class="loader"><div class="spinner"></div> Chargement…</div>
+    </div>
+  </div>
+</section>
   </main>
 
   <div id="toast"></div>
