@@ -1,0 +1,51 @@
+{
+  "currency": "XOF",
+  "safety_reserve_xof": 150000,
+  "monthly_fixed_costs_xof": 85000,
+  "credits": [
+    {
+      "label": "Moto livraison",
+      "amount_left_xof": 240000,
+      "monthly_payment_xof": 40000,
+      "priority": 1,
+      "active": true
+    }
+  ],
+  "debts": [
+    {
+      "label": "Fournisseur boissons",
+      "amount_xof": 75000,
+      "due_in_days": 7,
+      "priority": 1,
+      "active": true
+    },
+    {
+      "label": "Petit matériel boutique",
+      "amount_xof": 25000,
+      "due_in_days": 21,
+      "priority": 2,
+      "active": true
+    }
+  ],
+  "projects": [
+    {
+      "label": "Acheter congélateur",
+      "target_xof": 180000,
+      "deadline_days": 45,
+      "priority": 1,
+      "active": true
+    },
+    {
+      "label": "Refaire enseigne",
+      "target_xof": 90000,
+      "deadline_days": 30,
+      "priority": 2,
+      "active": true
+    }
+  ],
+  "rules": {
+    "danger_debt_ratio_pct": 35,
+    "minimum_cash_after_commitments_xof": 50000,
+    "recommended_savings_pct": 15
+  }
+}
