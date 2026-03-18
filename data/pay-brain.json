@@ -8,7 +8,8 @@
       "amount_left_xof": 240000,
       "monthly_payment_xof": 40000,
       "priority": 1,
-      "active": true
+      "active": true,
+      "notes": "Crédit principal à tenir sans retard"
     }
   ],
   "debts": [
@@ -17,14 +18,16 @@
       "amount_xof": 75000,
       "due_in_days": 7,
       "priority": 1,
-      "active": true
+      "active": true,
+      "notes": "Dette courte à solder vite"
     },
     {
       "label": "Petit matériel boutique",
       "amount_xof": 25000,
       "due_in_days": 21,
       "priority": 2,
-      "active": true
+      "active": true,
+      "notes": "Peut attendre un peu mais reste dans le mois"
     }
   ],
   "projects": [
@@ -33,14 +36,16 @@
       "target_xof": 180000,
       "deadline_days": 45,
       "priority": 1,
-      "active": true
+      "active": true,
+      "notes": "Projet utile mais à lancer seulement si la caisse respire"
     },
     {
       "label": "Refaire enseigne",
       "target_xof": 90000,
       "deadline_days": 30,
       "priority": 2,
-      "active": true
+      "active": true,
+      "notes": "Projet image, après les urgences"
     }
   ],
   "rules": {
