@@ -10,6 +10,8 @@
     content="Moule vierge du cerveau PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale par slug et export JSON."
   />
 
+  <script src="./session.js"></script>
+
   <style>
     :root{
       --bg:#04110d;
@@ -487,9 +489,9 @@
       </div>
 
       <nav class="nav">
-        <a class="pill" href="./index.html">← Accueil</a>
-        <a class="pill" href="./cockpit.html">📊 Cockpit</a>
-        <a class="pill" href="./admin.html">➕ Mouvements</a>
+        <a class="pill" id="navHomeLink" href="./index.html">← Accueil</a>
+        <a class="pill" id="navCockpitLink" href="./cockpit.html">📊 Cockpit</a>
+        <a class="pill" id="navAdminLink" href="./admin.html">➕ Mouvements</a>
         <button class="pill primary" id="btnSaveTop" type="button">💾 Sauvegarder</button>
       </nav>
     </div>
@@ -732,8 +734,8 @@
             <input class="file-input" id="fileImport" type="file" accept="application/json,.json" />
 
             <div class="status warn" style="margin-top:12px">
-              Le navigateur garde le brouillon dans le localStorage du slug courant.  
-              Pour la prod, exporte ensuite le fichier en <strong>pay-brain.json</strong>.
+              Le navigateur garde le brouillon dans le localStorage du slug courant.
+              Le cockpit lit d’abord la clé officielle par slug, puis garde la compatibilité avec l’ancien brouillon.
             </div>
           </div>
         </article>
@@ -811,16 +813,136 @@
   </main>
 
   <script>
+    function normalizeSlug(v){
+      return String(v || "").trim().toLowerCase();
+    }
+
+    function normalizePhone(v){
+      return String(v || "").replace(/[^\d]/g, "");
+    }
+
     function getUrlParams(){
       const u = new URL(window.location.href);
       return {
-        slug: u.searchParams.get("slug") || "",
-        phone: u.searchParams.get("phone") || ""
+        slug: normalizeSlug(u.searchParams.get("slug") || ""),
+        phone: normalizePhone(u.searchParams.get("phone") || "")
       };
     }
 
-    const URL_CTX = getUrlParams();
-    const LS_KEY = "digiy_pay_brain_draft_" + (URL_CTX.slug || "default");
+    function safeParse(raw){
+      try{ return JSON.parse(raw); }catch(_){ return null; }
+    }
+
+    function deepClone(obj){
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function num(v){
+      const n = Number(v || 0);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function money(n){
+      return Math.round(Number(n || 0)).toLocaleString("fr-FR") + " F CFA";
+    }
+
+    function esc(v){
+      return String(v == null ? "" : v)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function buildCtxHref(page, slug, phone){
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+      const qs = [];
+      if(s) qs.push("slug=" + encodeURIComponent(s));
+      if(p) qs.push("phone=" + encodeURIComponent(p));
+      return qs.length ? `${page}?${qs.join("&")}` : page;
+    }
+
+    function resolveContext(){
+      const urlCtx = getUrlParams();
+      let slug = urlCtx.slug;
+      let phone = urlCtx.phone;
+      let source = slug ? "url" : "none";
+
+      const SESSION = window.DIGIY_SESSION || null;
+
+      try{
+        if(SESSION && typeof SESSION.fromUrl === "function"){
+          const fromUrl = SESSION.fromUrl();
+          if(fromUrl && fromUrl.slug){
+            if(!slug) slug = normalizeSlug(fromUrl.slug);
+            if(!phone) phone = normalizePhone(fromUrl.phone);
+            if(source === "none" && slug) source = "session-url";
+          }
+        }
+      }catch(_){}
+
+      try{
+        if((!slug || !phone) && SESSION && typeof SESSION.get === "function"){
+          const sess = SESSION.get();
+          if(sess){
+            if(!slug) slug = normalizeSlug(sess.slug);
+            if(!phone) phone = normalizePhone(sess.phone);
+            if(source === "none" && slug) source = "session";
+          }
+        }
+      }catch(_){}
+
+      if(SESSION && typeof SESSION.save === "function" && slug){
+        try{ SESSION.save(slug, phone); }catch(_){}
+      }
+
+      return {
+        slug: slug || "default",
+        phone: phone || "",
+        source
+      };
+    }
+
+    const CTX = resolveContext();
+
+    function getOfficialBrainKey(slug){
+      return "digiy_pay_brain:" + normalizeSlug(slug || "default");
+    }
+
+    function getLegacyBrainKey(slug){
+      return "digiy_pay_brain_draft_" + normalizeSlug(slug || "default");
+    }
+
+    function getPhoneBrainKey(phone){
+      const p = normalizePhone(phone);
+      return p ? "digiy_pay_brain:" + p : "";
+    }
+
+    function getBrainKeysToRead(slug, phone){
+      const keys = [
+        getOfficialBrainKey(slug),
+        getLegacyBrainKey(slug)
+      ];
+
+      const phoneKey = getPhoneBrainKey(phone);
+      if(phoneKey) keys.push(phoneKey);
+
+      return [...new Set(keys.filter(Boolean))];
+    }
+
+    function getBrainKeysToWrite(slug, phone){
+      const keys = [
+        getOfficialBrainKey(slug),
+        getLegacyBrainKey(slug)
+      ];
+
+      const phoneKey = getPhoneBrainKey(phone);
+      if(phoneKey) keys.push(phoneKey);
+
+      return [...new Set(keys.filter(Boolean))];
+    }
 
     const TEMPLATE = {
       currency: "XOF",
@@ -893,68 +1015,6 @@
       }
     };
 
-    let brain = loadDraft();
-
-    function deepClone(obj){
-      return JSON.parse(JSON.stringify(obj));
-    }
-
-    function money(n){
-      return Math.round(Number(n || 0)).toLocaleString("fr-FR") + " F CFA";
-    }
-
-    function safeParse(raw){
-      try{ return JSON.parse(raw); }catch(_){ return null; }
-    }
-
-    function loadDraft(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        if(!raw) return deepClone(TEMPLATE);
-        const parsed = safeParse(raw);
-        if(!parsed || typeof parsed !== "object") return deepClone(TEMPLATE);
-        return normalizeBrain(parsed);
-      }catch(_){
-        return deepClone(TEMPLATE);
-      }
-    }
-
-    function saveDraft(showMessage = true){
-      localStorage.setItem(LS_KEY, JSON.stringify(brain));
-      if(showMessage) setStatus("ok", "Brouillon PAY sauvegardé localement pour ce slug.");
-      updateMeta();
-    }
-
-    function normalizeBrain(data){
-      const base = deepClone(TEMPLATE);
-      const out = Object.assign(base, data || {});
-      out.currency = String(out.currency || "XOF").trim() || "XOF";
-      out.safety_reserve_xof = num(out.safety_reserve_xof);
-      out.monthly_fixed_costs_xof = num(out.monthly_fixed_costs_xof);
-      out.credits = Array.isArray(out.credits) ? out.credits.map(normalizeCredit) : [];
-      out.debts = Array.isArray(out.debts) ? out.debts.map(normalizeDebt) : [];
-      out.projects = Array.isArray(out.projects) ? out.projects.map(normalizeProject) : [];
-      out.rules = Object.assign({}, TEMPLATE.rules, out.rules || {});
-      out.rules.danger_debt_ratio_pct = num(out.rules.danger_debt_ratio_pct);
-      out.rules.minimum_cash_after_commitments_xof = num(out.rules.minimum_cash_after_commitments_xof);
-      out.rules.recommended_savings_pct = num(out.rules.recommended_savings_pct);
-      return out;
-    }
-
-    function num(v){
-      const n = Number(v || 0);
-      return Number.isFinite(n) ? n : 0;
-    }
-
-    function esc(v){
-      return String(v == null ? "" : v)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
     function normalizeCredit(item){
       return {
         label: String(item?.label || "").trim(),
@@ -988,6 +1048,47 @@
       };
     }
 
+    function normalizeBrain(data){
+      const base = deepClone(TEMPLATE);
+      const out = Object.assign(base, data || {});
+      out.currency = String(out.currency || "XOF").trim() || "XOF";
+      out.safety_reserve_xof = num(out.safety_reserve_xof);
+      out.monthly_fixed_costs_xof = num(out.monthly_fixed_costs_xof);
+      out.credits = Array.isArray(out.credits) ? out.credits.map(normalizeCredit) : [];
+      out.debts = Array.isArray(out.debts) ? out.debts.map(normalizeDebt) : [];
+      out.projects = Array.isArray(out.projects) ? out.projects.map(normalizeProject) : [];
+      out.rules = Object.assign({}, TEMPLATE.rules, out.rules || {});
+      out.rules.danger_debt_ratio_pct = num(out.rules.danger_debt_ratio_pct);
+      out.rules.minimum_cash_after_commitments_xof = num(out.rules.minimum_cash_after_commitments_xof);
+      out.rules.recommended_savings_pct = num(out.rules.recommended_savings_pct);
+      return out;
+    }
+
+    function loadDraft(){
+      const keys = getBrainKeysToRead(CTX.slug, CTX.phone);
+
+      for(const key of keys){
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) continue;
+          const parsed = safeParse(raw);
+          if(parsed && typeof parsed === "object"){
+            return normalizeBrain(parsed);
+          }
+        }catch(_){}
+      }
+
+      return deepClone(TEMPLATE);
+    }
+
+    let brain = loadDraft();
+
+    function setContextLinks(){
+      document.getElementById("navHomeLink").href = buildCtxHref("./index.html", CTX.slug, CTX.phone);
+      document.getElementById("navCockpitLink").href = buildCtxHref("./cockpit.html", CTX.slug, CTX.phone);
+      document.getElementById("navAdminLink").href = buildCtxHref("./admin.html", CTX.slug, CTX.phone);
+    }
+
     function setStatus(kind, text){
       const el = document.getElementById("statusBox");
       el.className = "status " + kind;
@@ -1001,8 +1102,36 @@
         brain.projects.length
       ].reduce((a,b)=>a+b,0);
 
+      const official = getOfficialBrainKey(CTX.slug);
+      const ctxParts = [];
+      ctxParts.push("Clé officielle · " + official);
+      if(CTX.slug) ctxParts.push("slug · " + CTX.slug);
+      if(CTX.phone) ctxParts.push("phone · " + CTX.phone);
+
       document.getElementById("brainMeta").textContent =
-        `LocalStorage actif · ${count} élément(s) posés${URL_CTX.slug ? " · " + URL_CTX.slug : ""}${URL_CTX.phone ? " · " + URL_CTX.phone : ""}`;
+        `${ctxParts.join(" · ")} · ${count} élément(s)`;
+    }
+
+    function saveDraft(showMessage = true){
+      const payload = JSON.stringify(normalizeBrain(brain));
+      const keys = getBrainKeysToWrite(CTX.slug, CTX.phone);
+
+      keys.forEach(key => {
+        try{ localStorage.setItem(key, payload); }catch(_){}
+      });
+
+      if(window.DIGIY_SESSION && typeof window.DIGIY_SESSION.save === "function"){
+        try{ window.DIGIY_SESSION.save(CTX.slug, CTX.phone); }catch(_){}
+      }
+
+      if(showMessage){
+        setStatus(
+          "ok",
+          `Brain PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}`
+        );
+      }
+
+      updateMeta();
     }
 
     function bindBaseFields(){
@@ -1353,6 +1482,7 @@
       renderSummary();
       renderPreview();
       updateMeta();
+      setContextLinks();
     }
 
     function downloadJson(filename, obj){
@@ -1425,7 +1555,10 @@
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
-        localStorage.removeItem(LS_KEY);
+        const keys = getBrainKeysToWrite(CTX.slug, CTX.phone);
+        keys.forEach(key => {
+          try{ localStorage.removeItem(key); }catch(_){}
+        });
         brain = deepClone(TEMPLATE);
         renderAll();
         setStatus("warn", "Brouillon local effacé pour ce slug. Moule vierge rechargé.");
@@ -1435,6 +1568,18 @@
     bindBaseFields();
     bindActions();
     renderAll();
+
+    if(CTX.slug === "default"){
+      setStatus(
+        "warn",
+        "Aucun slug explicite détecté. Le brain reste utilisable, mais il sera rangé sous la clé par défaut jusqu’à ce qu’un slug PAY soit présent."
+      );
+    }else{
+      setStatus(
+        "ok",
+        `Slug actif détecté : <strong>${esc(CTX.slug)}</strong>. Le cockpit pourra relire ce brain via la clé officielle.`
+      );
+    }
 
     window.removeItem = removeItem;
     window.toggleItem = toggleItem;
