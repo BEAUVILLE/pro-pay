@@ -41,8 +41,10 @@
       --green2:#16a34a;
       --gold:#facc15;
       --danger:#f87171;
+      --danger2:#ef4444;
       --blue:#60a5fa;
       --violet:#a78bfa;
+      --orange:#fb923c;
       --shadow:0 24px 70px rgba(0,0,0,.45);
       --max:1140px;
       --ff-title:'Playfair Display', Georgia, serif;
@@ -427,7 +429,7 @@
 
     .hero-cake{
       display:grid;
-      grid-template-columns:repeat(4,1fr);
+      grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
       gap:12px;
       margin-bottom:16px;
     }
@@ -469,6 +471,7 @@
     .cake-value.blue{color:var(--blue)}
     .cake-value.danger{color:var(--danger)}
     .cake-value.violet{color:var(--violet)}
+    .cake-value.orange{color:var(--orange)}
 
     .cake-sub{
       margin-top:7px;
@@ -515,6 +518,7 @@
     .kpi-val.gold{color:var(--gold)}
     .kpi-val.blue{color:var(--blue)}
     .kpi-val.violet{color:var(--violet)}
+    .kpi-val.orange{color:var(--orange)}
 
     .kpi-sub{
       font-size:11px;
@@ -550,6 +554,8 @@
     .scard-title.blue{color:#93c5fd}
     .scard-title.gold{color:#fde68a}
     .scard-title.violet{color:#ddd6fe}
+    .scard-title.orange{color:#fdba74}
+    .scard-title.red{color:#fecaca}
 
     .btn-mini{
       display:inline-flex;
@@ -607,6 +613,7 @@
     .row-ico.blue{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2)}
     .row-ico.red{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2)}
     .row-ico.violet{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.2)}
+    .row-ico.orange{background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.2)}
 
     .row-body{flex:1;min-width:0}
 
@@ -640,6 +647,7 @@
     .row-amount.blue{color:var(--blue)}
     .row-amount.danger{color:var(--danger)}
     .row-amount.violet{color:var(--violet)}
+    .row-amount.orange{color:var(--orange)}
 
     .info-grid{
       display:grid;
@@ -802,6 +810,141 @@
       background:rgba(248,113,113,.09);
     }
 
+    .decision-chip.orange{
+      color:#fed7aa;
+      border-color:rgba(251,146,60,.26);
+      background:rgba(251,146,60,.09);
+    }
+
+    .status-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      padding:16px;
+    }
+
+    .status-card{
+      padding:16px;
+      border-radius:20px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:6px;
+    }
+
+    .status-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .status-label{
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+    }
+
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .status-badge.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.26);
+      background:rgba(34,197,94,.09);
+    }
+
+    .status-badge.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.24);
+      background:rgba(250,204,21,.08);
+    }
+
+    .status-badge.bad{
+      color:#fecaca;
+      border-color:rgba(248,113,113,.26);
+      background:rgba(248,113,113,.09);
+    }
+
+    .status-badge.orange{
+      color:#fed7aa;
+      border-color:rgba(251,146,60,.26);
+      background:rgba(251,146,60,.09);
+    }
+
+    .status-main{
+      font-size:18px;
+      font-weight:900;
+      color:#fff8dc;
+      line-height:1.2;
+    }
+
+    .status-sub{
+      font-size:12px;
+      line-height:1.5;
+      font-weight:700;
+      color:var(--muted);
+    }
+
+    .rescue-list{
+      padding:8px 0;
+    }
+
+    .rescue-item{
+      display:flex;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      align-items:flex-start;
+    }
+
+    .rescue-item:last-child{border-bottom:none}
+
+    .rescue-num{
+      width:32px;height:32px;
+      border-radius:12px;
+      flex-shrink:0;
+      display:grid;
+      place-items:center;
+      font-size:13px;
+      font-weight:900;
+      color:#04110d;
+      background:linear-gradient(135deg,var(--gold),#fde68a);
+      box-shadow:var(--shadow);
+    }
+
+    .rescue-body{
+      display:grid;
+      gap:4px;
+      min-width:0;
+    }
+
+    .rescue-title{
+      font-size:13px;
+      font-weight:900;
+      color:#fff;
+      line-height:1.35;
+    }
+
+    .rescue-text{
+      font-size:12px;
+      line-height:1.55;
+      color:var(--muted);
+      font-weight:800;
+    }
+
     #toast{
       position:fixed;
       bottom:24px;
@@ -832,13 +975,13 @@
     @keyframes spin{to{transform:rotate(360deg)}}
 
     @media (max-width:1100px){
-      .hero-cake{grid-template-columns:1fr 1fr}
       .hero-grid{grid-template-columns:1fr}
     }
 
     @media (max-width:980px){
       .kpi-strip{grid-template-columns:1fr}
       .info-grid{grid-template-columns:1fr}
+      .status-grid{grid-template-columns:1fr}
     }
 
     @media (max-width:760px){
@@ -848,7 +991,6 @@
     @media (max-width:700px){
       .topbar-in,.wrap{width:min(var(--max), calc(100% - 16px))}
       .tabs{grid-template-columns:1fr 1fr}
-      .hero-cake{grid-template-columns:1fr}
       .topbar-in{
         align-items:flex-start;
         flex-direction:column;
@@ -868,6 +1010,7 @@
       .hero-title{font-size:26px}
       .tabs{grid-template-columns:1fr}
       .decision-main{font-size:24px}
+      .status-main{font-size:17px}
     }
   </style>
 </head>
@@ -1202,6 +1345,12 @@
         </div>
 
         <div class="cake">
+          <div class="cake-title">🧮 Dettes totales</div>
+          <div class="cake-value danger" id="cakeDebtsTotal">—</div>
+          <div class="cake-sub">Vue globale de toutes les dettes déclarées dans le JSON.</div>
+        </div>
+
+        <div class="cake">
           <div class="cake-title">🚀 Projets à venir</div>
           <div class="cake-value gold" id="cakeProjectsTotal">—</div>
           <div class="cake-sub">Montant cible des projets visibles dans le JSON.</div>
@@ -1230,6 +1379,58 @@
 
       <div class="scard">
         <div class="scard-head">
+          <div class="scard-title orange">🛟 Plan de sauvetage du mois</div>
+        </div>
+        <div class="rescue-list" id="rescuePlanList">
+          <div class="loader"><div class="spinner"></div> Lecture du plan…</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title gold">🚦 Statut projet</div>
+        </div>
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-top">
+              <div class="status-label">Statut global</div>
+              <div class="status-badge" id="projectStatusBadge">Analyse…</div>
+            </div>
+            <div class="status-main" id="projectStatusMain">—</div>
+            <div class="status-sub" id="projectStatusSub">Chargement…</div>
+          </div>
+
+          <div class="status-card">
+            <div class="status-top">
+              <div class="status-label">Projet prioritaire</div>
+              <div class="status-badge" id="projectTopBadge">—</div>
+            </div>
+            <div class="status-main" id="projectTopMain">—</div>
+            <div class="status-sub" id="projectTopSub">Chargement…</div>
+          </div>
+
+          <div class="status-card">
+            <div class="status-top">
+              <div class="status-label">Capacité actuelle</div>
+              <div class="status-badge ok" id="projectCapacityBadge">Lecture</div>
+            </div>
+            <div class="status-main" id="projectCapacityMain">—</div>
+            <div class="status-sub" id="projectCapacitySub">Reste manœuvrable après engagements.</div>
+          </div>
+
+          <div class="status-card">
+            <div class="status-top">
+              <div class="status-label">Écart à couvrir</div>
+              <div class="status-badge" id="projectGapBadge">—</div>
+            </div>
+            <div class="status-main" id="projectGapMain">—</div>
+            <div class="status-sub" id="projectGapSub">Montant manquant ou marge disponible sur le projet prioritaire.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
           <div class="scard-title violet">🏦 Crédits en cours</div>
         </div>
         <div class="list" id="creditsList">
@@ -1239,7 +1440,7 @@
 
       <div class="scard">
         <div class="scard-head">
-          <div class="scard-title danger">🧾 Dettes à suivre</div>
+          <div class="scard-title red">🧾 Dettes à suivre</div>
         </div>
         <div class="list" id="debtsList">
           <div class="loader"><div class="spinner"></div> Chargement…</div>
@@ -1343,7 +1544,7 @@
       const safe = esc(message || "Aucune donnée chargée.");
       [
         "modulesList","channelsList","channelsBars","resultList",
-        "creditsList","debtsList","projectsList"
+        "creditsList","debtsList","projectsList","rescuePlanList"
       ].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.innerHTML = `<div class="empty">${safe}</div>`;
@@ -1662,6 +1863,190 @@
       return { chipClass, chipText, main, sub };
     }
 
+    function computeProjectStatus(calc, brain){
+      const topProject = highestPriorityProject(brain);
+      const safetyReserve = Number(calc.safetyReserve || 0);
+      const afterCommitments = Number(calc.afterCommitments || 0);
+
+      if(!topProject){
+        return {
+          badgeClass:"warn",
+          badgeText:"Aucun projet",
+          main:"Aucun projet prioritaire déclaré",
+          sub:"Le cockpit ne voit pas encore de projet dans le JSON. Tu peux piloter d’abord la caisse et déclarer le prochain objectif plus tard.",
+          topBadgeClass:"warn",
+          topBadgeText:"Vide",
+          topMain:"Pas de projet visible",
+          topSub:"Ajoute un projet dans pay-brain.json pour activer cette lecture.",
+          gapBadgeClass:"warn",
+          gapBadgeText:"Sans calcul",
+          gapValue:0,
+          capacityText:money(afterCommitments)
+        };
+      }
+
+      const target = Number(topProject.target_xof || 0);
+      const gap = target - afterCommitments;
+      const safeGap = target + safetyReserve - afterCommitments;
+
+      let badgeClass = "ok";
+      let badgeText = "Vert";
+      let main = "Projet lançable";
+      let sub = `Le projet prioritaire "${topProject.label}" peut être couvert sans étouffer le pro.`;
+
+      if(afterCommitments < 0){
+        badgeClass = "bad";
+        badgeText = "Rouge";
+        main = "Projet à geler";
+        sub = `Le mois est déjà sous pression. Le projet "${topProject.label}" doit attendre pendant que tu protèges la caisse.`;
+      }else if(afterCommitments < safetyReserve){
+        badgeClass = "orange";
+        badgeText = "Orange";
+        main = "Projet à ralentir";
+        sub = `Le pro respire encore trop peu. Avant d’ouvrir "${topProject.label}", il faut d’abord reconstituer la réserve de sécurité.`;
+      }else if(afterCommitments < target){
+        badgeClass = "warn";
+        badgeText = "Jaune";
+        main = "Projet partiellement finançable";
+        sub = `Le projet "${topProject.label}" n’est pas encore complètement absorbé par le reste actuel. Il manque encore une marche.`;
+      }
+
+      return {
+        badgeClass,
+        badgeText,
+        main,
+        sub,
+        topBadgeClass: badgeClass,
+        topBadgeText: priorityLabel(topProject.priority),
+        topMain: topProject.label || "Projet prioritaire",
+        topSub: `Cible : ${money(target)} · Horizon : ${String(topProject.deadline_days ?? "—")} jour(s)${topProject.notes ? " · " + topProject.notes : ""}`,
+        gapBadgeClass: gap <= 0 ? "ok" : (safeGap <= 0 ? "warn" : badgeClass === "bad" ? "bad" : "orange"),
+        gapBadgeText: gap <= 0 ? "Marge dispo" : "Montant manquant",
+        gapValue: gap <= 0 ? Math.abs(gap) : gap,
+        capacityText: money(afterCommitments)
+      };
+    }
+
+    function buildRescuePlan(calc, brain){
+      const plan = [];
+      const rules = brain?.rules || {};
+      const recommendedSavingsPct = Number(rules.recommended_savings_pct || 15);
+      const topProject = highestPriorityProject(brain);
+
+      if(calc.afterCommitments < 0){
+        plan.push({
+          title:"Stopper les nouvelles sorties non urgentes",
+          text:"Le reste après engagements est négatif. Toute dépense non vitale doit attendre la remise à flot."
+        });
+      }
+
+      if(calc.debtsSoon > 0){
+        plan.push({
+          title:"Traiter d’abord les dettes proches",
+          text:`Priorité aux dettes qui tombent vite : ${money(calc.debtsSoon)} à neutraliser pour calmer la pression du mois.`
+        });
+      }
+
+      if(calc.creditsMonthly > 0){
+        plan.push({
+          title:"Sécuriser l’échéance crédit du mois",
+          text:`Préserver au minimum ${money(calc.creditsMonthly)} pour ne pas casser le rythme des remboursements.`
+        });
+      }
+
+      if(calc.monthSavings > 0 && calc.afterCommitments < calc.safetyReserve){
+        plan.push({
+          title:"Protéger l’épargne utile",
+          text:`Ne pas vider l’épargne par panique. Elle reste une couche de survie et de respiration pour le pro.`
+        });
+      }
+
+      if(calc.monthIn > 0){
+        const savingsRatio = Math.round((calc.monthSavings / calc.monthIn) * 100);
+        if(savingsRatio < recommendedSavingsPct){
+          plan.push({
+            title:"Remonter doucement la réserve",
+            text:`L’épargne visible est à ${savingsRatio}% des entrées du mois. L’objectif conseillé reste autour de ${recommendedSavingsPct}%.`
+          });
+        }
+      }
+
+      if(topProject){
+        const target = Number(topProject.target_xof || 0);
+        if(calc.afterCommitments >= target){
+          plan.push({
+            title:"Projet faisable sans casser le pro",
+            text:`Le projet "${topProject.label}" devient finançable avec le reste actuel. Garde quand même la réserve de sécurité visible.`
+          });
+        }else{
+          const gap = Math.max(0, target - calc.afterCommitments);
+          plan.push({
+            title:"Reporter ou fractionner le projet",
+            text:`Le projet "${topProject.label}" n’est pas encore mûr. Il manque environ ${money(gap)} pour l’absorber proprement.`
+          });
+        }
+      }
+
+      if(!plan.length){
+        plan.push({
+          title:"Continuer le pilotage propre",
+          text:"Le cockpit ne voit pas d’alerte majeure ce mois-ci. L’objectif est de tenir la discipline et d’éviter les fuites."
+        });
+      }
+
+      return plan.slice(0, 6);
+    }
+
+    function renderRescuePlan(calc, brain){
+      const el = document.getElementById("rescuePlanList");
+      const steps = buildRescuePlan(calc, brain);
+      if(!steps.length){
+        el.innerHTML = `<div class="empty">Aucun plan généré pour l’instant.</div>`;
+        return;
+      }
+
+      el.innerHTML = steps.map((step, idx) => `
+        <div class="rescue-item">
+          <div class="rescue-num">${idx + 1}</div>
+          <div class="rescue-body">
+            <div class="rescue-title">${esc(step.title)}</div>
+            <div class="rescue-text">${esc(step.text)}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderProjectStatus(calc, brain){
+      const status = computeProjectStatus(calc, brain);
+
+      const badge = document.getElementById("projectStatusBadge");
+      badge.className = "status-badge " + status.badgeClass;
+      badge.textContent = status.badgeText;
+
+      document.getElementById("projectStatusMain").textContent = status.main;
+      document.getElementById("projectStatusSub").textContent = status.sub;
+
+      const topBadge = document.getElementById("projectTopBadge");
+      topBadge.className = "status-badge " + status.topBadgeClass;
+      topBadge.textContent = status.topBadgeText;
+
+      document.getElementById("projectTopMain").textContent = status.topMain;
+      document.getElementById("projectTopSub").textContent = status.topSub;
+
+      document.getElementById("projectCapacityMain").textContent = status.capacityText;
+      document.getElementById("projectCapacitySub").textContent = "C’est la marge estimée après crédits mensuels et dettes proches.";
+
+      const gapBadge = document.getElementById("projectGapBadge");
+      gapBadge.className = "status-badge " + status.gapBadgeClass;
+      gapBadge.textContent = status.gapBadgeText;
+
+      document.getElementById("projectGapMain").textContent = money(status.gapValue);
+      document.getElementById("projectGapSub").textContent =
+        status.gapBadgeText === "Marge dispo"
+          ? "Cette marge reste théorique. Elle doit respecter la réserve de sécurité."
+          : "Montant estimé à trouver avant de lancer le projet proprement.";
+    }
+
     function renderEngagements(calc, brain){
       const credits = normalizeArray(brain?.credits);
       const debts = normalizeArray(brain?.debts);
@@ -1670,10 +2055,13 @@
       renderCredits(credits);
       renderDebts(debts);
       renderProjects(projects);
+      renderRescuePlan(calc, brain);
+      renderProjectStatus(calc, brain);
 
       document.getElementById("cakeCreditsLeft").textContent = money(calc.creditsLeft);
       document.getElementById("cakeCreditsMonthly").textContent = money(calc.creditsMonthly);
       document.getElementById("cakeDebtsSoon").textContent = money(calc.debtsSoon);
+      document.getElementById("cakeDebtsTotal").textContent = money(calc.debtsTotal);
       document.getElementById("cakeProjectsTotal").textContent = money(calc.projectsTotal);
 
       const afterEl = document.getElementById("kpiAfterCommitments");
@@ -1697,9 +2085,33 @@
       renderDebts([]);
       renderProjects([]);
 
+      const rescueEl = document.getElementById("rescuePlanList");
+      if(rescueEl){
+        rescueEl.innerHTML = `<div class="empty">Le plan de sauvetage a besoin du fichier data/pay-brain.json.</div>`;
+      }
+
+      document.getElementById("projectStatusBadge").className = "status-badge warn";
+      document.getElementById("projectStatusBadge").textContent = "JSON manquant";
+      document.getElementById("projectStatusMain").textContent = "Statut projet indisponible";
+      document.getElementById("projectStatusSub").textContent = "La lecture projet dépend du fichier data/pay-brain.json.";
+
+      document.getElementById("projectTopBadge").className = "status-badge warn";
+      document.getElementById("projectTopBadge").textContent = "Aucun calcul";
+      document.getElementById("projectTopMain").textContent = "Projet non lu";
+      document.getElementById("projectTopSub").textContent = "Ajoute le JSON pour faire remonter le projet prioritaire.";
+
+      document.getElementById("projectCapacityMain").textContent = money(calc.disponiblePro);
+      document.getElementById("projectCapacitySub").textContent = "Lecture simple sans couche crédits/dettes/projets.";
+
+      document.getElementById("projectGapBadge").className = "status-badge warn";
+      document.getElementById("projectGapBadge").textContent = "Sans calcul";
+      document.getElementById("projectGapMain").textContent = "—";
+      document.getElementById("projectGapSub").textContent = "Impossible de calculer l’écart sans projet déclaré.";
+
       document.getElementById("cakeCreditsLeft").textContent = money(0);
       document.getElementById("cakeCreditsMonthly").textContent = money(0);
       document.getElementById("cakeDebtsSoon").textContent = money(0);
+      document.getElementById("cakeDebtsTotal").textContent = money(0);
       document.getElementById("cakeProjectsTotal").textContent = money(0);
 
       const afterEl = document.getElementById("kpiAfterCommitments");
@@ -1814,7 +2226,8 @@
         projectsTotal: 0,
         fixedCosts: 0,
         safetyReserve: 0,
-        afterCommitments: disponiblePro
+        afterCommitments: disponiblePro,
+        netPro: monthNet
       };
 
       if(PAY_BRAIN){
