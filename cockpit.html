@@ -1146,6 +1146,7 @@
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
         <a class="pill" href="./pin.html">🔐 PIN</a>
+        <a class="pill" href="./brain-admin.html" id="topBrainLink">🧠 Brain</a>
         <a class="pill primary" href="./admin.html" id="topAdminLink">➕ Ajouter</a>
         <button class="pill" id="btnRefresh" type="button">🔄 Recharger</button>
         <button class="pill" id="btnLogout" type="button">🚪 Quitter</button>
@@ -1206,6 +1207,14 @@
               <div class="left">
                 <div class="k">Ajouter un mouvement</div>
                 <div class="s">Entrée, dépense pro, dépense perso visible ou épargne.</div>
+              </div>
+              <div class="arrow">→</div>
+            </a>
+
+            <a class="hud-link" id="hudBrainLink" href="./brain-admin.html">
+              <div class="left">
+                <div class="k">Piloter le Brain admin</div>
+                <div class="s">Réserve, charges fixes, crédits, dettes, projets et règles par slug.</div>
               </div>
               <div class="arrow">→</div>
             </a>
@@ -1747,13 +1756,14 @@
     );
 
     const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
-    const PAY_BRAIN_URL = "./data/pay-brain.json";
+    const PAY_BRAIN_FALLBACK_URL = "./data/pay-brain.json";
 
     let SLUG = "";
     let PHONE = "";
     let COCKPIT = null;
     let MANUAL_MOVES = [];
     let PAY_BRAIN = null;
+    let PAY_BRAIN_SOURCE = "none";
     let LAST_CALC = null;
 
     function money(n){
@@ -1772,6 +1782,14 @@
 
     function safeJsonParse(raw){
       try{ return JSON.parse(raw); }catch(_){ return null; }
+    }
+
+    function normalizeSlug(v){
+      return String(v || "").trim().toLowerCase();
+    }
+
+    function normalizePhone(v){
+      return String(v || "").replace(/[^\d]/g, "");
     }
 
     function normalizeMovementDate(raw){
@@ -1880,6 +1898,33 @@
       if(level === "CONSOLIDER") return "warn";
       if(level === "ACCELERER") return "ok";
       return "warn";
+    }
+
+    function buildContextHref(page, slug, phone){
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+      const params = [];
+      if(s) params.push("slug=" + encodeURIComponent(s));
+      if(p) params.push("phone=" + encodeURIComponent(p));
+      return params.length ? `${page}?${params.join("&")}` : page;
+    }
+
+    function setContextLinks(slug, phone){
+      const adminHref = buildContextHref("./admin.html", slug, phone);
+      const brainHref = buildContextHref("./brain-admin.html", slug, phone);
+
+      const idsAdmin = ["btnGoAdmin", "topAdminLink", "hudAdminLink"];
+      const idsBrain = ["topBrainLink", "hudBrainLink"];
+
+      idsAdmin.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.href = adminHref;
+      });
+
+      idsBrain.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.href = brainHref;
+      });
     }
 
     function renderModules(items){
@@ -2082,16 +2127,172 @@
       }));
     }
 
-    async function loadPayBrain(){
-      try{
-        const res = await fetch(PAY_BRAIN_URL, { cache: "no-store" });
-        if(!res.ok) throw new Error("JSON non trouvé.");
-        const data = await res.json();
-        PAY_BRAIN = data && typeof data === "object" ? data : null;
-      }catch(err){
-        console.warn("[PAY brain]", err);
-        PAY_BRAIN = null;
+    function isBrainLikeObject(obj){
+      return !!(
+        obj &&
+        typeof obj === "object" &&
+        !Array.isArray(obj) &&
+        (
+          "currency" in obj ||
+          "safety_reserve_xof" in obj ||
+          "monthly_fixed_costs_xof" in obj ||
+          "credits" in obj ||
+          "debts" in obj ||
+          "projects" in obj ||
+          "rules" in obj
+        )
+      );
+    }
+
+    function extractBrainObject(value, slug, phone, depth = 0){
+      if(depth > 6) return null;
+      if(value == null) return null;
+
+      if(typeof value === "string"){
+        const parsed = safeJsonParse(value.trim());
+        return parsed ? extractBrainObject(parsed, slug, phone, depth + 1) : null;
       }
+
+      if(typeof value !== "object" || Array.isArray(value)) return null;
+      if(isBrainLikeObject(value)) return value;
+
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+
+      const directKeys = [slug, s, phone, p].filter(Boolean);
+      for(const key of directKeys){
+        if(Object.prototype.hasOwnProperty.call(value, key)){
+          const found = extractBrainObject(value[key], slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      const nestedKeys = ["brain", "data", "payload", "value", "json", "state", "content"];
+      for(const key of nestedKeys){
+        if(Object.prototype.hasOwnProperty.call(value, key)){
+          const found = extractBrainObject(value[key], slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      for(const [k, v] of Object.entries(value)){
+        const lk = String(k || "").toLowerCase();
+        if((s && lk.includes(s)) || (p && lk.includes(p))){
+          const found = extractBrainObject(v, slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      return null;
+    }
+
+    function getBrainStorageCandidates(slug, phone){
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+      const bases = [
+        "digiy_pay_brain",
+        "digiy-pay-brain",
+        "pay_brain",
+        "pay-brain",
+        "brain_admin",
+        "brain-admin",
+        "digiy_brain",
+        "digiy-brain",
+        "brain"
+      ];
+      const out = [];
+
+      [s, p].filter(Boolean).forEach(id => {
+        bases.forEach(base => {
+          out.push(`${base}:${id}`);
+          out.push(`${base}::${id}`);
+          out.push(`${base}/${id}`);
+          out.push(`${base}-${id}`);
+          out.push(`${base}_${id}`);
+          out.push(`${base}|${id}`);
+        });
+      });
+
+      return [...new Set(out)];
+    }
+
+    function scanLocalStorageForBrain(slug, phone){
+      const out = [];
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+
+      try{
+        for(let i = 0; i < localStorage.length; i += 1){
+          const rawKey = localStorage.key(i);
+          const key = String(rawKey || "");
+          const low = key.toLowerCase();
+
+          const hasBrainWord =
+            low.includes("brain") ||
+            low.includes("pay_brain") ||
+            low.includes("pay-brain") ||
+            low.includes("digiy_pay_brain");
+
+          const hasSlug = s && low.includes(s);
+          const hasPhone = p && low.includes(p);
+
+          if(hasBrainWord && (hasSlug || hasPhone)){
+            out.push(key);
+          }
+        }
+      }catch(_){}
+
+      return [...new Set(out)];
+    }
+
+    function readBrainFromLocalStorage(slug, phone){
+      const keys = [
+        ...getBrainStorageCandidates(slug, phone),
+        ...scanLocalStorageForBrain(slug, phone)
+      ];
+
+      for(const key of [...new Set(keys)]){
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) continue;
+
+          const found = extractBrainObject(raw, slug, phone);
+          if(found){
+            return { key, data: found };
+          }
+        }catch(_){}
+      }
+
+      return null;
+    }
+
+    async function loadPayBrain(){
+      PAY_BRAIN = null;
+      PAY_BRAIN_SOURCE = "none";
+
+      const fromLocal = readBrainFromLocalStorage(SLUG, PHONE);
+      if(fromLocal && fromLocal.data){
+        PAY_BRAIN = fromLocal.data;
+        PAY_BRAIN_SOURCE = "local:" + fromLocal.key;
+        return;
+      }
+
+      try{
+        const res = await fetch(PAY_BRAIN_FALLBACK_URL, { cache: "no-store" });
+        if(!res.ok) throw new Error("JSON non trouvé.");
+        const json = await res.json();
+        const extracted = extractBrainObject(json, SLUG, PHONE);
+        if(extracted){
+          PAY_BRAIN = extracted;
+          PAY_BRAIN_SOURCE = "fallback-file";
+          return;
+        }
+      }catch(err){
+        console.warn("[PAY brain fallback]", err);
+      }
+
+      PAY_BRAIN = null;
+      PAY_BRAIN_SOURCE = "none";
     }
 
     function computePersonalOutVisible(referenceDate = new Date()){
@@ -2320,7 +2521,7 @@
           topBadgeClass:"warn",
           topBadgeText:"Vide",
           topMain:"Pas de projet visible",
-          topSub:"Ajoute un projet dans pay-brain.json pour activer cette lecture.",
+          topSub:"Ajoute un projet dans le Brain pour activer cette lecture.",
           gapBadgeClass:"warn",
           gapBadgeText:"Sans calcul",
           gapValue:0,
@@ -2585,7 +2786,7 @@
           "warn",
           "Vide",
           "Pas de projet prioritaire",
-          "Aucun projet n’est déclaré dans le JSON pour l’instant."
+          "Aucun projet n’est déclaré dans le Brain pour l’instant."
         );
       }else if(calc.afterCommitments < 0){
         setBlock(
@@ -2850,11 +3051,11 @@
 
       const rescueEl = document.getElementById("rescuePlanList");
       if(rescueEl){
-        rescueEl.innerHTML = `<div class="empty">Le plan de protection a besoin du fichier data/pay-brain.json.</div>`;
+        rescueEl.innerHTML = `<div class="empty">Le plan de protection a besoin du Brain admin ou du fichier de secours.</div>`;
       }
 
       document.getElementById("synthTitle").textContent = "Synthèse indisponible";
-      document.getElementById("synthSub").textContent = "Le bandeau patron a besoin du fichier data/pay-brain.json.";
+      document.getElementById("synthSub").textContent = "Le bandeau patron a besoin du Brain admin ou du fichier de secours.";
 
       ["synthBreath","synthMonth","synthProject","synthPriority"].forEach(prefix => {
         const badge = document.getElementById(prefix + "Badge");
@@ -2862,21 +3063,21 @@
         const text = document.getElementById(prefix + "Text");
         if(badge){
           badge.className = "synth-badge warn";
-          badge.textContent = "JSON manquant";
+          badge.textContent = "Brain manquant";
         }
         if(main) main.textContent = "Lecture indisponible";
-        if(text) text.textContent = "Le cockpit a besoin du JSON pour produire cette synthèse.";
+        if(text) text.textContent = "Le cockpit a besoin du Brain pour produire cette synthèse.";
       });
 
       document.getElementById("projectStatusBadge").className = "status-badge warn";
-      document.getElementById("projectStatusBadge").textContent = "JSON manquant";
+      document.getElementById("projectStatusBadge").textContent = "Brain manquant";
       document.getElementById("projectStatusMain").textContent = "Statut projet indisponible";
-      document.getElementById("projectStatusSub").textContent = "La lecture projet dépend du fichier data/pay-brain.json.";
+      document.getElementById("projectStatusSub").textContent = "La lecture projet dépend du Brain.";
 
       document.getElementById("projectTopBadge").className = "status-badge warn";
       document.getElementById("projectTopBadge").textContent = "Aucun calcul";
       document.getElementById("projectTopMain").textContent = "Projet non lu";
-      document.getElementById("projectTopSub").textContent = "Ajoute le JSON pour faire remonter le projet prioritaire.";
+      document.getElementById("projectTopSub").textContent = "Ajoute le Brain pour faire remonter le projet prioritaire.";
 
       document.getElementById("projectCapacityMain").textContent = money(calc.disponiblePro);
       document.getElementById("projectCapacitySub").textContent = "Lecture simple sans couche crédits/dettes/projets.";
@@ -2893,19 +3094,19 @@
       document.getElementById("cakeProjectsTotal").textContent = money(0);
 
       document.getElementById("recoveryZeroBadge").className = "status-badge warn";
-      document.getElementById("recoveryZeroBadge").textContent = "JSON manquant";
+      document.getElementById("recoveryZeroBadge").textContent = "Brain manquant";
       document.getElementById("recoveryZeroMain").textContent = "—";
       document.getElementById("recoveryZeroSub").textContent = "Impossible de calculer la remontée sans la couche engagements.";
 
       document.getElementById("recoveryReserveBadge").className = "status-badge warn";
-      document.getElementById("recoveryReserveBadge").textContent = "JSON manquant";
+      document.getElementById("recoveryReserveBadge").textContent = "Brain manquant";
       document.getElementById("recoveryReserveMain").textContent = "—";
-      document.getElementById("recoveryReserveSub").textContent = "Impossible de lire la réserve cible sans le JSON.";
+      document.getElementById("recoveryReserveSub").textContent = "Impossible de lire la réserve cible sans le Brain.";
 
       document.getElementById("recoveryReadBadge").className = "status-badge warn";
       document.getElementById("recoveryReadBadge").textContent = "Sans calcul";
       document.getElementById("recoveryReadMain").textContent = "Lecture indisponible";
-      document.getElementById("recoveryReadSub").textContent = "Le cockpit a besoin du JSON pour produire cette lecture.";
+      document.getElementById("recoveryReadSub").textContent = "Le cockpit a besoin du Brain pour produire cette lecture.";
 
       document.getElementById("recoveryCapBadge").className = "status-badge warn";
       document.getElementById("recoveryCapBadge").textContent = "Sans cap";
@@ -2920,30 +3121,36 @@
       document.getElementById("kpiFixedCosts").textContent = money(0);
 
       document.getElementById("target7Badge").className = "status-badge warn";
-      document.getElementById("target7Badge").textContent = "JSON manquant";
+      document.getElementById("target7Badge").textContent = "Brain manquant";
       document.getElementById("target7Main").textContent = "—";
       document.getElementById("target7Sub").textContent = "Impossible de calculer l’objectif 7 jours.";
 
       document.getElementById("target30Badge").className = "status-badge warn";
-      document.getElementById("target30Badge").textContent = "JSON manquant";
+      document.getElementById("target30Badge").textContent = "Brain manquant";
       document.getElementById("target30Main").textContent = "—";
       document.getElementById("target30Sub").textContent = "Impossible de calculer l’objectif 30 jours.";
 
       document.getElementById("targetReadBadge").className = "status-badge warn";
       document.getElementById("targetReadBadge").textContent = "Sans lecture";
       document.getElementById("targetReadMain").textContent = "Lecture indisponible";
-      document.getElementById("targetReadSub").textContent = "Le cockpit a besoin du JSON pour produire le plan de redressement.";
+      document.getElementById("targetReadSub").textContent = "Le cockpit a besoin du Brain pour produire le plan de redressement.";
 
       document.getElementById("targetCapBadge").className = "status-badge warn";
       document.getElementById("targetCapBadge").textContent = "Sans cap";
       document.getElementById("targetCapMain").textContent = "Cap indisponible";
       document.getElementById("targetCapSub").textContent = "Le cap opérationnel dépend de la couche engagements.";
 
-      document.getElementById("decisionMain").textContent = "JSON non chargé";
-      document.getElementById("decisionSub").textContent = "Le cockpit fonctionne, mais la couche crédits / dettes / projets n’a pas trouvé le fichier data/pay-brain.json.";
+      document.getElementById("decisionMain").textContent = "Brain non chargé";
+      document.getElementById("decisionSub").textContent = "Le cockpit fonctionne, mais la couche crédits / dettes / projets n’a pas trouvé le Brain admin ni le fichier de secours.";
       const chip = document.getElementById("decisionChip");
-      chip.textContent = "JSON manquant";
+      chip.textContent = "Brain manquant";
       chip.className = "decision-chip warn";
+    }
+
+    function brainSourceText(){
+      if(PAY_BRAIN_SOURCE === "fallback-file") return "Brain de secours chargé.";
+      if(PAY_BRAIN_SOURCE && PAY_BRAIN_SOURCE.startsWith("local:")) return "Brain admin local branché.";
+      return "Brain non trouvé.";
     }
 
     function renderCockpit(data){
@@ -3006,10 +3213,7 @@
       const realSlug = data.slug || SLUG;
       const realPhone = data.phone || PHONE;
 
-      const adminHref = `./admin.html?slug=${encodeURIComponent(realSlug)}${realPhone ? `&phone=${encodeURIComponent(realPhone)}` : ""}`;
-      document.getElementById("btnGoAdmin").href = adminHref;
-      document.getElementById("topAdminLink").href = adminHref;
-      document.getElementById("hudAdminLink").href = adminHref;
+      setContextLinks(realSlug, realPhone);
 
       if(SESSION){
         SESSION.save(realSlug, realPhone);
@@ -3069,9 +3273,9 @@
       LAST_CALC = calc;
 
       if(data.access_ok){
-        setState("ok", "Cockpit PAY connecté", "Lecture réelle chargée depuis le backbone DIGIY PAY.");
+        setState("ok", "Cockpit PAY connecté", `Lecture réelle chargée depuis le backbone DIGIY PAY. ${brainSourceText()}`);
       }else{
-        setState("bad", "Accès PAY non actif", "Le slug est lu mais l’abonnement PAY n’est pas actif ou est expiré.");
+        setState("bad", "Accès PAY non actif", `Le slug est lu mais l’abonnement PAY n’est pas actif ou est expiré. ${brainSourceText()}`);
       }
     }
 
@@ -3099,12 +3303,14 @@
         const session = SESSION.require("./pin.html?redirect=cockpit");
         if(!session) return;
 
-        SLUG = session.slug;
-        PHONE = session.phone;
+        SLUG = normalizeSlug(session.slug);
+        PHONE = normalizePhone(session.phone);
 
-        document.getElementById("topSlug").textContent = SLUG;
-        document.getElementById("badgeSlug").textContent = SLUG;
+        document.getElementById("topSlug").textContent = SLUG || "Session";
+        document.getElementById("badgeSlug").textContent = SLUG || "Session";
         document.getElementById("slugBadge").style.display = "flex";
+
+        setContextLinks(SLUG, PHONE);
 
         await Promise.all([
           loadManualMovements(),
