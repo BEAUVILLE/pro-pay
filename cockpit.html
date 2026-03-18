@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Cockpit réel MON ARGENT by DIGIY : net, disponible, entrées, dépenses pro, épargne, modules et canaux visibles en lecture rapide."
+    content="Cockpit réel MON ARGENT by DIGIY : net, disponible, entrées, dépenses pro, épargne, modules, canaux et engagements visibles en lecture rapide."
   />
 
   <script>
@@ -42,6 +42,7 @@
       --gold:#facc15;
       --danger:#f87171;
       --blue:#60a5fa;
+      --violet:#a78bfa;
       --shadow:0 24px 70px rgba(0,0,0,.45);
       --max:1140px;
       --ff-title:'Playfair Display', Georgia, serif;
@@ -181,15 +182,8 @@
       overflow:hidden;
     }
 
-    .hero-card{
-      padding:22px 20px;
-    }
-
-    .hero-main{
-      display:grid;
-      gap:14px;
-      align-content:start;
-    }
+    .hero-card{padding:22px 20px}
+    .hero-main{display:grid;gap:14px;align-content:start}
 
     .eyebrow{
       display:inline-flex;
@@ -349,30 +343,10 @@
       transform:translateY(-1px);
     }
 
-    .hud-link .left{
-      display:grid;
-      gap:2px;
-    }
-
-    .hud-link .k{
-      font-size:13px;
-      font-weight:900;
-      color:#fff;
-    }
-
-    .hud-link .s{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:700;
-      line-height:1.4;
-    }
-
-    .hud-link .arrow{
-      color:var(--gold);
-      font-size:18px;
-      font-weight:900;
-      flex-shrink:0;
-    }
+    .hud-link .left{display:grid;gap:2px}
+    .hud-link .k{font-size:13px;font-weight:900;color:#fff}
+    .hud-link .s{font-size:12px;color:var(--muted);font-weight:700;line-height:1.4}
+    .hud-link .arrow{color:var(--gold);font-size:18px;font-weight:900;flex-shrink:0}
 
     .state{
       min-height:64px;
@@ -411,7 +385,7 @@
 
     .tabs{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:6px;
       margin-bottom:16px;
       background:rgba(255,255,255,.03);
@@ -437,22 +411,13 @@
     }
 
     .tab .ico{font-size:18px}
-
-    .tab.active{
-      background:var(--card);
-      border-color:var(--line);
-      color:var(--text);
-    }
-
+    .tab.active{background:var(--card);border-color:var(--line);color:var(--text)}
     .tab.active.pro{border-color:rgba(34,197,94,.28);color:#bbf7d0}
     .tab.active.epargne{border-color:rgba(96,165,250,.28);color:#bfdbfe}
     .tab.active.eco{border-color:rgba(250,204,21,.28);color:#fde68a}
+    .tab.active.engagements{border-color:rgba(167,139,250,.28);color:#ddd6fe}
 
-    .panel{
-      display:none;
-      animation:fadeIn .22s ease;
-    }
-
+    .panel{display:none;animation:fadeIn .22s ease}
     .panel.active{display:block}
 
     @keyframes fadeIn{
@@ -503,6 +468,7 @@
     .cake-value.gold{color:var(--gold)}
     .cake-value.blue{color:var(--blue)}
     .cake-value.danger{color:var(--danger)}
+    .cake-value.violet{color:var(--violet)}
 
     .cake-sub{
       margin-top:7px;
@@ -548,6 +514,7 @@
     .kpi-val.danger{color:var(--danger)}
     .kpi-val.gold{color:var(--gold)}
     .kpi-val.blue{color:var(--blue)}
+    .kpi-val.violet{color:var(--violet)}
 
     .kpi-sub{
       font-size:11px;
@@ -557,9 +524,7 @@
       line-height:1.4;
     }
 
-    .scard{
-      margin-bottom:14px;
-    }
+    .scard{margin-bottom:14px}
 
     .scard-head{
       display:flex;
@@ -584,6 +549,7 @@
     .scard-title.green{color:#86efac}
     .scard-title.blue{color:#93c5fd}
     .scard-title.gold{color:#fde68a}
+    .scard-title.violet{color:#ddd6fe}
 
     .btn-mini{
       display:inline-flex;
@@ -640,11 +606,9 @@
     .row-ico.gold{background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.2)}
     .row-ico.blue{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2)}
     .row-ico.red{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2)}
+    .row-ico.violet{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.2)}
 
-    .row-body{
-      flex:1;
-      min-width:0;
-    }
+    .row-body{flex:1;min-width:0}
 
     .row-title{
       font-size:13px;
@@ -675,6 +639,7 @@
     .row-amount.gold{color:var(--gold)}
     .row-amount.blue{color:var(--blue)}
     .row-amount.danger{color:var(--danger)}
+    .row-amount.violet{color:var(--violet)}
 
     .info-grid{
       display:grid;
@@ -772,7 +737,70 @@
       animation:spin .7s linear infinite;
     }
 
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .decision-box{
+      padding:16px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:linear-gradient(160deg, rgba(16,40,32,.94), rgba(8,24,18,.92));
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
+      display:grid;
+      gap:8px;
+    }
+
+    .decision-title{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#ddd6fe;
+    }
+
+    .decision-main{
+      font-family:var(--ff-title);
+      font-size:30px;
+      line-height:1.05;
+      color:#fff8dc;
+    }
+
+    .decision-sub{
+      font-size:13px;
+      font-weight:800;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .decision-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:max-content;
+      max-width:100%;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .decision-chip.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.26);
+      background:rgba(34,197,94,.09);
+    }
+
+    .decision-chip.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.24);
+      background:rgba(250,204,21,.08);
+    }
+
+    .decision-chip.bad{
+      color:#fecaca;
+      border-color:rgba(248,113,113,.26);
+      background:rgba(248,113,113,.09);
+    }
 
     #toast{
       position:fixed;
@@ -801,6 +829,8 @@
       transform:translateX(-50%) translateY(0);
     }
 
+    @keyframes spin{to{transform:rotate(360deg)}}
+
     @media (max-width:1100px){
       .hero-cake{grid-template-columns:1fr 1fr}
       .hero-grid{grid-template-columns:1fr}
@@ -817,7 +847,7 @@
 
     @media (max-width:700px){
       .topbar-in,.wrap{width:min(var(--max), calc(100% - 16px))}
-      .tabs{grid-template-columns:1fr}
+      .tabs{grid-template-columns:1fr 1fr}
       .hero-cake{grid-template-columns:1fr}
       .topbar-in{
         align-items:flex-start;
@@ -836,6 +866,8 @@
       .bar-label{width:76px}
       .bar-val{width:88px}
       .hero-title{font-size:26px}
+      .tabs{grid-template-columns:1fr}
+      .decision-main{font-size:24px}
     }
   </style>
 </head>
@@ -868,7 +900,7 @@
           <h1 class="hero-title">Vois le vrai résultat.<br>Le reste n’est que bruit.</h1>
           <p class="hero-text">
             Ce cockpit te montre d’abord ce qui compte :
-            le net pro, le disponible, l’épargne et les wagons qui poussent vraiment ton activité.
+            le net pro, le disponible, l’épargne, les dettes, les crédits et les projets à venir.
             PAY n’encaisse pas l’argent. Il éclaire la décision.
           </p>
 
@@ -881,14 +913,14 @@
 
             <div class="mini">
               <div class="mini-k">En 1 regard</div>
-              <div class="mini-v">Disponible réel</div>
-              <div class="mini-s">Voir ce qui reste après l’épargne utile.</div>
+              <div class="mini-v">Reste manœuvrable</div>
+              <div class="mini-s">Voir ce qu’il reste après épargne et engagements.</div>
             </div>
 
             <div class="mini">
               <div class="mini-k">En 1 décision</div>
-              <div class="mini-v">Wagon fort</div>
-              <div class="mini-s">Comprendre quel module nourrit vraiment le mouvement.</div>
+              <div class="mini-v">Projet faisable ou non</div>
+              <div class="mini-s">Savoir s’il faut pousser, attendre ou protéger.</div>
             </div>
           </div>
         </div>
@@ -902,7 +934,7 @@
           </div>
 
           <div class="hud-title">Lecture HUD PAY</div>
-          <div class="hud-big">Le net d’abord.<br>La déco après.</div>
+          <div class="hud-big">Le net d’abord.<br>Les engagements juste après.</div>
           <div class="hud-sub">
             Ce cockpit est pensé comme un affichage de décision rapide :
             comprendre vite, agir proprement, protéger le pro.
@@ -917,10 +949,10 @@
               <div class="arrow">→</div>
             </a>
 
-            <a class="hud-link" href="#panel-eco">
+            <a class="hud-link" href="#panel-engagements">
               <div class="left">
-                <div class="k">Voir l’écosystème</div>
-                <div class="s">Modules et canaux qui poussent réellement le flux.</div>
+                <div class="k">Voir les engagements</div>
+                <div class="s">Crédits, dettes, projets et pression réelle du mois.</div>
               </div>
               <div class="arrow">→</div>
             </a>
@@ -943,6 +975,9 @@
       </button>
       <button class="tab eco" data-tab="eco" role="tab" type="button" aria-selected="false">
         <span class="ico">📊</span> ÉCOSYSTÈME
+      </button>
+      <button class="tab engagements" data-tab="engagements" role="tab" type="button" aria-selected="false">
+        <span class="ico">📌</span> ENGAGEMENTS
       </button>
     </nav>
 
@@ -1138,11 +1173,108 @@
         </div>
       </div>
     </section>
+
+    <section class="panel" id="panel-engagements">
+      <div class="decision-box">
+        <div class="decision-title">Lecture décisionnelle</div>
+        <div class="decision-main" id="decisionMain">—</div>
+        <div class="decision-sub" id="decisionSub">Chargement de la lecture stratégique…</div>
+        <div class="decision-chip" id="decisionChip">Analyse…</div>
+      </div>
+
+      <div class="hero-cake">
+        <div class="cake">
+          <div class="cake-title">🏦 Crédits restants</div>
+          <div class="cake-value violet" id="cakeCreditsLeft">—</div>
+          <div class="cake-sub">Montant restant à rembourser sur les crédits en cours.</div>
+        </div>
+
+        <div class="cake">
+          <div class="cake-title">📆 Pression crédit mensuelle</div>
+          <div class="cake-value violet" id="cakeCreditsMonthly">—</div>
+          <div class="cake-sub">Somme mensuelle à sortir pour tenir les échéances.</div>
+        </div>
+
+        <div class="cake">
+          <div class="cake-title">🧾 Dettes proches</div>
+          <div class="cake-value danger" id="cakeDebtsSoon">—</div>
+          <div class="cake-sub">Dettes à pression rapide selon l’échéance déclarée.</div>
+        </div>
+
+        <div class="cake">
+          <div class="cake-title">🚀 Projets à venir</div>
+          <div class="cake-value gold" id="cakeProjectsTotal">—</div>
+          <div class="cake-sub">Montant cible des projets visibles dans le JSON.</div>
+        </div>
+      </div>
+
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-label">Reste après engagements</div>
+          <div class="kpi-val" id="kpiAfterCommitments">—</div>
+          <div class="kpi-sub">Disponible pro − crédits mensuels − dettes proches</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Réserve de sécurité</div>
+          <div class="kpi-val blue" id="kpiSafetyReserve">—</div>
+          <div class="kpi-sub">Seuil terrain défini dans le JSON</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-label">Charges fixes prévues</div>
+          <div class="kpi-val danger" id="kpiFixedCosts">—</div>
+          <div class="kpi-sub">Pression mensuelle structurelle hors flux spontanés</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title violet">🏦 Crédits en cours</div>
+        </div>
+        <div class="list" id="creditsList">
+          <div class="loader"><div class="spinner"></div> Chargement…</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title danger">🧾 Dettes à suivre</div>
+        </div>
+        <div class="list" id="debtsList">
+          <div class="loader"><div class="spinner"></div> Chargement…</div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-title gold">🚀 Projets à venir</div>
+        </div>
+        <div class="list" id="projectsList">
+          <div class="loader"><div class="spinner"></div> Chargement…</div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <div id="toast"></div>
 
   <script>
+    const SESSION = window.DIGIY_SESSION || null;
+
+    if(!window.supabase || !window.supabase.createClient){
+      console.error("[PAY cockpit] Supabase JS introuvable.");
+      const box = document.getElementById("stateBox");
+      if(box){
+        box.className = "state bad";
+        box.innerHTML = `
+          <div class="state-title">Erreur technique</div>
+          <div class="state-txt">La bibliothèque Supabase n’a pas pu être chargée.</div>
+        `;
+      }
+      throw new Error("Supabase JS introuvable.");
+    }
+
     const sb = window.supabase.createClient(
       String(window.DIGIY_SUPABASE_URL || "").trim(),
       String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim(),
@@ -1161,11 +1293,14 @@
     );
 
     const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
+    const PAY_BRAIN_URL = "./data/pay-brain.json";
 
     let SLUG = "";
     let PHONE = "";
     let COCKPIT = null;
     let MANUAL_MOVES = [];
+    let PAY_BRAIN = null;
+    let LAST_CALC = null;
 
     function money(n){
       const v = Number(n || 0);
@@ -1173,11 +1308,12 @@
     }
 
     function esc(v){
-      return String(v == null ? "" : "")
+      return String(v == null ? "" : v)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
     function safeJsonParse(raw){
@@ -1205,15 +1341,29 @@
 
     function setEmptyEverywhere(message){
       const safe = esc(message || "Aucune donnée chargée.");
-      ["modulesList","channelsList","channelsBars","resultList"].forEach(id => {
+      [
+        "modulesList","channelsList","channelsBars","resultList",
+        "creditsList","debtsList","projectsList"
+      ].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.innerHTML = `<div class="empty">${safe}</div>`;
       });
     }
 
+    function normalizeArray(arr){
+      return Array.isArray(arr) ? arr : [];
+    }
+
+    function priorityLabel(v){
+      const n = Number(v || 0);
+      if(n <= 1) return "Priorité haute";
+      if(n === 2) return "Priorité moyenne";
+      return "Priorité normale";
+    }
+
     function renderModules(items){
       const el = document.getElementById("modulesList");
-      const arr = Array.isArray(items) ? items : [];
+      const arr = normalizeArray(items);
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucun module visible pour l’instant.</div>`;
         return;
@@ -1233,7 +1383,7 @@
 
     function renderChannels(items){
       const el = document.getElementById("channelsList");
-      const arr = Array.isArray(items) ? items : [];
+      const arr = normalizeArray(items);
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucun canal visible pour l’instant.</div>`;
         return;
@@ -1253,7 +1403,7 @@
 
     function renderChannelBars(items){
       const el = document.getElementById("channelsBars");
-      const arr = Array.isArray(items) ? items : [];
+      const arr = normalizeArray(items);
       if(!arr.length){
         el.innerHTML = `<div class="empty">Aucune répartition canal pour l’instant.</div>`;
         return;
@@ -1273,20 +1423,6 @@
           </div>
         `;
       }).join("");
-    }
-
-    async function loadManualMovements(){
-      const { data, error } = await sb
-        .from(PAY_MOVEMENTS_TABLE)
-        .select("id,slug,direction,scope,kind,amount_xof,label,note_text,channel,source_module,movement_date,status")
-        .eq("slug", SLUG)
-        .eq("status", "posted")
-        .order("movement_date", { ascending:false })
-        .order("id", { ascending:false })
-        .limit(100);
-
-      if(error) throw error;
-      MANUAL_MOVES = Array.isArray(data) ? data : [];
     }
 
     function renderResultRows(calc){
@@ -1330,25 +1466,254 @@
       `;
     }
 
+    function renderCredits(items){
+      const el = document.getElementById("creditsList");
+      const arr = normalizeArray(items);
+      if(!arr.length){
+        el.innerHTML = `<div class="empty">Aucun crédit déclaré dans le JSON.</div>`;
+        return;
+      }
+
+      el.innerHTML = arr.map(row => `
+        <div class="row">
+          <div class="row-ico violet">🏦</div>
+          <div class="row-body">
+            <div class="row-title">${esc(row.label || "Crédit")}</div>
+            <div class="row-meta">
+              ${esc(priorityLabel(row.priority))} · Mensuel : ${esc(money(row.monthly_payment_xof || 0))}
+              ${row.notes ? " · " + esc(row.notes) : ""}
+            </div>
+          </div>
+          <div class="row-amount violet">${money(row.amount_left_xof || 0)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderDebts(items){
+      const el = document.getElementById("debtsList");
+      const arr = normalizeArray(items);
+      if(!arr.length){
+        el.innerHTML = `<div class="empty">Aucune dette déclarée dans le JSON.</div>`;
+        return;
+      }
+
+      el.innerHTML = arr.map(row => `
+        <div class="row">
+          <div class="row-ico red">🧾</div>
+          <div class="row-body">
+            <div class="row-title">${esc(row.label || "Dette")}</div>
+            <div class="row-meta">
+              ${esc(priorityLabel(row.priority))} · Échéance : ${esc(String(row.due_in_days ?? "—"))} jour(s)
+              ${row.notes ? " · " + esc(row.notes) : ""}
+            </div>
+          </div>
+          <div class="row-amount danger">${money(row.amount_xof || 0)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderProjects(items){
+      const el = document.getElementById("projectsList");
+      const arr = normalizeArray(items);
+      if(!arr.length){
+        el.innerHTML = `<div class="empty">Aucun projet déclaré dans le JSON.</div>`;
+        return;
+      }
+
+      el.innerHTML = arr.map(row => `
+        <div class="row">
+          <div class="row-ico gold">🚀</div>
+          <div class="row-body">
+            <div class="row-title">${esc(row.label || "Projet")}</div>
+            <div class="row-meta">
+              ${esc(priorityLabel(row.priority))} · Horizon : ${esc(String(row.deadline_days ?? "—"))} jour(s)
+              ${row.notes ? " · " + esc(row.notes) : ""}
+            </div>
+          </div>
+          <div class="row-amount gold">${money(row.target_xof || 0)}</div>
+        </div>
+      `).join("");
+    }
+
+    async function loadManualMovements(){
+      const { data, error } = await sb
+        .from(PAY_MOVEMENTS_TABLE)
+        .select("id,slug,direction,scope,kind,amount_xof,label,note_text,channel,source_module,movement_date,status")
+        .eq("slug", SLUG)
+        .eq("status", "posted")
+        .order("movement_date", { ascending:false })
+        .order("id", { ascending:false })
+        .limit(100);
+
+      if(error) throw error;
+      MANUAL_MOVES = Array.isArray(data) ? data : [];
+    }
+
+    async function loadPayBrain(){
+      try{
+        const res = await fetch(PAY_BRAIN_URL, { cache: "no-store" });
+        if(!res.ok) throw new Error("JSON non trouvé.");
+        const data = await res.json();
+        PAY_BRAIN = data && typeof data === "object" ? data : null;
+      }catch(err){
+        console.warn("[PAY brain]", err);
+        PAY_BRAIN = null;
+      }
+    }
+
     function computePersonalOutVisible(){
       return MANUAL_MOVES
         .filter(x => String(x.scope || "") === "personal" && String(x.direction || "") === "out")
         .reduce((sum, x) => sum + Number(x.amount_xof || 0), 0);
     }
 
-    function openEcoPanel(){
-      const ecoBtn = document.querySelector('.tab[data-tab="eco"]');
-      if(ecoBtn){
-        ecoBtn.click();
-        const anchor = document.getElementById("panel-eco-anchor");
+    function openEngagementsPanel(){
+      const btn = document.querySelector('.tab[data-tab="engagements"]');
+      if(btn){
+        btn.click();
+        const anchor = document.getElementById("panel-engagements");
         if(anchor){
           setTimeout(() => {
-            try{
-              anchor.scrollIntoView({ behavior:"smooth", block:"start" });
-            }catch(_){}
+            try{ anchor.scrollIntoView({ behavior:"smooth", block:"start" }); }catch(_){}
           }, 40);
         }
       }
+    }
+
+    function sumCreditsLeft(brain){
+      return normalizeArray(brain?.credits).reduce((s, x) => s + Number(x.amount_left_xof || 0), 0);
+    }
+
+    function sumCreditsMonthly(brain){
+      return normalizeArray(brain?.credits).reduce((s, x) => s + Number(x.monthly_payment_xof || 0), 0);
+    }
+
+    function sumDebtsTotal(brain){
+      return normalizeArray(brain?.debts).reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+    }
+
+    function sumDebtsSoon(brain){
+      return normalizeArray(brain?.debts)
+        .filter(x => Number(x.due_in_days || 999999) <= 30)
+        .reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+    }
+
+    function sumProjectsTotal(brain){
+      return normalizeArray(brain?.projects).reduce((s, x) => s + Number(x.target_xof || 0), 0);
+    }
+
+    function highestPriorityProject(brain){
+      const arr = normalizeArray(brain?.projects).slice().sort((a,b) => {
+        const pa = Number(a.priority || 999);
+        const pb = Number(b.priority || 999);
+        if(pa !== pb) return pa - pb;
+        return Number(a.deadline_days || 999999) - Number(b.deadline_days || 999999);
+      });
+      return arr[0] || null;
+    }
+
+    function computeDecision(calc, brain){
+      const rules = brain?.rules || {};
+      const minCash = Number(rules.minimum_cash_after_commitments_xof || 0);
+      const dangerDebtRatioPct = Number(rules.danger_debt_ratio_pct || 35);
+      const recommendedSavingsPct = Number(rules.recommended_savings_pct || 15);
+
+      const afterCommitments = calc.afterCommitments;
+      const debtRatio = calc.monthIn > 0 ? Math.round((calc.debtsSoon / calc.monthIn) * 100) : 0;
+      const savingsRatio = calc.monthIn > 0 ? Math.round((calc.monthSavings / calc.monthIn) * 100) : 0;
+      const topProject = highestPriorityProject(brain);
+
+      let chipClass = "ok";
+      let chipText = "Situation saine";
+      let main = "Zone de pilotage correcte";
+      let sub = "Le terrain est respirable. Tu peux tenir le mois sans étouffer le pro.";
+
+      if(afterCommitments < 0){
+        chipClass = "bad";
+        chipText = "Tension forte";
+        main = "Les engagements mangent le mois";
+        sub = "Après crédits et dettes proches, le reste devient négatif. Priorité : protéger la caisse, ralentir les projets et solder ce qui presse.";
+      }else if(afterCommitments < minCash){
+        chipClass = "warn";
+        chipText = "Zone fragile";
+        main = "Tu tiens, mais tu ne dois pas jouer";
+        sub = "Le reste après engagements est en dessous du plancher de sécurité. Pas de fantaisie : consolider d’abord.";
+      }else if(debtRatio >= dangerDebtRatioPct){
+        chipClass = "warn";
+        chipText = "Dettes lourdes";
+        main = "La pression dette devient visible";
+        sub = "La part des dettes proches pèse lourd par rapport aux entrées du mois. Mieux vaut nettoyer avant d’ouvrir un nouveau front.";
+      }
+
+      if(chipClass === "ok" && topProject){
+        if(afterCommitments >= Number(topProject.target_xof || 0)){
+          main = "Projet finançable";
+          sub = `Le projet prioritaire "${topProject.label}" peut être absorbé avec le reste manœuvrable actuel, sans casser la réserve déclarée.`;
+        }else{
+          main = "Projet pas encore mûr";
+          sub = `Le projet prioritaire "${topProject.label}" reste au-dessus du reste manœuvrable actuel. Continuer à pousser le net ou renforcer l’épargne.`;
+        }
+      }
+
+      if(savingsRatio < recommendedSavingsPct && calc.monthIn > 0){
+        sub += ` L’épargne visible reste sous l’objectif conseillé de ${recommendedSavingsPct}%.`;
+      }
+
+      return { chipClass, chipText, main, sub };
+    }
+
+    function renderEngagements(calc, brain){
+      const credits = normalizeArray(brain?.credits);
+      const debts = normalizeArray(brain?.debts);
+      const projects = normalizeArray(brain?.projects);
+
+      renderCredits(credits);
+      renderDebts(debts);
+      renderProjects(projects);
+
+      document.getElementById("cakeCreditsLeft").textContent = money(calc.creditsLeft);
+      document.getElementById("cakeCreditsMonthly").textContent = money(calc.creditsMonthly);
+      document.getElementById("cakeDebtsSoon").textContent = money(calc.debtsSoon);
+      document.getElementById("cakeProjectsTotal").textContent = money(calc.projectsTotal);
+
+      const afterEl = document.getElementById("kpiAfterCommitments");
+      afterEl.textContent = money(calc.afterCommitments);
+      afterEl.className = "kpi-val " + (calc.afterCommitments >= 0 ? "gold" : "danger");
+
+      document.getElementById("kpiSafetyReserve").textContent = money(calc.safetyReserve);
+      document.getElementById("kpiFixedCosts").textContent = money(calc.fixedCosts);
+
+      const decision = computeDecision(calc, brain);
+      document.getElementById("decisionMain").textContent = decision.main;
+      document.getElementById("decisionSub").textContent = decision.sub;
+
+      const chip = document.getElementById("decisionChip");
+      chip.textContent = decision.chipText;
+      chip.className = "decision-chip " + decision.chipClass;
+    }
+
+    function renderEngagementsFallback(calc){
+      renderCredits([]);
+      renderDebts([]);
+      renderProjects([]);
+
+      document.getElementById("cakeCreditsLeft").textContent = money(0);
+      document.getElementById("cakeCreditsMonthly").textContent = money(0);
+      document.getElementById("cakeDebtsSoon").textContent = money(0);
+      document.getElementById("cakeProjectsTotal").textContent = money(0);
+
+      const afterEl = document.getElementById("kpiAfterCommitments");
+      afterEl.textContent = money(calc.disponiblePro);
+      afterEl.className = "kpi-val gold";
+
+      document.getElementById("kpiSafetyReserve").textContent = money(0);
+      document.getElementById("kpiFixedCosts").textContent = money(0);
+
+      document.getElementById("decisionMain").textContent = "JSON non chargé";
+      document.getElementById("decisionSub").textContent = "Le cockpit fonctionne, mais la couche crédits / dettes / projets n’a pas trouvé le fichier data/pay-brain.json.";
+      const chip = document.getElementById("decisionChip");
+      chip.textContent = "JSON manquant";
+      chip.className = "decision-chip warn";
     }
 
     function renderCockpit(data){
@@ -1363,8 +1728,8 @@
       const monthSavings = Number(data.month_savings || 0);
       const todaySavings = Number(data.today_savings || 0);
       const totalSavings = Number(data.total_savings || 0);
-      const modules = Array.isArray(data.by_module) ? data.by_module : [];
-      const channels = Array.isArray(data.by_channel) ? data.by_channel : [];
+      const modules = normalizeArray(data.by_module);
+      const channels = normalizeArray(data.by_channel);
       const personalOutVisible = computePersonalOutVisible();
       const disponiblePro = monthNet - monthSavings;
       const resteApresPerso = disponiblePro - personalOutVisible;
@@ -1424,8 +1789,49 @@
       document.getElementById("topAdminLink").href = adminHref;
       document.getElementById("hudAdminLink").href = adminHref;
 
-      window.DIGIY_SESSION.save(realSlug, realPhone);
-      window.DIGIY_SESSION.applyUrl(realSlug, realPhone);
+      if(SESSION){
+        SESSION.save(realSlug, realPhone);
+        SESSION.applyUrl(realSlug, realPhone);
+      }
+
+      const calc = {
+        monthIn,
+        todayIn,
+        monthOut,
+        todayOut,
+        monthNet,
+        todayNet,
+        monthSavings,
+        todaySavings,
+        totalSavings,
+        personalOutVisible,
+        disponiblePro,
+        resteApresPerso,
+        creditsLeft: 0,
+        creditsMonthly: 0,
+        debtsTotal: 0,
+        debtsSoon: 0,
+        projectsTotal: 0,
+        fixedCosts: 0,
+        safetyReserve: 0,
+        afterCommitments: disponiblePro
+      };
+
+      if(PAY_BRAIN){
+        calc.creditsLeft = sumCreditsLeft(PAY_BRAIN);
+        calc.creditsMonthly = sumCreditsMonthly(PAY_BRAIN);
+        calc.debtsTotal = sumDebtsTotal(PAY_BRAIN);
+        calc.debtsSoon = sumDebtsSoon(PAY_BRAIN);
+        calc.projectsTotal = sumProjectsTotal(PAY_BRAIN);
+        calc.fixedCosts = Number(PAY_BRAIN.monthly_fixed_costs_xof || 0);
+        calc.safetyReserve = Number(PAY_BRAIN.safety_reserve_xof || 0);
+        calc.afterCommitments = disponiblePro - calc.creditsMonthly - calc.debtsSoon;
+        renderEngagements(calc, PAY_BRAIN);
+      }else{
+        renderEngagementsFallback(calc);
+      }
+
+      LAST_CALC = calc;
 
       if(data.access_ok){
         setState("ok", "Cockpit PAY connecté", "Lecture réelle chargée depuis le backbone DIGIY PAY.");
@@ -1446,12 +1852,16 @@
 
     async function loadCockpit(){
       try{
-        const fromUrl = window.DIGIY_SESSION.fromUrl();
-        if(fromUrl && fromUrl.slug){
-          window.DIGIY_SESSION.save(fromUrl.slug, fromUrl.phone);
+        if(!SESSION){
+          throw new Error("session.js non chargé ou DIGIY_SESSION indisponible.");
         }
 
-        const session = window.DIGIY_SESSION.require("./pin.html?redirect=cockpit");
+        const fromUrl = SESSION.fromUrl();
+        if(fromUrl && fromUrl.slug){
+          SESSION.save(fromUrl.slug, fromUrl.phone);
+        }
+
+        const session = SESSION.require("./pin.html?redirect=cockpit");
         if(!session) return;
 
         SLUG = session.slug;
@@ -1461,7 +1871,10 @@
         document.getElementById("badgeSlug").textContent = SLUG;
         document.getElementById("slugBadge").style.display = "flex";
 
-        await loadManualMovements();
+        await Promise.all([
+          loadManualMovements(),
+          loadPayBrain()
+        ]);
 
         const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", {
           p_slug: SLUG
@@ -1507,15 +1920,15 @@
       });
 
       document.getElementById("btnLogout").addEventListener("click", () => {
-        window.DIGIY_SESSION.clear();
+        if(SESSION) SESSION.clear();
         window.location.href = "./pin.html";
       });
 
-      const ecoLink = document.querySelector('.hud-link[href="#panel-eco"]');
-      if(ecoLink){
-        ecoLink.addEventListener("click", (e) => {
+      const engagementLink = document.querySelector('.hud-link[href="#panel-engagements"]');
+      if(engagementLink){
+        engagementLink.addEventListener("click", (e) => {
           e.preventDefault();
-          openEcoPanel();
+          openEngagementsPanel();
         });
       }
     }
