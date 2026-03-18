@@ -1,0 +1,60 @@
+{
+  "currency": "XOF",
+  "safety_reserve_xof": 100000,
+  "monthly_fixed_costs_xof": 60000,
+
+  "credits": [
+    {
+      "label": "Moto activité",
+      "amount_left_xof": 180000,
+      "monthly_payment_xof": 30000,
+      "priority": 1,
+      "active": true,
+      "notes": "Exemple de crédit principal à tenir"
+    }
+  ],
+
+  "debts": [
+    {
+      "label": "Fournisseur principal",
+      "amount_xof": 50000,
+      "due_in_days": 7,
+      "priority": 1,
+      "active": true,
+      "notes": "Exemple de dette courte"
+    },
+    {
+      "label": "Petit matériel",
+      "amount_xof": 20000,
+      "due_in_days": 21,
+      "priority": 2,
+      "active": true,
+      "notes": "Exemple de dette du mois"
+    }
+  ],
+
+  "projects": [
+    {
+      "label": "Acheter équipement utile",
+      "target_xof": 120000,
+      "deadline_days": 45,
+      "priority": 1,
+      "active": true,
+      "notes": "Projet utile à lancer seulement si la caisse respire"
+    },
+    {
+      "label": "Amélioration image",
+      "target_xof": 70000,
+      "deadline_days": 30,
+      "priority": 2,
+      "active": true,
+      "notes": "Projet image après urgences et base protégée"
+    }
+  ],
+
+  "rules": {
+    "danger_debt_ratio_pct": 35,
+    "minimum_cash_after_commitments_xof": 50000,
+    "recommended_savings_pct": 15
+  }
+}
