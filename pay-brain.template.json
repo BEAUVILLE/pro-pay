@@ -1,0 +1,17 @@
+{
+  "currency": "XOF",
+  "safety_reserve_xof": 0,
+  "monthly_fixed_costs_xof": 0,
+
+  "credits": [],
+
+  "debts": [],
+
+  "projects": [],
+
+  "rules": {
+    "danger_debt_ratio_pct": 35,
+    "minimum_cash_after_commitments_xof": 50000,
+    "recommended_savings_pct": 15
+  }
+}
