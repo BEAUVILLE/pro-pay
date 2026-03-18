@@ -833,6 +833,95 @@
       try{ return JSON.parse(raw); }catch(_){ return null; }
     }
 
+    function isBrainLikeObject(obj){
+      return !!(
+        obj &&
+        typeof obj === "object" &&
+        !Array.isArray(obj) &&
+        (
+          "currency" in obj ||
+          "safety_reserve_xof" in obj ||
+          "monthly_fixed_costs_xof" in obj ||
+          "credits" in obj ||
+          "debts" in obj ||
+          "projects" in obj ||
+          "rules" in obj
+        )
+      );
+    }
+
+    function extractBrainObject(value, slug, phone, depth = 0){
+      if(depth > 6) return null;
+      if(value == null) return null;
+
+      if(typeof value === "string"){
+        const parsed = safeParse(value.trim());
+        return parsed ? extractBrainObject(parsed, slug, phone, depth + 1) : null;
+      }
+
+      if(typeof value !== "object" || Array.isArray(value)) return null;
+      if(isBrainLikeObject(value)) return value;
+
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+
+      const directKeys = [slug, s, phone, p].filter(Boolean);
+      for(const key of directKeys){
+        if(Object.prototype.hasOwnProperty.call(value, key)){
+          const found = extractBrainObject(value[key], slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      const nestedKeys = ["brain", "data", "payload", "value", "json", "state", "content"];
+      for(const key of nestedKeys){
+        if(Object.prototype.hasOwnProperty.call(value, key)){
+          const found = extractBrainObject(value[key], slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      for(const [k, v] of Object.entries(value)){
+        const lk = String(k || "").toLowerCase();
+        if((s && lk.includes(s)) || (p && lk.includes(p))){
+          const found = extractBrainObject(v, slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      return null;
+    }
+
+    function scanBrainKeysInStorage(slug, phone){
+      const out = [];
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+
+      try{
+        for(let i = 0; i < localStorage.length; i += 1){
+          const rawKey = localStorage.key(i);
+          const key = String(rawKey || "");
+          const low = key.toLowerCase();
+
+          const hasBrainWord =
+            low.includes("brain") ||
+            low.includes("pay_brain") ||
+            low.includes("pay-brain") ||
+            low.includes("digiy_pay_brain") ||
+            low.includes("digiy_pay_brain_draft");
+
+          const hasSlug = s && low.includes(s);
+          const hasPhone = p && low.includes(p);
+
+          if(hasBrainWord && (hasSlug || hasPhone)){
+            out.push(key);
+          }
+        }
+      }catch(_){}
+
+      return [...new Set(out)];
+    }
+
     function deepClone(obj){
       return JSON.parse(JSON.stringify(obj));
     }
@@ -942,6 +1031,13 @@
       if(phoneKey) keys.push(phoneKey);
 
       return [...new Set(keys.filter(Boolean))];
+    }
+
+    function getBrainKeysToClear(slug, phone){
+      return [...new Set([
+        ...getBrainKeysToWrite(slug, phone),
+        ...scanBrainKeysInStorage(slug, phone)
+      ])];
     }
 
     const TEMPLATE = {
@@ -1071,9 +1167,10 @@
         try{
           const raw = localStorage.getItem(key);
           if(!raw) continue;
-          const parsed = safeParse(raw);
-          if(parsed && typeof parsed === "object"){
-            return normalizeBrain(parsed);
+
+          const extracted = extractBrainObject(raw, CTX.slug, CTX.phone);
+          if(extracted){
+            return normalizeBrain(extracted);
           }
         }catch(_){}
       }
@@ -1501,12 +1598,15 @@
       const reader = new FileReader();
       reader.onload = () => {
         try{
-          const parsed = safeParse(String(reader.result || ""));
-          if(!parsed || typeof parsed !== "object"){
-            setStatus("bad", "Import refusé : JSON invalide.");
+          const raw = String(reader.result || "");
+          const extracted = extractBrainObject(raw, CTX.slug, CTX.phone);
+
+          if(!extracted || typeof extracted !== "object"){
+            setStatus("bad", "Import refusé : JSON invalide ou brain introuvable.");
             return;
           }
-          brain = normalizeBrain(parsed);
+
+          brain = normalizeBrain(extracted);
           renderAll();
           saveDraft(false);
           setStatus("ok", "JSON importé dans le brouillon local de ce slug.");
@@ -1555,13 +1655,14 @@
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
-        const keys = getBrainKeysToWrite(CTX.slug, CTX.phone);
+        const keys = getBrainKeysToClear(CTX.slug, CTX.phone);
         keys.forEach(key => {
           try{ localStorage.removeItem(key); }catch(_){}
         });
+
         brain = deepClone(TEMPLATE);
         renderAll();
-        setStatus("warn", "Brouillon local effacé pour ce slug. Moule vierge rechargé.");
+        setStatus("warn", "Toutes les clés Brain locales de ce slug ont été effacées. Moule vierge rechargé.");
       });
     }
 
