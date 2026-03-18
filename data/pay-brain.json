@@ -2,6 +2,7 @@
   "currency": "XOF",
   "safety_reserve_xof": 150000,
   "monthly_fixed_costs_xof": 85000,
+
   "credits": [
     {
       "label": "Moto livraison",
@@ -12,6 +13,7 @@
       "notes": "Crédit principal à tenir sans retard"
     }
   ],
+
   "debts": [
     {
       "label": "Fournisseur boissons",
@@ -27,9 +29,10 @@
       "due_in_days": 21,
       "priority": 2,
       "active": true,
-      "notes": "Peut attendre un peu mais reste dans le mois"
+      "notes": "Dette du mois, moins urgente mais à surveiller"
     }
   ],
+
   "projects": [
     {
       "label": "Acheter congélateur",
@@ -37,7 +40,7 @@
       "deadline_days": 45,
       "priority": 1,
       "active": true,
-      "notes": "Projet utile mais à lancer seulement si la caisse respire"
+      "notes": "Projet utile, seulement si la caisse respire vraiment"
     },
     {
       "label": "Refaire enseigne",
@@ -45,9 +48,10 @@
       "deadline_days": 30,
       "priority": 2,
       "active": true,
-      "notes": "Projet image, après les urgences"
+      "notes": "Projet image, après urgences et base protégée"
     }
   ],
+
   "rules": {
     "danger_debt_ratio_pct": 35,
     "minimum_cash_after_commitments_xof": 50000,
