@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Cockpit réel MON ARGENT by DIGIY : net, disponible, entrées, dépenses pro, épargne, modules, canaux et engagements visibles en lecture rapide."
+    content="Cockpit stratégique MON ARGENT by DIGIY : protéger la base, éviter les erreurs financières, lire le vrai cap du mois."
   />
 
   <script>
@@ -1157,31 +1157,31 @@
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-card hero-main">
-          <div class="eyebrow">💳 PAY — cockpit financier terrain</div>
-          <h1 class="hero-title">Vois le vrai résultat.<br>Le reste n’est que bruit.</h1>
+          <div class="eyebrow">💳 PAY — cockpit stratégique terrain</div>
+          <h1 class="hero-title">Le cockpit ne te montre pas seulement l’argent.<br>Il te protège de l’erreur.</h1>
           <p class="hero-text">
-            Ce cockpit te montre d’abord ce qui compte :
-            le net pro, le disponible, l’épargne, les dettes, les crédits et les projets à venir.
-            PAY n’encaisse pas l’argent. Il éclaire la décision.
+            Ici, le but n’est pas de flatter la dépense.
+            Le but est de protéger la base, éviter le surcoût, ralentir ce qui menace la caisse
+            et n’accélérer que ce que le terrain peut absorber sans se casser.
           </p>
 
           <div class="hero-mini">
             <div class="mini">
               <div class="mini-k">En 2 secondes</div>
-              <div class="mini-v">Net du mois</div>
-              <div class="mini-s">Lire vite si le business tient, monte ou fatigue.</div>
+              <div class="mini-v">Verdict du mois</div>
+              <div class="mini-s">Savoir si le rôle du moment est de protéger, tenir, consolider ou accélérer.</div>
             </div>
 
             <div class="mini">
               <div class="mini-k">En 1 regard</div>
-              <div class="mini-v">Reste manœuvrable</div>
-              <div class="mini-s">Voir ce qu’il reste après épargne et engagements.</div>
+              <div class="mini-v">Erreur à éviter</div>
+              <div class="mini-s">Repérer la dépense ou le projet qui peut tuer l’œuf dans la poule.</div>
             </div>
 
             <div class="mini">
               <div class="mini-k">En 1 décision</div>
-              <div class="mini-v">Projet faisable ou non</div>
-              <div class="mini-s">Savoir s’il faut pousser, attendre ou protéger.</div>
+              <div class="mini-v">Cap réel</div>
+              <div class="mini-s">Dépenser juste, pas tôt. Avancer proprement, pas fièrement.</div>
             </div>
           </div>
         </div>
@@ -1194,11 +1194,11 @@
             </div>
           </div>
 
-          <div class="hud-title">Lecture HUD PAY</div>
-          <div class="hud-big">Le net d’abord.<br>Les engagements juste après.</div>
+          <div class="hud-title">Lecture patron</div>
+          <div class="hud-big">Protéger d’abord.<br>Accélérer seulement si la base tient.</div>
           <div class="hud-sub">
-            Ce cockpit est pensé comme un affichage de décision rapide :
-            comprendre vite, agir proprement, protéger le pro.
+            PAY ne garde pas les fonds. Il te donne une lecture anti-erreur :
+            ce qui protège, ce qui fatigue, ce qui est trop tôt, ce qui peut passer.
           </div>
 
           <div class="hud-actions">
@@ -1212,8 +1212,8 @@
 
             <a class="hud-link" href="#panel-engagements">
               <div class="left">
-                <div class="k">Voir les engagements</div>
-                <div class="s">Crédits, dettes, projets et pression réelle du mois.</div>
+                <div class="k">Voir la pression réelle</div>
+                <div class="s">Crédits, dettes, projets, cap du mois et risque de surcoût.</div>
               </div>
               <div class="arrow">→</div>
             </a>
@@ -1245,28 +1245,37 @@
     <section class="panel active" id="panel-pro">
       <div class="hero-cake">
         <div class="cake main">
+          <div class="cake-title">🧠 Verdict stratégique</div>
+          <div class="cake-value gold" id="cakeStrategicLevel">—</div>
+          <div class="cake-sub">Le vrai rôle du mois : protéger, tenir, consolider ou accélérer.</div>
+        </div>
+
+        <div class="cake">
           <div class="cake-title">💼 Net pro</div>
           <div class="cake-value gold" id="cakeNetPro">—</div>
           <div class="cake-sub">Entrées pro − dépenses pro. La vérité du business.</div>
         </div>
 
         <div class="cake">
-          <div class="cake-title">🛟 Épargne du mois</div>
-          <div class="cake-value blue" id="cakeSavings">—</div>
-          <div class="cake-sub">Part mise de côté pour sécurité, projet ou réserve.</div>
+          <div class="cake-title">🛟 Marge protégée</div>
+          <div class="cake-value green" id="cakeProtectedMargin">—</div>
+          <div class="cake-sub">Ce qu’il reste après la pression visible du mois.</div>
         </div>
 
         <div class="cake">
-          <div class="cake-title">💰 Disponible pro</div>
-          <div class="cake-value green" id="cakeDisponible">—</div>
-          <div class="cake-sub">Net pro − épargne. Ce que tu peux manœuvrer.</div>
+          <div class="cake-title">⚠️ Surcoût détecté</div>
+          <div class="cake-value danger" id="cakePressure">—</div>
+          <div class="cake-sub">Crédits mensuels + dettes proches + perso visible du mois.</div>
         </div>
+      </div>
 
-        <div class="cake">
-          <div class="cake-title">🍗 Reste après perso</div>
-          <div class="cake-value danger" id="cakeResteApresPerso">—</div>
-          <div class="cake-sub">Disponible pro − dépenses perso visibles du mois.</div>
-        </div>
+      <div class="decision-box">
+        <div class="decision-title">Verdict stratégique</div>
+        <div class="decision-main" id="strategicMain">—</div>
+        <div class="decision-sub" id="strategicMsg">Chargement de la lecture patron…</div>
+        <div class="decision-chip" id="strategicChip">Analyse…</div>
+        <div class="decision-sub" id="dangerMsg"></div>
+        <div class="decision-sub" id="monthlyCap"></div>
       </div>
 
       <div class="kpi-strip">
@@ -1291,7 +1300,7 @@
 
       <div class="scard">
         <div class="scard-head">
-          <div class="scard-title gold">🍒 Résultat utile</div>
+          <div class="scard-title gold">🍒 Lecture utile</div>
         </div>
         <div class="list" id="resultList">
           <div class="loader"><div class="spinner"></div> Chargement…</div>
@@ -1300,7 +1309,7 @@
 
       <div class="scard">
         <div class="scard-head">
-          <div class="scard-title green">📦 Modules qui poussent le business</div>
+          <div class="scard-title green">📦 Modules qui nourrissent le business</div>
           <a class="btn-mini" id="btnGoAdmin" href="./admin.html">➕ Ajouter un mouvement</a>
         </div>
         <div class="list" id="modulesList">
@@ -1364,32 +1373,32 @@
 
       <div class="scard">
         <div class="scard-head">
-          <div class="scard-title blue">🛟 Couche épargne</div>
+          <div class="scard-title blue">🛟 Couche de protection</div>
         </div>
 
         <div class="info-grid">
           <div class="ibox">
             <div class="ibox-t">Mission</div>
-            <div class="ibox-v">Protéger le pro</div>
-            <div class="ibox-s">L’épargne sert de sécurité, de projet, d’investissement ou de réserve.</div>
+            <div class="ibox-v">Protéger la base</div>
+            <div class="ibox-s">L’épargne sert à empêcher une mauvaise période de casser la marche suivante.</div>
           </div>
 
           <div class="ibox">
             <div class="ibox-t">Doctrine PAY</div>
-            <div class="ibox-v">PAY pilote</div>
-            <div class="ibox-s">PAY organise les flux. Il ne garde pas les fonds.</div>
+            <div class="ibox-v">PAY éclaire</div>
+            <div class="ibox-s">PAY pilote les décisions. Il ne garde pas les fonds.</div>
           </div>
 
           <div class="ibox">
             <div class="ibox-t">Mois courant</div>
             <div class="ibox-v" id="iboxSavingsMonth">—</div>
-            <div class="ibox-s">Montant épargne sur la période en cours.</div>
+            <div class="ibox-s">Montant mis de côté sur la période en cours.</div>
           </div>
 
           <div class="ibox">
             <div class="ibox-t">Total cumulé</div>
             <div class="ibox-v" id="iboxSavingsTotal">—</div>
-            <div class="ibox-s">Cumul visible dans le cockpit global.</div>
+            <div class="ibox-s">Couche de réserve visible dans le cockpit global.</div>
           </div>
         </div>
       </div>
@@ -1440,7 +1449,7 @@
         <div class="synth-head">
           <div class="synth-kicker">🧭 Synthèse patron</div>
           <div class="synth-title" id="synthTitle">Chargement de la sentence…</div>
-          <div class="synth-sub" id="synthSub">Lecture ultra-rapide du mois, de la pression et des projets.</div>
+          <div class="synth-sub" id="synthSub">Lecture ultra-rapide du mois, du risque et du cap stratégique.</div>
         </div>
 
         <div class="synth-grid">
@@ -1623,7 +1632,7 @@
 
       <div class="scard">
         <div class="scard-head">
-          <div class="scard-title orange">🛟 Plan de sauvetage du mois</div>
+          <div class="scard-title orange">🛟 Plan de protection du mois</div>
         </div>
         <div class="rescue-list" id="rescuePlanList">
           <div class="loader"><div class="spinner"></div> Lecture du plan…</div>
@@ -1857,6 +1866,22 @@
       return "Priorité normale";
     }
 
+    function strategicLevelLabel(level){
+      if(level === "PROTEGER") return "PROTÉGER";
+      if(level === "TENIR") return "TENIR";
+      if(level === "CONSOLIDER") return "CONSOLIDER";
+      if(level === "ACCELERER") return "ACCÉLÉRER";
+      return "—";
+    }
+
+    function strategicClass(level){
+      if(level === "PROTEGER") return "bad";
+      if(level === "TENIR") return "orange";
+      if(level === "CONSOLIDER") return "warn";
+      if(level === "ACCELERER") return "ok";
+      return "warn";
+    }
+
     function renderModules(items){
       const el = document.getElementById("modulesList");
       const arr = normalizeArray(items);
@@ -1921,9 +1946,18 @@
       }).join("");
     }
 
-    function renderResultRows(calc){
+    function renderResultRows(calc, strategic){
       const el = document.getElementById("resultList");
       el.innerHTML = `
+        <div class="row">
+          <div class="row-ico gold">🧠</div>
+          <div class="row-body">
+            <div class="row-title">VERDICT DU MOIS</div>
+            <div class="row-meta">Le rôle réel du terrain : protéger, tenir, consolider ou accélérer.</div>
+          </div>
+          <div class="row-amount gold">${esc(strategicLevelLabel(strategic.level))}</div>
+        </div>
+
         <div class="row">
           <div class="row-ico gold">💼</div>
           <div class="row-body">
@@ -1934,30 +1968,21 @@
         </div>
 
         <div class="row">
-          <div class="row-ico blue">🛟</div>
+          <div class="row-ico green">🛟</div>
           <div class="row-body">
-            <div class="row-title">ÉPARGNE DU MOIS</div>
-            <div class="row-meta">Montant mis de côté sur la période.</div>
+            <div class="row-title">MARGE PROTÉGÉE</div>
+            <div class="row-meta">Ce qu’il reste après la pression visible du mois.</div>
           </div>
-          <div class="row-amount blue">${money(calc.monthSavings)}</div>
+          <div class="row-amount ${strategic.marge >= 0 ? "green" : "danger"}">${money(strategic.marge)}</div>
         </div>
 
         <div class="row">
-          <div class="row-ico green">💰</div>
+          <div class="row-ico red">⚠️</div>
           <div class="row-body">
-            <div class="row-title">DISPONIBLE PRO</div>
-            <div class="row-meta">Net pro − épargne. Ce que tu peux manœuvrer.</div>
+            <div class="row-title">SURCOÛT DÉTECTÉ</div>
+            <div class="row-meta">Crédits mensuels + dettes proches + perso visible.</div>
           </div>
-          <div class="row-amount green">${money(calc.disponiblePro)}</div>
-        </div>
-
-        <div class="row">
-          <div class="row-ico red">🍗</div>
-          <div class="row-body">
-            <div class="row-title">RESTE APRÈS PERSO</div>
-            <div class="row-meta">Disponible pro − dépenses perso visibles du mois courant.</div>
-          </div>
-          <div class="row-amount ${calc.resteApresPerso >= 0 ? "gold" : "danger"}">${money(calc.resteApresPerso)}</div>
+          <div class="row-amount danger">${money(strategic.pressure)}</div>
         </div>
       `;
     }
@@ -2130,6 +2155,107 @@
       return arr[0] || null;
     }
 
+    function buildStrategicView(calc){
+      const monthNet = Number(calc.monthNet || 0);
+      const personalOutVisible = Number(calc.personalOutVisible || 0);
+      const creditsMonthly = Number(calc.creditsMonthly || 0);
+      const debtsSoon = Number(calc.debtsSoon || 0);
+
+      const pressure = creditsMonthly + debtsSoon + personalOutVisible;
+      const marge = monthNet - pressure;
+
+      let level = "PROTEGER";
+
+      if(marge > 0 && monthNet > 0 && marge < monthNet * 0.25){
+        level = "TENIR";
+      }
+
+      if(monthNet > 0 && marge >= monthNet * 0.25){
+        level = "CONSOLIDER";
+      }
+
+      if(monthNet > 0 && marge >= monthNet * 0.5){
+        level = "ACCELERER";
+      }
+
+      if(monthNet <= 0 && marge <= 0){
+        level = "PROTEGER";
+      }
+
+      return {
+        marge,
+        pressure,
+        level,
+        ratio: monthNet > 0 ? (marge / monthNet) : 0
+      };
+    }
+
+    function buildStrategicMessage(view){
+      const { level } = view;
+
+      if(level === "PROTEGER"){
+        return "Le rôle du mois n’est pas de grandir. Il est de protéger la caisse. Toute dépense non vitale est une erreur.";
+      }
+
+      if(level === "TENIR"){
+        return "Le terrain tient, mais ne supporte pas les erreurs. Chaque dépense doit être justifiée.";
+      }
+
+      if(level === "CONSOLIDER"){
+        return "La base tient. Tu peux avancer, mais uniquement sur ce qui renforce la structure.";
+      }
+
+      if(level === "ACCELERER"){
+        return "Le terrain peut porter une poussée. Tu peux accélérer sans casser la base, à condition de rester propre.";
+      }
+
+      return "";
+    }
+
+    function detectFinancialDanger(view){
+      const { marge, pressure } = view;
+
+      if(marge < 0){
+        return "Les engagements mangent la caisse. Stop immédiat des nouvelles dépenses non vitales.";
+      }
+
+      if(pressure > 0 && marge < pressure * 0.5){
+        return "Tension forte : les charges prennent trop de place. Réduire avant d’investir.";
+      }
+
+      return "Pas d’alerte majeure détectée sur la pression visible du mois. Garde quand même la discipline.";
+    }
+
+    function buildMonthlyCap(view){
+      const { level } = view;
+
+      if(level === "PROTEGER"){
+        return "Cap du mois : couper, ralentir, tenir. Aucun nouveau projet tant que la base n’est pas protégée.";
+      }
+
+      if(level === "TENIR"){
+        return "Cap du mois : maintenir. Éviter toute charge inutile et toute dépense d’orgueil.";
+      }
+
+      if(level === "CONSOLIDER"){
+        return "Cap du mois : renforcer. Priorité aux dépenses utiles qui solidifient le socle.";
+      }
+
+      if(level === "ACCELERER"){
+        return "Cap du mois : avancer. Ne lancer que ce que le terrain peut absorber sans se trahir.";
+      }
+
+      return "";
+    }
+
+    function strategicMainText(view){
+      if(view.level === "PROTEGER") return "Protéger la base";
+      if(view.level === "TENIR") return "Tenir sans erreur";
+      if(view.level === "CONSOLIDER") return "Consolider le socle";
+      if(view.level === "ACCELERER") return "Accélérer proprement";
+      return "Lecture en cours";
+    }
+
     function computeDecision(calc, brain){
       const rules = brain?.rules || {};
       const minCash = Number(rules.minimum_cash_after_commitments_xof || 0);
@@ -2142,34 +2268,34 @@
       const topProject = highestPriorityProject(brain);
 
       let chipClass = "ok";
-      let chipText = "Situation saine";
-      let main = "Zone de pilotage correcte";
-      let sub = "Le terrain est respirable. Tu peux tenir le mois sans étouffer le pro.";
+      let chipText = "Base saine";
+      let main = "Le terrain peut encore décider proprement";
+      let sub = "La base respire. Le vrai sujet est d’avancer sans introduire un surcoût idiot.";
 
       if(afterCommitments < 0){
         chipClass = "bad";
-        chipText = "Tension forte";
-        main = "Les engagements mangent le mois";
-        sub = "Après crédits et dettes proches, le reste devient négatif. Priorité : protéger la caisse, ralentir les projets et solder ce qui presse.";
+        chipText = "Protéger";
+        main = "Le mois doit défendre la caisse";
+        sub = "Après crédits et dettes proches, le reste devient négatif. La priorité n’est pas le prestige : c’est la survie intelligente.";
       }else if(afterCommitments < minCash){
         chipClass = "warn";
-        chipText = "Zone fragile";
-        main = "Tu tiens, mais tu ne dois pas jouer";
-        sub = "Le reste après engagements est en dessous du plancher de sécurité. Pas de fantaisie : consolider d’abord.";
+        chipText = "Tenir";
+        main = "Tu tiens, mais tu n’as pas le droit à l’erreur";
+        sub = "Le reste après engagements est en dessous du plancher de sécurité. Toute dépense trop tôt peut casser la marche suivante.";
       }else if(debtRatio >= dangerDebtRatioPct){
         chipClass = "warn";
-        chipText = "Dettes lourdes";
-        main = "La pression dette devient visible";
-        sub = "La part des dettes proches pèse lourd par rapport aux entrées du mois. Mieux vaut nettoyer avant d’ouvrir un nouveau front.";
+        chipText = "Nettoyer";
+        main = "La pression dette fatigue le terrain";
+        sub = "La part des dettes proches pèse lourd par rapport aux entrées du mois. Il vaut mieux nettoyer avant d’ouvrir un nouveau front.";
       }
 
       if(chipClass === "ok" && topProject){
         if(afterCommitments >= Number(topProject.target_xof || 0)){
-          main = "Projet finançable";
-          sub = `Le projet prioritaire "${topProject.label}" peut être absorbé avec le reste manœuvrable actuel, sans casser la réserve déclarée.`;
+          main = "Projet absorbable";
+          sub = `Le projet prioritaire "${topProject.label}" peut être porté par le terrain actuel sans casser la réserve déclarée.`;
         }else{
-          main = "Projet pas encore mûr";
-          sub = `Le projet prioritaire "${topProject.label}" reste au-dessus du reste manœuvrable actuel. Continuer à pousser le net ou renforcer l’épargne.`;
+          main = "Projet trop tôt";
+          sub = `Le projet prioritaire "${topProject.label}" reste au-dessus du reste manœuvrable actuel. Lancer trop tôt serait une erreur financière.`;
         }
       }
 
@@ -2190,7 +2316,7 @@
           badgeClass:"warn",
           badgeText:"Aucun projet",
           main:"Aucun projet prioritaire déclaré",
-          sub:"Le cockpit ne voit pas encore de projet dans le JSON. Tu peux piloter d’abord la caisse et déclarer le prochain objectif plus tard.",
+          sub:"Le cockpit ne voit pas encore de projet dans le JSON. Tu peux protéger la caisse et déclarer l’objectif plus tard.",
           topBadgeClass:"warn",
           topBadgeText:"Vide",
           topMain:"Pas de projet visible",
@@ -2207,25 +2333,25 @@
       const safeGap = target + safetyReserve - afterCommitments;
 
       let badgeClass = "ok";
-      let badgeText = "Vert";
+      let badgeText = "Absorbable";
       let main = "Projet lançable";
-      let sub = `Le projet prioritaire "${topProject.label}" peut être couvert sans étouffer le pro.`;
+      let sub = `Le projet prioritaire "${topProject.label}" peut être couvert sans abîmer la base.`;
 
       if(afterCommitments < 0){
         badgeClass = "bad";
-        badgeText = "Rouge";
+        badgeText = "À geler";
         main = "Projet à geler";
         sub = `Le mois est déjà sous pression. Le projet "${topProject.label}" doit attendre pendant que tu protèges la caisse.`;
       }else if(afterCommitments < safetyReserve){
         badgeClass = "orange";
-        badgeText = "Orange";
+        badgeText = "Trop tôt";
         main = "Projet à ralentir";
         sub = `Le pro respire encore trop peu. Avant d’ouvrir "${topProject.label}", il faut d’abord reconstituer la réserve de sécurité.`;
       }else if(afterCommitments < target){
         badgeClass = "warn";
-        badgeText = "Jaune";
-        main = "Projet partiellement finançable";
-        sub = `Le projet "${topProject.label}" n’est pas encore complètement absorbé par le reste actuel. Il manque encore une marche.`;
+        badgeText = "Partiel";
+        main = "Projet partiellement absorbable";
+        sub = `Le projet "${topProject.label}" n’est pas encore complètement couvert par le terrain actuel.`;
       }
 
       return {
@@ -2252,8 +2378,8 @@
 
       if(calc.afterCommitments < 0){
         plan.push({
-          title:"Stopper les nouvelles sorties non urgentes",
-          text:"Le reste après engagements est négatif. Toute dépense non vitale doit attendre la remise à flot."
+          title:"Stopper les nouvelles sorties non vitales",
+          text:"Le reste après engagements est négatif. Le mois doit défendre la caisse avant toute autre ambition."
         });
       }
 
@@ -2266,15 +2392,22 @@
 
       if(calc.creditsMonthly > 0){
         plan.push({
-          title:"Sécuriser l’échéance crédit du mois",
+          title:"Sécuriser l’échéance crédit",
           text:`Préserver au minimum ${money(calc.creditsMonthly)} pour ne pas casser le rythme des remboursements.`
+        });
+      }
+
+      if(calc.personalOutVisible > 0){
+        plan.push({
+          title:"Surveiller les sorties perso visibles",
+          text:`Le cockpit voit ${money(calc.personalOutVisible)} de sorties perso sur le mois. Cette couche doit rester sous contrôle pour ne pas fatiguer le pro.`
         });
       }
 
       if(calc.monthSavings > 0 && calc.afterCommitments < calc.safetyReserve){
         plan.push({
           title:"Protéger l’épargne utile",
-          text:`Ne pas vider l’épargne par panique. Elle reste une couche de survie et de respiration pour le pro.`
+          text:"Ne pas vider la réserve par panique. Elle sert à empêcher une mauvaise passe de tuer la marche suivante."
         });
       }
 
@@ -2282,7 +2415,7 @@
         const savingsRatio = Math.round((calc.monthSavings / calc.monthIn) * 100);
         if(savingsRatio < recommendedSavingsPct){
           plan.push({
-            title:"Remonter doucement la réserve",
+            title:"Remonter doucement la couche de sécurité",
             text:`L’épargne visible est à ${savingsRatio}% des entrées du mois. L’objectif conseillé reste autour de ${recommendedSavingsPct}%.`
           });
         }
@@ -2292,14 +2425,14 @@
         const target = Number(topProject.target_xof || 0);
         if(calc.afterCommitments >= target){
           plan.push({
-            title:"Projet faisable sans casser le pro",
-            text:`Le projet "${topProject.label}" devient finançable avec le reste actuel. Garde quand même la réserve de sécurité visible.`
+            title:"Projet absorbable sans casser la base",
+            text:`Le projet "${topProject.label}" peut être porté, à condition de garder la discipline et la réserve visible.`
           });
         }else{
           const gap = Math.max(0, target - calc.afterCommitments);
           plan.push({
             title:"Reporter ou fractionner le projet",
-            text:`Le projet "${topProject.label}" n’est pas encore mûr. Il manque environ ${money(gap)} pour l’absorber proprement.`
+            text:`Le projet "${topProject.label}" est encore trop tôt. Il manque environ ${money(gap)} pour l’absorber proprement.`
           });
         }
       }
@@ -2307,7 +2440,7 @@
       if(!plan.length){
         plan.push({
           title:"Continuer le pilotage propre",
-          text:"Le cockpit ne voit pas d’alerte majeure ce mois-ci. L’objectif est de tenir la discipline et d’éviter les fuites."
+          text:"Le cockpit ne voit pas d’alerte majeure ce mois-ci. L’objectif est de tenir la discipline et d’éviter le surcoût inutile."
         });
       }
 
@@ -2384,14 +2517,14 @@
       const decision = computeDecision(calc, brain);
 
       if(calc.afterCommitments < 0){
-        titleEl.textContent = "Mois sous pression forte";
-        subEl.textContent = "Le business existe, mais les engagements étouffent la marge. Il faut défendre la caisse avant de penser expansion.";
+        titleEl.textContent = "Le mois doit protéger la caisse";
+        subEl.textContent = "Le terrain existe, mais la pression visible devient trop lourde. La priorité n’est pas le rêve, c’est la base.";
       }else if(calc.afterCommitments < calc.safetyReserve){
-        titleEl.textContent = "Respiration courte";
-        subEl.textContent = "Le mois tient encore, mais la marge reste trop faible pour jouer avec les projets ou les sorties non utiles.";
+        titleEl.textContent = "Le terrain tient, mais reste fragile";
+        subEl.textContent = "Le mois ne doit pas jouer avec des dépenses trop tôt. Une erreur peut casser la marche suivante.";
       }else{
-        titleEl.textContent = "Zone de pilotage plus respirable";
-        subEl.textContent = "Le pro garde une marge après engagements. La discipline reste nécessaire, mais le mois n’est pas étranglé.";
+        titleEl.textContent = "Le terrain peut décider plus proprement";
+        subEl.textContent = "La base respire mieux. L’enjeu est maintenant d’avancer sans introduire un surcoût inutile.";
       }
 
       if(calc.afterCommitments < 0){
@@ -2424,25 +2557,25 @@
         setBlock(
           "synthMonth",
           "bad",
-          "Tension",
-          "Mois mangé",
-          "Les dettes proches et le crédit du mois prennent l’avantage sur la marge."
+          "Protéger",
+          "Mois défensif",
+          "Les dettes proches et le crédit du mois prennent trop de place sur la marge."
         );
       }else if(decision.chipClass === "warn"){
         setBlock(
           "synthMonth",
           "warn",
-          "Fragile",
+          "Tenir",
           "Mois serré",
-          "Le mois n’est pas à l’aise. La discipline doit rester stricte."
+          "Le mois tient, mais ne pardonne pas les dépenses de confort."
         );
       }else{
         setBlock(
           "synthMonth",
           "ok",
           "Stable",
-          "Mois tenable",
-          "La structure du mois reste pilotable sans étouffer le pro."
+          "Mois pilotable",
+          "Le terrain reste suffisamment propre pour décider sans se mentir."
         );
       }
 
@@ -2466,7 +2599,7 @@
         setBlock(
           "synthProject",
           "warn",
-          "Attente",
+          "Trop tôt",
           "Projet à ralentir",
           `Le projet "${topProject.label}" n’est pas encore absorbable proprement.`
         );
@@ -2475,8 +2608,8 @@
           "synthProject",
           "ok",
           "Go",
-          "Projet finançable",
-          `Le projet "${topProject.label}" peut être envisagé sans casser la caisse.`
+          "Projet absorbable",
+          `Le projet "${topProject.label}" peut être envisagé sans casser la base.`
         );
       }
 
@@ -2485,16 +2618,16 @@
           "synthPriority",
           "orange",
           "Action",
-          "Désendettement d’abord",
+          "Nettoyer d’abord",
           `Priorité à ${money(calc.debtsSoon)} de dettes proches et ${money(calc.creditsMonthly)} de crédit mensuel.`
         );
-      }else if(calc.monthSavings <= 0){
+      }else if(calc.personalOutVisible > 0){
         setBlock(
           "synthPriority",
           "warn",
           "Vigilance",
-          "Rebâtir l’épargne",
-          "Le pro doit remettre une petite couche de réserve avant d’ouvrir un nouveau front."
+          "Surveiller les fuites",
+          `Le cockpit voit ${money(calc.personalOutVisible)} de sorties perso visibles ce mois-ci.`
         );
       }else{
         setBlock(
@@ -2656,6 +2789,24 @@
       }
     }
 
+    function renderStrategicBlock(strategic){
+      const chip = document.getElementById("strategicChip");
+      const levelLabel = strategicLevelLabel(strategic.level);
+
+      document.getElementById("strategicMain").textContent = strategicMainText(strategic);
+      document.getElementById("strategicMsg").textContent = buildStrategicMessage(strategic);
+      document.getElementById("dangerMsg").textContent = detectFinancialDanger(strategic);
+      document.getElementById("monthlyCap").textContent = buildMonthlyCap(strategic);
+
+      chip.className = "decision-chip " + strategicClass(strategic.level);
+      chip.textContent = levelLabel;
+
+      document.getElementById("cakeStrategicLevel").textContent = levelLabel;
+      document.getElementById("cakeProtectedMargin").textContent = money(strategic.marge);
+      document.getElementById("cakeProtectedMargin").className = "cake-value " + (strategic.marge >= 0 ? "green" : "danger");
+      document.getElementById("cakePressure").textContent = money(strategic.pressure);
+    }
+
     function renderEngagements(calc, brain){
       const credits = activeItems(brain?.credits);
       const debts = activeItems(brain?.debts);
@@ -2699,7 +2850,7 @@
 
       const rescueEl = document.getElementById("rescuePlanList");
       if(rescueEl){
-        rescueEl.innerHTML = `<div class="empty">Le plan de sauvetage a besoin du fichier data/pay-brain.json.</div>`;
+        rescueEl.innerHTML = `<div class="empty">Le plan de protection a besoin du fichier data/pay-brain.json.</div>`;
       }
 
       document.getElementById("synthTitle").textContent = "Synthèse indisponible";
@@ -2847,17 +2998,6 @@
       document.getElementById("iboxAccess").textContent = data.access_ok ? "ABONNEMENT OK" : "NON ACTIF";
 
       document.getElementById("cakeNetPro").textContent = money(monthNet);
-      document.getElementById("cakeSavings").textContent = money(monthSavings);
-      document.getElementById("cakeDisponible").textContent = money(disponiblePro);
-
-      const resteEl = document.getElementById("cakeResteApresPerso");
-      resteEl.textContent = money(resteApresPerso);
-      resteEl.className = "cake-value " + (resteApresPerso >= 0 ? "gold" : "danger");
-
-      renderResultRows({ netPro: monthNet, monthSavings, disponiblePro, resteApresPerso });
-      renderModules(modules);
-      renderChannels(channels);
-      renderChannelBars(channels);
 
       document.getElementById("topSlug").textContent = data.slug || SLUG;
       document.getElementById("badgeSlug").textContent = data.slug || SLUG;
@@ -2910,6 +3050,17 @@
         calc.fixedCosts = Number(PAY_BRAIN.monthly_fixed_costs_xof || 0);
         calc.safetyReserve = Number(PAY_BRAIN.safety_reserve_xof || 0);
         calc.afterCommitments = disponiblePro - calc.creditsMonthly - calc.debtsSoon;
+      }
+
+      const strategic = buildStrategicView(calc);
+      renderStrategicBlock(strategic);
+      renderResultRows(calc, strategic);
+
+      renderModules(modules);
+      renderChannels(channels);
+      renderChannelBars(channels);
+
+      if(PAY_BRAIN){
         renderEngagements(calc, PAY_BRAIN);
       }else{
         renderEngagementsFallback(calc);
