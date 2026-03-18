@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Moule vierge du cerveau PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale et export JSON."
+    content="Moule vierge du cerveau PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale par slug et export JSON."
   />
 
   <style>
@@ -111,6 +111,7 @@
       color:var(--muted);
       font-weight:800;
       margin-top:3px;
+      word-break:break-word;
     }
 
     .nav{
@@ -500,8 +501,8 @@
       <h1>Remplis le cerveau une fois.<br>Le cockpit parlera plus vrai.</h1>
       <p>
         Ce moule vierge sert à poser la base du pro : réserve, charges fixes, crédits,
-        dettes et projets. Tout reste d’abord dans le navigateur du pro. Ensuite tu peux
-        exporter le JSON proprement.
+        dettes et projets. Tout reste d’abord dans le navigateur du pro, séparé par slug.
+        Ensuite tu peux exporter le JSON proprement.
       </p>
 
       <div class="hero-grid">
@@ -731,7 +732,7 @@
             <input class="file-input" id="fileImport" type="file" accept="application/json,.json" />
 
             <div class="status warn" style="margin-top:12px">
-              Le navigateur garde le brouillon dans le localStorage.  
+              Le navigateur garde le brouillon dans le localStorage du slug courant.  
               Pour la prod, exporte ensuite le fichier en <strong>pay-brain.json</strong>.
             </div>
           </div>
@@ -810,7 +811,16 @@
   </main>
 
   <script>
-    const LS_KEY = "digiy_pay_brain_draft_v1";
+    function getUrlParams(){
+      const u = new URL(window.location.href);
+      return {
+        slug: u.searchParams.get("slug") || "",
+        phone: u.searchParams.get("phone") || ""
+      };
+    }
+
+    const URL_CTX = getUrlParams();
+    const LS_KEY = "digiy_pay_brain_draft_" + (URL_CTX.slug || "default");
 
     const TEMPLATE = {
       currency: "XOF",
@@ -911,7 +921,7 @@
 
     function saveDraft(showMessage = true){
       localStorage.setItem(LS_KEY, JSON.stringify(brain));
-      if(showMessage) setStatus("ok", "Brouillon PAY sauvegardé localement.");
+      if(showMessage) setStatus("ok", "Brouillon PAY sauvegardé localement pour ce slug.");
       updateMeta();
     }
 
@@ -990,8 +1000,9 @@
         brain.debts.length,
         brain.projects.length
       ].reduce((a,b)=>a+b,0);
+
       document.getElementById("brainMeta").textContent =
-        `LocalStorage actif · ${count} élément(s) posés`;
+        `LocalStorage actif · ${count} élément(s) posés${URL_CTX.slug ? " · " + URL_CTX.slug : ""}${URL_CTX.phone ? " · " + URL_CTX.phone : ""}`;
     }
 
     function bindBaseFields(){
@@ -1368,7 +1379,7 @@
           brain = normalizeBrain(parsed);
           renderAll();
           saveDraft(false);
-          setStatus("ok", "JSON importé dans le brouillon local.");
+          setStatus("ok", "JSON importé dans le brouillon local de ce slug.");
         }catch(_){
           setStatus("bad", "Import refusé : fichier illisible.");
         }
@@ -1403,27 +1414,30 @@
         brain = deepClone(TEMPLATE);
         renderAll();
         saveDraft(false);
-        setStatus("ok", "Moule vierge chargé dans le brouillon local.");
+        setStatus("ok", "Moule vierge chargé dans le brouillon local de ce slug.");
       });
 
       document.getElementById("btnLoadDemo").addEventListener("click", () => {
         brain = deepClone(DEMO);
         renderAll();
         saveDraft(false);
-        setStatus("ok", "Démo chargée dans le brouillon local.");
+        setStatus("ok", "Démo chargée dans le brouillon local de ce slug.");
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
         localStorage.removeItem(LS_KEY);
         brain = deepClone(TEMPLATE);
         renderAll();
-        setStatus("warn", "Brouillon local effacé. Moule vierge rechargé.");
+        setStatus("warn", "Brouillon local effacé pour ce slug. Moule vierge rechargé.");
       });
     }
 
     bindBaseFields();
     bindActions();
     renderAll();
+
+    window.removeItem = removeItem;
+    window.toggleItem = toggleItem;
   </script>
 </body>
 </html>
