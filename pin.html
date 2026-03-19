@@ -1002,29 +1002,116 @@
       }
     );
 
-   async function openAccess(event) {
+   async function verifyPin(slugValue, pinValue) {
+  const slug =
+    SESSION.normalizeSlug(
+      slugValue ||
+      $("slug")?.value ||
+      readQuery().slug ||
+      window.DIGIY_GUARD?.getSlug?.() ||
+      ""
+    );
+
+  const pin = String(
+    pinValue ||
+    $("pin")?.value ||
+    ""
+  ).trim();
+
+  if (!window.DIGIY_GUARD || typeof window.DIGIY_GUARD.loginWithPin !== "function") {
+    throw new Error("Guard PAY indisponible.");
+  }
+
+  if (!slug) {
+    throw new Error("Slug PAY manquant.");
+  }
+
+  if (!pin) {
+    throw new Error("PIN manquant.");
+  }
+
+  const res = await window.DIGIY_GUARD.loginWithPin(slug, pin);
+
+  if (!res?.ok) {
+    throw new Error(res?.error || "Accès PAY refusé.");
+  }
+
+  return {
+    ok: true,
+    slug: SESSION.normalizeSlug(res.slug || slug),
+    phone: SESSION.normalizePhone(res.phone || "")
+  };
+}
+
+function buildNextUrl(result) {
+  const qs = new URLSearchParams(window.location.search);
+  const nextRaw = String(qs.get("next") || "").trim();
+
+  if (nextRaw) {
+    const url = new URL(nextRaw, window.location.origin);
+    if (result?.slug) url.searchParams.set("slug", SESSION.normalizeSlug(result.slug));
+    if (result?.phone) url.searchParams.set("phone", SESSION.normalizePhone(result.phone));
+    return url.toString();
+  }
+
+  const q = readQuery();
+  const targetPage = chooseRedirectTarget(q.redirect || "cockpit");
+  return buildCtxHref(targetPage, result?.slug || "", result?.phone || "");
+}
+
+async function openAccess(event) {
   event.preventDefault();
+  setMsg("", "");
+  setLoading(true);
 
   try {
     const qs = new URLSearchParams(window.location.search);
+
     const slug =
-      (qs.get("slug") || window.DIGIY_GUARD?.getSlug?.() || "").trim();
+      SESSION.normalizeSlug(
+        qs.get("slug") ||
+        $("slug")?.value ||
+        window.DIGIY_GUARD?.getSlug?.() ||
+        ""
+      );
 
     const pin =
-      document.querySelector('input[name="pin"]')?.value ||
-      document.querySelector('#pin')?.value ||
-      "";
+      String(
+        $("pin")?.value ||
+        document.querySelector('input[name="pin"]')?.value ||
+        ""
+      ).trim();
 
     const result = await verifyPin(slug, pin);
 
-    const next = qs.get("next") || "/index.html";
-    const url = new URL(next, window.location.origin);
-    if (result?.slug) url.searchParams.set("slug", result.slug);
+    if ($("slug")) $("slug").value = result.slug || "";
+    if ($("phone")) $("phone").value = result.phone || "";
 
-    window.location.replace(url.toString());
+    syncContextUi(result.slug, result.phone);
+
+    setState(
+      "ok",
+      "Accès PAY ouvert",
+      "PIN validé. Redirection vers votre espace PAY."
+    );
+    setMsg("Accès PAY validé.", "ok");
+    toast("Accès PAY validé");
+
+    window.location.replace(buildNextUrl(result));
   } catch (err) {
     console.error("[PAY pin] Error:", err);
-    alert(err.message || "Erreur d’accès PAY.");
+
+    setState(
+      "bad",
+      "Accès refusé",
+      err?.message || "Erreur d’accès PAY."
+    );
+    setMsg(err?.message || "Erreur d’accès PAY.", "bad");
+
+    const pinEl = $("pin") || document.querySelector('input[name="pin"]');
+    focusBadField(pinEl);
+  } finally {
+    setLoading(false);
   }
 }
 
