@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT PRO — Cerveau PAY</title>
+  <title>MON ARGENT PRO — Pilotage PAY</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Moule vierge du cerveau PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale par slug et export JSON."
+    content="Moule vierge du pilotage PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale par slug et export JSON."
   />
 
   <script src="./session.js"></script>
@@ -483,8 +483,8 @@
       <div class="brand">
         <div class="mark">₣</div>
         <div>
-          <div class="brand-title">Cerveau PAY — Moule vierge</div>
-          <div class="brand-sub" id="brainMeta">Clé Brain locale par slug</div>
+          <div class="brand-title">Pilotage PAY — Moule vierge</div>
+          <div class="brand-sub" id="brainMeta">Clé de pilotage locale par slug</div>
         </div>
       </div>
 
@@ -499,8 +499,8 @@
 
   <main class="wrap">
     <section class="hero">
-      <div class="eyebrow">🧠 PAY BRAIN — base stratégique locale</div>
-      <h1>Remplis le cerveau une fois.<br>Le cockpit parlera plus vrai.</h1>
+      <div class="eyebrow">🧭 PAY — base de pilotage locale</div>
+      <h1>Pose le pilotage une fois.<br>Le cockpit parlera plus vrai.</h1>
       <p>
         Ce moule vierge sert à poser la base du pro : réserve, charges fixes, crédits,
         dettes et projets. Tout reste d’abord dans le navigateur du pro, séparé par slug.
@@ -720,7 +720,7 @@
           </div>
           <div class="card-body">
             <div class="status ok" id="statusBox">
-              Brain local prêt. Rien n’est envoyé au serveur.
+              Pilotage local prêt. Rien n’est envoyé au serveur.
             </div>
 
             <div class="toolbar" style="margin-top:12px">
@@ -733,7 +733,7 @@
             <input class="file-input" id="fileImport" type="file" accept="application/json,.json" />
 
             <div class="status warn" style="margin-top:12px">
-              Le navigateur garde le brain dans le localStorage du slug courant.
+              Le navigateur garde les données de pilotage dans le localStorage du slug courant.
               Le cockpit lit d’abord la clé officielle par slug, puis garde la compatibilité avec l’ancien rail.
             </div>
           </div>
@@ -1166,7 +1166,7 @@
       if(showMessage){
         setStatus(
           "ok",
-          `Brain PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}`
+          `Pilotage PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}`
         );
       }
 
@@ -1544,14 +1544,14 @@
           const extracted = extractBrainObject(raw, CTX.slug, CTX.phone);
 
           if(!extracted || typeof extracted !== "object"){
-            setStatus("bad", "Import refusé : JSON invalide ou brain introuvable.");
+            setStatus("bad", "Import refusé : JSON invalide ou données de pilotage introuvables.");
             return;
           }
 
           brain = normalizeBrain(extracted);
           renderAll();
           saveDraft(false);
-          setStatus("ok", "JSON importé dans le brain local de ce slug.");
+          setStatus("ok", "JSON importé dans le pilotage local de ce slug.");
         }catch(_){
           setStatus("bad", "Import refusé : fichier illisible.");
         }
@@ -1586,7 +1586,7 @@
         brain = deepClone(TEMPLATE);
         renderAll();
         saveDraft(false);
-        setStatus("ok", "Moule vierge chargé dans le brain local de ce slug.");
+        setStatus("ok", "Moule vierge chargé dans le pilotage local de ce slug.");
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
@@ -1597,7 +1597,7 @@
 
         brain = deepClone(TEMPLATE);
         renderAll();
-        setStatus("warn", "Toutes les clés Brain locales de ce slug ont été effacées. Moule vierge rechargé.");
+        setStatus("warn", "Toutes les clés de pilotage locales de ce slug ont été effacées. Moule vierge rechargé.");
       });
     }
 
@@ -1608,12 +1608,12 @@
     if(CTX.slug === "default"){
       setStatus(
         "warn",
-        "Aucun slug explicite détecté. Le brain reste utilisable, mais il sera rangé sous la clé par défaut jusqu’à ce qu’un slug PAY soit présent."
+        "Aucun slug explicite détecté. Le pilotage reste utilisable, mais il sera rangé sous la clé par défaut jusqu’à ce qu’un slug PAY soit présent."
       );
     }else{
       setStatus(
         "ok",
-        `Slug actif détecté : <strong>${esc(CTX.slug)}</strong>. Le cockpit pourra relire ce brain via la clé officielle.`
+        `Slug actif détecté : <strong>${esc(CTX.slug)}</strong>. Le cockpit pourra relire ce pilotage via la clé officielle.`
       );
     }
 
