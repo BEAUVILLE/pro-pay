@@ -2186,196 +2186,191 @@
       return null;
     }
 
-   function getPreferredBrainStorageCandidates(slug, phone){
-  const s = normalizeSlug(slug);
-  const p = normalizePhone(phone);
+    function getPreferredBrainStorageCandidates(slug, phone){
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
 
-  return [
-    s ? {
-      key: `digiy_pay_brain:${s}`,
-      label: `local:digiy_pay_brain:${s}`
-    } : null,
+      return [
+        s ? { key: `digiy_pay_brain:${s}`, label: `local:digiy_pay_brain:${s}` } : null,
+        s ? { key: `digiy_pay_brain_draft_${s}`, label: `local:digiy_pay_brain_draft_${s}` } : null,
+        p ? { key: `digiy_pay_brain:${p}`, label: `local:digiy_pay_brain:${p}` } : null
+      ].filter(Boolean);
+    }
 
-    s ? {
-      key: `digiy_pay_brain_draft_${s}`,
-      label: `local:digiy_pay_brain_draft_${s}`
-    } : null,
+    function getLegacyBrainStorageCandidates(slug, phone){
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
 
-    p ? {
-      key: `digiy_pay_brain:${p}`,
-      label: `local:digiy_pay_brain:${p}`
-    } : null
-  ].filter(Boolean);
-}
+      const bases = [
+        "digiy_pay_brain",
+        "digiy_pay_brain_draft",
+        "digiy-pay-brain",
+        "pay_brain",
+        "pay-brain",
+        "brain_admin",
+        "brain-admin",
+        "digiy_brain",
+        "digiy-brain",
+        "brain"
+      ];
 
-function getLegacyBrainStorageCandidates(slug, phone){
-  const s = normalizeSlug(slug);
-  const p = normalizePhone(phone);
+      const out = [];
 
-  const bases = [
-    "digiy_pay_brain",
-    "digiy_pay_brain_draft",
-    "digiy-pay-brain",
-    "pay_brain",
-    "pay-brain",
-    "brain_admin",
-    "brain-admin",
-    "digiy_brain",
-    "digiy-brain",
-    "brain"
-  ];
+      [s, p].filter(Boolean).forEach(id => {
+        bases.forEach(base => {
+          out.push(`${base}:${id}`);
+          out.push(`${base}::${id}`);
+          out.push(`${base}/${id}`);
+          out.push(`${base}-${id}`);
+          out.push(`${base}_${id}`);
+          out.push(`${base}|${id}`);
+        });
+      });
 
-  const out = [];
+      return [...new Set(out)];
+    }
 
-  [s, p].filter(Boolean).forEach(id => {
-    bases.forEach(base => {
-      out.push(`${base}:${id}`);
-      out.push(`${base}::${id}`);
-      out.push(`${base}/${id}`);
-      out.push(`${base}-${id}`);
-      out.push(`${base}_${id}`);
-      out.push(`${base}|${id}`);
-    });
-  });
+    function scanLocalStorageForBrain(slug, phone){
+      const out = [];
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
 
-  return [...new Set(out)];
-}
+      try{
+        for(let i = 0; i < localStorage.length; i += 1){
+          const rawKey = localStorage.key(i);
+          const key = String(rawKey || "");
+          const low = key.toLowerCase();
 
-function scanLocalStorageForBrain(slug, phone){
-  const out = [];
-  const s = normalizeSlug(slug);
-  const p = normalizePhone(phone);
+          const hasBrainWord =
+            low.includes("brain") ||
+            low.includes("pay_brain") ||
+            low.includes("pay-brain") ||
+            low.includes("digiy_pay_brain") ||
+            low.includes("digiy_pay_brain_draft");
 
-  try{
-    for(let i = 0; i < localStorage.length; i += 1){
-      const rawKey = localStorage.key(i);
-      const key = String(rawKey || "");
-      const low = key.toLowerCase();
+          const hasSlug = s && low.includes(s);
+          const hasPhone = p && low.includes(p);
 
-      const hasBrainWord =
-        low.includes("brain") ||
-        low.includes("pay_brain") ||
-        low.includes("pay-brain") ||
-        low.includes("digiy_pay_brain") ||
-        low.includes("digiy_pay_brain_draft");
+          if(hasBrainWord && (hasSlug || hasPhone)){
+            out.push(key);
+          }
+        }
+      }catch(_){}
 
-      const hasSlug = s && low.includes(s);
-      const hasPhone = p && low.includes(p);
+      return [...new Set(out)];
+    }
 
-      if(hasBrainWord && (hasSlug || hasPhone)){
-        out.push(key);
+    function readBrainValueByKey(key, slug, phone){
+      try{
+        const raw = localStorage.getItem(key);
+        if(!raw) return null;
+
+        const found = extractBrainObject(raw, slug, phone);
+        if(found){
+          return { key, data: found };
+        }
+      }catch(_){}
+
+      return null;
+    }
+
+    function readBrainFromLocalStorage(slug, phone){
+      const preferred = getPreferredBrainStorageCandidates(slug, phone);
+
+      for(const entry of preferred){
+        const found = readBrainValueByKey(entry.key, slug, phone);
+        if(found && found.data){
+          return {
+            key: entry.key,
+            label: entry.label,
+            data: found.data
+          };
+        }
       }
+
+      const preferredKeys = new Set(preferred.map(x => x.key));
+      const legacyKeys = [
+        ...getLegacyBrainStorageCandidates(slug, phone),
+        ...scanLocalStorageForBrain(slug, phone)
+      ].filter(key => !preferredKeys.has(key));
+
+      for(const key of [...new Set(legacyKeys)]){
+        const found = readBrainValueByKey(key, slug, phone);
+        if(found && found.data){
+          return {
+            key,
+            label: `local:${key}`,
+            data: found.data
+          };
+        }
+      }
+
+      return null;
     }
-  }catch(_){}
 
-  return [...new Set(out)];
-}
+    async function loadPayBrain(){
+      PAY_BRAIN = null;
+      PAY_BRAIN_SOURCE = "none";
 
-function readBrainValueByKey(key, slug, phone){
-  try{
-    const raw = localStorage.getItem(key);
-    if(!raw) return null;
+      const fromLocal = readBrainFromLocalStorage(SLUG, PHONE);
+      if(fromLocal && fromLocal.data){
+        PAY_BRAIN = fromLocal.data;
+        PAY_BRAIN_SOURCE = fromLocal.label || (`local:${fromLocal.key}`);
+        return;
+      }
 
-    const found = extractBrainObject(raw, slug, phone);
-    if(found){
-      return { key, data: found };
+      try{
+        const res = await fetch(PAY_BRAIN_FALLBACK_URL, { cache: "no-store" });
+        if(!res.ok) throw new Error("JSON non trouvé.");
+
+        const json = await res.json();
+        const extracted = extractBrainObject(json, SLUG, PHONE);
+
+        if(extracted){
+          PAY_BRAIN = extracted;
+          PAY_BRAIN_SOURCE = `file:${PAY_BRAIN_FALLBACK_URL}`;
+          return;
+        }
+      }catch(err){
+        console.warn("[PAY brain fallback]", err);
+      }
+
+      PAY_BRAIN = null;
+      PAY_BRAIN_SOURCE = "none";
     }
-  }catch(_){}
 
-  return null;
-}
+    function brainSourceText(){
+      const s = normalizeSlug(SLUG);
+      const p = normalizePhone(PHONE);
 
-function readBrainFromLocalStorage(slug, phone){
-  const preferred = getPreferredBrainStorageCandidates(slug, phone);
+      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain:${s}`){
+        return "Brain slug chargé.";
+      }
 
-  for(const entry of preferred){
-    const found = readBrainValueByKey(entry.key, slug, phone);
-    if(found && found.data){
-      return {
-        key: entry.key,
-        label: entry.label,
-        data: found.data
-      };
+      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain_draft_${s}`){
+        return "Brain brouillon slug chargé.";
+      }
+
+      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain:${p}`){
+        return "Brain téléphone chargé.";
+      }
+
+      if(PAY_BRAIN_SOURCE.startsWith("local:")){
+        return "Brain local chargé.";
+      }
+
+      if(PAY_BRAIN_SOURCE === `file:${PAY_BRAIN_FALLBACK_URL}`){
+        return "Brain de secours chargé.";
+      }
+
+      return "Brain non trouvé.";
     }
-  }
 
-  const preferredKeys = new Set(preferred.map(x => x.key));
-  const legacyKeys = [
-    ...getLegacyBrainStorageCandidates(slug, phone),
-    ...scanLocalStorageForBrain(slug, phone)
-  ].filter(key => !preferredKeys.has(key));
-
-  for(const key of [...new Set(legacyKeys)]){
-    const found = readBrainValueByKey(key, slug, phone);
-    if(found && found.data){
-      return {
-        key,
-        label: `local:${key}`,
-        data: found.data
-      };
+    function computePersonalOutVisible(referenceDate = new Date()){
+      return MANUAL_MOVES
+        .filter(x => x.__date && sameMonth(x.__date, referenceDate))
+        .reduce((sum, x) => sum + Number(x.amount_xof || 0), 0);
     }
-  }
-
-  return null;
-}
-
-async function loadPayBrain(){
-  PAY_BRAIN = null;
-  PAY_BRAIN_SOURCE = "none";
-
-  const fromLocal = readBrainFromLocalStorage(SLUG, PHONE);
-  if(fromLocal && fromLocal.data){
-    PAY_BRAIN = fromLocal.data;
-    PAY_BRAIN_SOURCE = fromLocal.label || (`local:${fromLocal.key}`);
-    return;
-  }
-
-  try{
-    const res = await fetch(PAY_BRAIN_FALLBACK_URL, { cache: "no-store" });
-    if(!res.ok) throw new Error("JSON non trouvé.");
-
-    const json = await res.json();
-    const extracted = extractBrainObject(json, SLUG, PHONE);
-
-    if(extracted){
-      PAY_BRAIN = extracted;
-      PAY_BRAIN_SOURCE = `file:${PAY_BRAIN_FALLBACK_URL}`;
-      return;
-    }
-  }catch(err){
-    console.warn("[PAY brain fallback]", err);
-  }
-
-  PAY_BRAIN = null;
-  PAY_BRAIN_SOURCE = "none";
-}
-
-function brainSourceText(){
-  const s = normalizeSlug(SLUG);
-  const p = normalizePhone(PHONE);
-
-  if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain:${s}`){
-    return "Brain slug chargé.";
-  }
-
-  if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain_draft_${s}`){
-    return "Brain brouillon slug chargé.";
-  }
-
-  if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain:${p}`){
-    return "Brain téléphone chargé.";
-  }
-
-  if(PAY_BRAIN_SOURCE.startsWith("local:")){
-    return "Brain local chargé.";
-  }
-
-  if(PAY_BRAIN_SOURCE === `file:${PAY_BRAIN_FALLBACK_URL}`){
-    return "Brain de secours chargé.";
-  }
-
-  return "Brain non trouvé.";
-}
 
     function computePersonalOutToday(referenceDate = new Date()){
       return MANUAL_MOVES
@@ -3223,12 +3218,6 @@ function brainSourceText(){
       chip.className = "decision-chip warn";
     }
 
-    function brainSourceText(){
-      if(PAY_BRAIN_SOURCE === "fallback-file") return "Brain de secours chargé.";
-      if(PAY_BRAIN_SOURCE && PAY_BRAIN_SOURCE.startsWith("local:")) return "Brain admin local branché.";
-      return "Brain non trouvé.";
-    }
-
     function renderCockpit(data){
       COCKPIT = data || {};
 
@@ -3293,7 +3282,9 @@ function brainSourceText(){
 
       if(SESSION){
         SESSION.save(realSlug, realPhone);
-        SESSION.applyUrl(realSlug, realPhone);
+        if(typeof SESSION.applyUrl === "function"){
+          SESSION.applyUrl(realSlug, realPhone);
+        }
       }
 
       const calc = {
