@@ -10,6 +10,18 @@
     content="Entrée PIN sécurisée MON ARGENT by DIGIY pour ouvrir le cockpit PAY avec une lecture rapide et une session terrain."
   />
 
+  <!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>MON ARGENT PRO — Entrée PIN DIGIY ♾️</title>
+  <meta name="theme-color" content="#04110d" />
+  <meta
+    name="description"
+    content="Entrée PIN sécurisée MON ARGENT by DIGIY pour ouvrir le cockpit PAY avec une lecture rapide et une session terrain."
+  />
+
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -804,7 +816,6 @@
 
   <script>
     const SESSION = window.DIGIY_SESSION || null;
-
     const $ = (id) => document.getElementById(id);
 
     function esc(v){
@@ -897,11 +908,12 @@
         return {
           slug: SESSION.normalizeSlug(url.searchParams.get("slug")),
           phone: SESSION.normalizePhone(url.searchParams.get("phone")),
+          next: String(url.searchParams.get("next") || "").trim(),
           redirect: String(url.searchParams.get("redirect") || "cockpit").trim().toLowerCase(),
           reason: String(url.searchParams.get("reason") || "").trim()
         };
       }catch(_){
-        return { slug:"", phone:"", redirect:"cockpit", reason:"" };
+        return { slug:"", phone:"", next:"", redirect:"cockpit", reason:"" };
       }
     }
 
@@ -1002,167 +1014,206 @@
       }
     );
 
-   async function verifyPin(slugValue, pinValue) {
-  const slug =
-    SESSION.normalizeSlug(
-      slugValue ||
-      $("slug")?.value ||
-      readQuery().slug ||
-      window.DIGIY_GUARD?.getSlug?.() ||
-      ""
-    );
+    async function resolvePayIdentity(phoneValue, slugValue){
+      let phone = SESSION.normalizePhone(phoneValue || "");
+      let slug = SESSION.normalizeSlug(slugValue || "");
 
-  const pin = String(
-    pinValue ||
-    $("pin")?.value ||
-    ""
-  ).trim();
-
-  if (!window.DIGIY_GUARD || typeof window.DIGIY_GUARD.loginWithPin !== "function") {
-    throw new Error("Guard PAY indisponible.");
-  }
-
-  if (!slug) {
-    throw new Error("Slug PAY manquant.");
-  }
-
-  if (!pin) {
-    throw new Error("PIN manquant.");
-  }
-
-  const res = await window.DIGIY_GUARD.loginWithPin(slug, pin);
-
-  if (!res?.ok) {
-    throw new Error(res?.error || "Accès PAY refusé.");
-  }
-
-  return {
-    ok: true,
-    slug: SESSION.normalizeSlug(res.slug || slug),
-    phone: SESSION.normalizePhone(res.phone || "")
-  };
-}
-
-function buildNextUrl(result) {
-  const qs = new URLSearchParams(window.location.search);
-  const nextRaw = String(qs.get("next") || "").trim();
-
-  if (nextRaw) {
-    const url = new URL(nextRaw, window.location.origin);
-    if (result?.slug) url.searchParams.set("slug", SESSION.normalizeSlug(result.slug));
-    if (result?.phone) url.searchParams.set("phone", SESSION.normalizePhone(result.phone));
-    return url.toString();
-  }
-
-  const q = readQuery();
-  const targetPage = chooseRedirectTarget(q.redirect || "cockpit");
-  return buildCtxHref(targetPage, result?.slug || "", result?.phone || "");
-}
-
-async function openAccess(event) {
-  event.preventDefault();
-  setMsg("", "");
-  setLoading(true);
-
-  try {
-    const qs = new URLSearchParams(window.location.search);
-
-    const slug =
-      SESSION.normalizeSlug(
-        qs.get("slug") ||
-        $("slug")?.value ||
-        window.DIGIY_GUARD?.getSlug?.() ||
-        ""
-      );
-
-    const pin =
-      String(
-        $("pin")?.value ||
-        document.querySelector('input[name="pin"]')?.value ||
-        ""
-      ).trim();
-
-    const result = await verifyPin(slug, pin);
-
-    if ($("slug")) $("slug").value = result.slug || "";
-    if ($("phone")) $("phone").value = result.phone || "";
-
-    syncContextUi(result.slug, result.phone);
-
-    setState(
-      "ok",
-      "Accès PAY ouvert",
-      "PIN validé. Redirection vers votre espace PAY."
-    );
-    setMsg("Accès PAY validé.", "ok");
-    toast("Accès PAY validé");
-
-    window.location.replace(buildNextUrl(result));
-  } catch (err) {
-    console.error("[PAY pin] Error:", err);
-
-    setState(
-      "bad",
-      "Accès refusé",
-      err?.message || "Erreur d’accès PAY."
-    );
-    setMsg(err?.message || "Erreur d’accès PAY.", "bad");
-
-    const pinEl = $("pin") || document.querySelector('input[name="pin"]');
-    focusBadField(pinEl);
-  } finally {
-    setLoading(false);
-  }
-}
-
-      if(error) throw error;
-
-      let payload = data;
-
-      if(Array.isArray(payload)) payload = payload[0] || null;
-
-      if(typeof payload === "string"){
-        const txt = payload.trim();
-        const pgRecord = parsePostgresRecordString(txt, phone);
-        if(pgRecord){
-          if(pgRecord.ok === true) return pgRecord;
-          throw new Error("PIN incorrect ou accès PAY non valide.");
-        }
-        try{ payload = JSON.parse(txt); }catch(_){}
+      if(!slug && phone){
+        slug = inferSlugFromPhone(phone);
       }
 
-      if(payload && typeof payload === "object"){
-        if(payload.ok === true || payload.success === true || payload.valid === true || payload.is_valid === true || payload.f1 === true){
-          const finalPhone = SESSION.normalizePhone(payload.phone || phone);
+      if(slug){
+        const { data, error } = await sb
+          .from("digiy_subscriptions_public")
+          .select("phone,slug,module")
+          .eq("slug", slug)
+          .eq("module", "PAY")
+          .limit(1);
+
+        if(!error && Array.isArray(data) && data[0]){
           return {
-            ok: true,
-            phone: finalPhone,
-            slug: SESSION.normalizeSlug(payload.slug || inferSlugFromPhone(finalPhone)),
-            label: payload.label || payload.business_name || "MON ARGENT PRO",
-            raw: payload
+            phone: SESSION.normalizePhone(data[0].phone || phone),
+            slug: SESSION.normalizeSlug(data[0].slug || slug)
           };
         }
       }
 
-      throw new Error(
-        (payload && (payload.error || payload.message)) ||
-        "PIN incorrect ou accès PAY non valide."
+      if(phone){
+        const { data, error } = await sb
+          .from("digiy_subscriptions_public")
+          .select("phone,slug,module")
+          .eq("phone", phone)
+          .eq("module", "PAY")
+          .limit(1);
+
+        if(!error && Array.isArray(data) && data[0]){
+          return {
+            phone: SESSION.normalizePhone(data[0].phone || phone),
+            slug: SESSION.normalizeSlug(data[0].slug || inferSlugFromPhone(phone))
+          };
+        }
+      }
+
+      return {
+        phone: SESSION.normalizePhone(phone),
+        slug: SESSION.normalizeSlug(slug)
+      };
+    }
+
+    function normalizeVerifyPayload(payload, fallbackPhone){
+      let current = payload;
+
+      if(Array.isArray(current)){
+        current = current[0] || null;
+      }
+
+      if(typeof current === "string"){
+        const txt = current.trim();
+        const pgRecord = parsePostgresRecordString(txt, fallbackPhone);
+        if(pgRecord){
+          return pgRecord.ok ? pgRecord : null;
+        }
+        try{
+          current = JSON.parse(txt);
+        }catch(_){
+          return null;
+        }
+      }
+
+      if(current === true){
+        const finalPhone = SESSION.normalizePhone(fallbackPhone);
+        return {
+          ok: true,
+          phone: finalPhone,
+          slug: inferSlugFromPhone(finalPhone),
+          label: "MON ARGENT PRO",
+          raw: current
+        };
+      }
+
+      if(current && typeof current === "object"){
+        if(
+          current.ok === true ||
+          current.success === true ||
+          current.valid === true ||
+          current.is_valid === true ||
+          current.f1 === true
+        ){
+          const finalPhone = SESSION.normalizePhone(current.phone || fallbackPhone);
+          return {
+            ok: true,
+            phone: finalPhone,
+            slug: SESSION.normalizeSlug(current.slug || inferSlugFromPhone(finalPhone)),
+            label: current.label || current.business_name || "MON ARGENT PRO",
+            raw: current
+          };
+        }
+      }
+
+      return null;
+    }
+
+    async function callVerifyPin(phone, pin){
+      const tries = [
+        { p_phone: phone, p_module: "PAY", p_pin: pin },
+        { p_phone: phone, p_module: "pay", p_pin: pin }
+      ];
+
+      for(const body of tries){
+        const { data, error } = await sb.rpc("digiy_verify_pin", body);
+        if(error) continue;
+
+        const parsed = normalizeVerifyPayload(data, phone);
+        if(parsed?.ok === true){
+          return parsed;
+        }
+      }
+
+      return null;
+    }
+
+    async function callHasAccess(phone){
+      const tries = [
+        { p_phone: phone, p_module: "PAY" },
+        { phone, module: "PAY" }
+      ];
+
+      for(const body of tries){
+        const { data, error } = await sb.rpc("digiy_has_access", body);
+        if(error) continue;
+
+        if(data === true) return true;
+        if(data && typeof data === "object" && (data.ok === true || data.access === true)) return true;
+      }
+
+      return false;
+    }
+
+    async function verifyPin(phoneValue, slugValue, pinValue){
+      const pin = String(pinValue || "").trim();
+      if(!pin){
+        throw new Error("PIN manquant.");
+      }
+
+      const resolved = await resolvePayIdentity(phoneValue, slugValue);
+      const phone = SESSION.normalizePhone(resolved.phone);
+      const slug = SESSION.normalizeSlug(resolved.slug || inferSlugFromPhone(phone));
+
+      if(!slug){
+        throw new Error("Slug PAY manquant.");
+      }
+
+      if(!phone){
+        throw new Error("Téléphone PAY introuvable.");
+      }
+
+      const verify = await callVerifyPin(phone, pin);
+      if(!verify?.ok){
+        throw new Error("PIN incorrect.");
+      }
+
+      const accessOk = await callHasAccess(phone);
+      if(!accessOk){
+        throw new Error("Accès PAY non valide.");
+      }
+
+      return {
+        ok: true,
+        phone,
+        slug: slug || SESSION.normalizeSlug(verify.slug || inferSlugFromPhone(phone)),
+        label: verify.label || "MON ARGENT PRO"
+      };
+    }
+
+    function buildNextUrl(result){
+      const q = readQuery();
+
+      if(q.next){
+        const url = new URL(q.next, window.location.origin);
+        if(result?.slug) url.searchParams.set("slug", SESSION.normalizeSlug(result.slug));
+        if(result?.phone) url.searchParams.set("phone", SESSION.normalizePhone(result.phone));
+        return url.toString();
+      }
+
+      return buildCtxHref(
+        chooseRedirectTarget(q.redirect),
+        result?.slug || "",
+        result?.phone || ""
       );
     }
 
     async function openAccess(evt){
       evt.preventDefault();
 
-      const q = readQuery();
       const phone = SESSION.normalizePhone($("phone").value);
       const pin = String($("pin").value || "").trim();
       const slug = SESSION.normalizeSlug($("slug").value) || inferSlugFromPhone(phone);
 
       syncContextUi(slug, phone);
 
-      if(!phone){
-        setState("bad", "Téléphone requis", "Le rail PIN PAY a besoin du téléphone principal du pro.");
-        setMsg("Entre d’abord le téléphone du pro.", "bad");
+      if(!phone && !slug){
+        setState("bad", "Contexte requis", "Le rail PIN PAY a besoin d’un téléphone ou d’un slug PAY.");
+        setMsg("Entre d’abord le téléphone du pro ou le slug PAY.", "bad");
         focusBadField($("phone"));
         return;
       }
@@ -1181,30 +1232,37 @@ async function openAccess(event) {
         setState("", "Vérification", "Contrôle du PIN sur le vrai rail DIGIY PAY…");
         setMsg("Vérification du PIN en cours…", "");
 
-        const payload = await verifyPin(phone, pin);
+        const payload = await verifyPin(phone, slug, pin);
         const finalPhone = SESSION.normalizePhone(payload.phone || phone);
-        const finalSlug = SESSION.normalizeSlug(payload.slug || slug) || slug;
+        const finalSlug = SESSION.normalizeSlug(payload.slug || slug) || inferSlugFromPhone(finalPhone);
 
         SESSION.save(finalSlug, finalPhone);
+        if(typeof SESSION.applyUrl === "function"){
+          SESSION.applyUrl(finalSlug, finalPhone);
+        }
+
+        if($("slug")) $("slug").value = finalSlug;
+        if($("phone")) $("phone").value = finalPhone;
+
         syncContextUi(finalSlug, finalPhone);
 
         setState("ok", "Accès validé", "PIN correct. Ouverture du cockpit PAY en cours.");
         setMsg("Accès PAY validé. Redirection vers le cockpit…", "ok");
         toast("✅ Accès PAY validé");
 
-        const target = new URL(chooseRedirectTarget(q.redirect), window.location.href);
-        target.searchParams.set("slug", finalSlug);
-        if(finalPhone) target.searchParams.set("phone", finalPhone);
-
         redirecting = true;
         window.setTimeout(() => {
-          window.location.href = target.toString();
-        }, 350);
+          window.location.href = buildNextUrl({
+            slug: finalSlug,
+            phone: finalPhone
+          });
+        }, 280);
       }catch(err){
         console.error("[PAY pin]", err);
         const message = err && err.message ? err.message : "Vérification PIN impossible.";
         setState("bad", "Accès refusé", message);
         setMsg(message, "bad");
+        focusBadField($("pin"));
       }finally{
         if(!redirecting){
           setLoading(false);
