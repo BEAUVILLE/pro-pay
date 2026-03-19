@@ -8,18 +8,19 @@
 (() => {
   "use strict";
 
-  const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+  const SUPABASE_URL =
+    String(window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co").trim();
+  const SUPABASE_ANON_KEY =
+    String(window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY || "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3").trim();
 
   const MODULE_CODE = "PAY";
   const LOGIN_URL = window.DIGIY_LOGIN_URL || "./pin.html";
   const PAY_URL = "https://commencer-a-payer.digiylyfe.com/";
 
-  // Sécurité : pas de preview libre sur page protégée
   const ALLOW_PREVIEW_WITHOUT_IDENTITY = false;
 
-  const SESSION_KEY = "DIGIY_PAY_SESSION";
-const ACCESS_KEY = "DIGIY_PAY_ACCESS";
+  const SESSION_KEY = `DIGIY_${MODULE_CODE}_SESSION`;
+  const ACCESS_KEY = `DIGIY_${MODULE_CODE}_ACCESS`;
   const MODULE_PREFIX = "digiy_pay";
 
   const state = {
@@ -32,6 +33,7 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
   };
 
   let bootPromise = null;
+  let watchdogStarted = false;
 
   const api = {
     state,
@@ -56,6 +58,48 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
     try {
       document.documentElement.style.visibility = "hidden";
     } catch (_) {}
+  }
+
+  function safeRedirect(url) {
+    showPage();
+    window.location.replace(url);
+  }
+
+  function installAntiBlackoutWatchdog() {
+    if (watchdogStarted) return;
+    watchdogStarted = true;
+
+    window.setTimeout(() => {
+      try {
+        if (document.documentElement.style.visibility === "hidden") {
+          console.warn("DIGIY watchdog: écran caché trop longtemps, réaffichage forcé.");
+          showPage();
+        }
+      } catch (_) {}
+    }, 1500);
+
+    window.setInterval(() => {
+      try {
+        if (state.access_ok === true && document.documentElement.style.visibility === "hidden") {
+          console.warn("DIGIY watchdog: page cachée alors que l'accès est valide, réaffichage.");
+          showPage();
+        }
+      } catch (_) {}
+    }, 2500);
+
+    document.addEventListener("visibilitychange", () => {
+      try {
+        if (!document.hidden && state.access_ok === true && document.documentElement.style.visibility === "hidden") {
+          showPage();
+        }
+      } catch (_) {}
+    });
+
+    window.addEventListener("pageshow", () => {
+      try {
+        if (state.access_ok === true) showPage();
+      } catch (_) {}
+    });
   }
 
   function normPhone(v) {
@@ -210,17 +254,26 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
     };
   }
 
-  function enrichUrlIfMissingSlug(slug) {
+  function enrichUrlIfMissingSlug(slug, phone) {
     const s = normSlug(slug);
-    if (!s) return;
-
-    const qs = getQs();
-    const current = normSlug(qs.get("slug") || "");
-    if (current === s) return;
+    const p = normPhone(phone);
 
     const u = new URL(window.location.href);
-    u.searchParams.set("slug", s);
-    history.replaceState(null, "", u.toString());
+    let changed = false;
+
+    if (s && normSlug(u.searchParams.get("slug") || "") !== s) {
+      u.searchParams.set("slug", s);
+      changed = true;
+    }
+
+    if (p && normPhone(u.searchParams.get("phone") || "") !== p) {
+      u.searchParams.set("phone", p);
+      changed = true;
+    }
+
+    if (changed) {
+      history.replaceState(null, "", u.toString());
+    }
   }
 
   function buildLoginUrl(slug) {
@@ -234,7 +287,7 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
   }
 
   function goLogin(slug) {
-    window.location.replace(buildLoginUrl(slug));
+    safeRedirect(buildLoginUrl(slug));
   }
 
   function buildPayUrl({ slug, phone }) {
@@ -251,7 +304,7 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
   }
 
   function goPay({ slug, phone }) {
-    window.location.replace(buildPayUrl({ slug, phone }));
+    safeRedirect(buildPayUrl({ slug, phone }));
   }
 
   async function resolveSubBySlug(slug) {
@@ -339,11 +392,17 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
       const d = res.data;
       const row = Array.isArray(d) ? d[0] : d;
 
-      if (row?.ok === true) {
+      if (
+        row?.ok === true ||
+        row?.success === true ||
+        row?.valid === true ||
+        row?.is_valid === true ||
+        row === true
+      ) {
         return {
           ok: true,
           slug: s,
-          phone: normPhone(row.phone || ph)
+          phone: normPhone(row?.phone || ph)
         };
       }
     }
@@ -384,7 +443,7 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
     }
 
     rememberIdentity({ slug: s, phone });
-    enrichUrlIfMissingSlug(s);
+    enrichUrlIfMissingSlug(s, phone);
 
     setState({
       preview: false,
@@ -414,7 +473,6 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
       phone: ""
     });
 
-    showPage();
     goLogin("");
   }
 
@@ -452,7 +510,6 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
           return state;
         }
 
-        showPage();
         goLogin("");
         return null;
       }
@@ -461,14 +518,17 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
         const ok = await checkAccess(phone);
 
         if (ok) {
-          if (slug) enrichUrlIfMissingSlug(slug);
+          const finalSlug = normSlug(slug || `pay-${phone}`);
+          const finalPhone = normPhone(phone);
+
+          enrichUrlIfMissingSlug(finalSlug, finalPhone);
 
           setState({
             preview: false,
             access_ok: true,
             reason: "access_ok",
-            slug: normSlug(slug),
-            phone: normPhone(phone)
+            slug: finalSlug,
+            phone: finalPhone
           });
 
           showPage();
@@ -487,7 +547,6 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
           return state;
         }
 
-        showPage();
         goLogin(slug || "");
         return null;
       }
@@ -504,7 +563,6 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
         return state;
       }
 
-      showPage();
       goPay({ slug, phone: "" });
       return null;
     } catch (e) {
@@ -518,7 +576,6 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
         phone: ""
       });
 
-      // très important : ne jamais laisser l'écran noir
       showPage();
       goLogin("");
       return null;
@@ -532,5 +589,6 @@ const ACCESS_KEY = "DIGIY_PAY_ACCESS";
     return bootPromise;
   }
 
+  installAntiBlackoutWatchdog();
   ready();
 })();
