@@ -644,8 +644,8 @@
 
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
-        <a class="pill" href="./cockpit.html">📊 Cockpit</a>
-        <a class="pill" href="./admin.html">➕ Saisie</a>
+        <a class="pill" id="navCockpitLink" href="./cockpit.html">📊 Cockpit</a>
+        <a class="pill" id="navAdminLink" href="./admin.html">➕ Saisie</a>
       </nav>
     </div>
   </header>
@@ -779,7 +779,7 @@
           </form>
 
           <div class="quick-links">
-            <a class="quick-link" href="./cockpit.html">
+            <a class="quick-link" id="quickCockpitLink" href="./cockpit.html">
               <div class="ql-left">
                 <div class="ql-k">Voir la destination</div>
                 <div class="ql-s">Le cockpit PAY lit les vraies données agrégées du backbone.</div>
@@ -787,7 +787,7 @@
               <div class="ql-arrow">→</div>
             </a>
 
-            <a class="quick-link" href="./admin.html">
+            <a class="quick-link" id="quickAdminLink" href="./admin.html">
               <div class="ql-left">
                 <div class="ql-k">Ajouter un mouvement</div>
                 <div class="ql-s">Entrée, dépense ou épargne utile, dans la logique terrain DIGIY.</div>
@@ -803,22 +803,7 @@
   <div id="toast"></div>
 
   <script>
-    const sb = window.supabase.createClient(
-      String(window.DIGIY_SUPABASE_URL || "").trim(),
-      String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim(),
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-          detectSessionInUrl: false,
-          storage: {
-            getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {}
-          }
-        }
-      }
-    );
+    const SESSION = window.DIGIY_SESSION || null;
 
     const $ = (id) => document.getElementById(id);
 
@@ -869,16 +854,49 @@
     }
 
     function inferSlugFromPhone(phone){
-      const clean = window.DIGIY_SESSION.normalizePhone(phone);
+      const clean = SESSION.normalizePhone(phone);
       return clean ? ("pay-" + clean) : "";
+    }
+
+    function buildCtxHref(page, slug, phone){
+      const s = SESSION.normalizeSlug(slug);
+      const p = SESSION.normalizePhone(phone);
+      const url = new URL(page, window.location.href);
+
+      if(s) url.searchParams.set("slug", s);
+      if(p) url.searchParams.set("phone", p);
+
+      return url.toString();
+    }
+
+    function setContextLinks(slug, phone){
+      const cockpitHref = buildCtxHref("./cockpit.html", slug, phone);
+      const adminHref = buildCtxHref("./admin.html", slug, phone);
+
+      [ "navCockpitLink", "quickCockpitLink" ].forEach(id => {
+        const el = $(id);
+        if(el) el.href = cockpitHref;
+      });
+
+      [ "navAdminLink", "quickAdminLink" ].forEach(id => {
+        const el = $(id);
+        if(el) el.href = adminHref;
+      });
+    }
+
+    function syncContextUi(slug, phone){
+      const cleanSlug = SESSION.normalizeSlug(slug);
+      const cleanPhone = SESSION.normalizePhone(phone);
+      updateTags(cleanSlug, cleanPhone);
+      setContextLinks(cleanSlug, cleanPhone);
     }
 
     function readQuery(){
       try{
         const url = new URL(window.location.href);
         return {
-          slug: window.DIGIY_SESSION.normalizeSlug(url.searchParams.get("slug")),
-          phone: window.DIGIY_SESSION.normalizePhone(url.searchParams.get("phone")),
+          slug: SESSION.normalizeSlug(url.searchParams.get("slug")),
+          phone: SESSION.normalizePhone(url.searchParams.get("phone")),
           redirect: String(url.searchParams.get("redirect") || "cockpit").trim().toLowerCase(),
           reason: String(url.searchParams.get("reason") || "").trim()
         };
@@ -942,7 +960,7 @@
       const id = String(parts[4] || "").trim().replace(/^"|"$/g, "");
 
       if(first === "t" || first === "true"){
-        const finalPhone = outPhone || window.DIGIY_SESSION.normalizePhone(fallbackPhone);
+        const finalPhone = outPhone || SESSION.normalizePhone(fallbackPhone);
         return {
           ok: true,
           module: module || "PAY",
@@ -956,6 +974,33 @@
 
       return { ok:false, raw };
     }
+
+    if(!SESSION){
+      setState("bad", "Erreur session", "session.js n’a pas été chargé correctement.");
+      throw new Error("DIGIY_SESSION indisponible.");
+    }
+
+    if(!window.supabase || !window.supabase.createClient){
+      setState("bad", "Erreur technique", "La bibliothèque Supabase n’a pas pu être chargée.");
+      throw new Error("Supabase JS introuvable.");
+    }
+
+    const sb = window.supabase.createClient(
+      String(window.DIGIY_SUPABASE_URL || "").trim(),
+      String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim(),
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false,
+          storage: {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {}
+          }
+        }
+      }
+    );
 
     async function verifyPin(phone, pin){
       const { data, error } = await sb.rpc("digiy_verify_pin", {
@@ -982,11 +1027,11 @@
 
       if(payload && typeof payload === "object"){
         if(payload.ok === true || payload.success === true || payload.valid === true || payload.is_valid === true || payload.f1 === true){
-          const finalPhone = window.DIGIY_SESSION.normalizePhone(payload.phone || phone);
+          const finalPhone = SESSION.normalizePhone(payload.phone || phone);
           return {
             ok: true,
             phone: finalPhone,
-            slug: window.DIGIY_SESSION.normalizeSlug(payload.slug || inferSlugFromPhone(finalPhone)),
+            slug: SESSION.normalizeSlug(payload.slug || inferSlugFromPhone(finalPhone)),
             label: payload.label || payload.business_name || "MON ARGENT PRO",
             raw: payload
           };
@@ -1003,11 +1048,11 @@
       evt.preventDefault();
 
       const q = readQuery();
-      const phone = window.DIGIY_SESSION.normalizePhone($("phone").value);
+      const phone = SESSION.normalizePhone($("phone").value);
       const pin = String($("pin").value || "").trim();
-      const slug = window.DIGIY_SESSION.normalizeSlug($("slug").value) || inferSlugFromPhone(phone);
+      const slug = SESSION.normalizeSlug($("slug").value) || inferSlugFromPhone(phone);
 
-      updateTags(slug, phone);
+      syncContextUi(slug, phone);
 
       if(!phone){
         setState("bad", "Téléphone requis", "Le rail PIN PAY a besoin du téléphone principal du pro.");
@@ -1023,16 +1068,19 @@
         return;
       }
 
+      let redirecting = false;
+
       try{
         setLoading(true);
         setState("", "Vérification", "Contrôle du PIN sur le vrai rail DIGIY PAY…");
         setMsg("Vérification du PIN en cours…", "");
 
         const payload = await verifyPin(phone, pin);
-        const finalPhone = window.DIGIY_SESSION.normalizePhone(payload.phone || phone);
-        const finalSlug = window.DIGIY_SESSION.normalizeSlug(payload.slug || slug) || slug;
+        const finalPhone = SESSION.normalizePhone(payload.phone || phone);
+        const finalSlug = SESSION.normalizeSlug(payload.slug || slug) || slug;
 
-        window.DIGIY_SESSION.save(finalSlug, finalPhone);
+        SESSION.save(finalSlug, finalPhone);
+        syncContextUi(finalSlug, finalPhone);
 
         setState("ok", "Accès validé", "PIN correct. Ouverture du cockpit PAY en cours.");
         setMsg("Accès PAY validé. Redirection vers le cockpit…", "ok");
@@ -1042,6 +1090,7 @@
         target.searchParams.set("slug", finalSlug);
         if(finalPhone) target.searchParams.set("phone", finalPhone);
 
+        redirecting = true;
         window.setTimeout(() => {
           window.location.href = target.toString();
         }, 350);
@@ -1051,20 +1100,31 @@
         setState("bad", "Accès refusé", message);
         setMsg(message, "bad");
       }finally{
-        setLoading(false);
+        if(!redirecting){
+          setLoading(false);
+        }
       }
     }
 
     function autofill(){
       const q = readQuery();
-      const s = window.DIGIY_SESSION.get();
-      const slug = q.slug || (s && s.slug) || "";
+      const s = SESSION.get();
+
       const phone = q.phone || (s && s.phone) || "";
+      const slug =
+        q.slug ||
+        (s && s.slug) ||
+        inferSlugFromPhone(phone) ||
+        "";
 
       if(slug) $("slug").value = slug;
       if(phone) $("phone").value = phone;
 
-      updateTags(slug, phone);
+      syncContextUi(slug, phone);
+
+      if((slug || phone) && typeof SESSION.applyUrl === "function"){
+        SESSION.applyUrl(slug, phone);
+      }
 
       if(q.reason === "session_absente"){
         setState("bad", "Session expirée", "La session PAY a expiré. Entre le PIN pour repartir proprement.");
@@ -1081,7 +1141,7 @@
         $("phone").value = "";
         $("slug").value = "";
         $("pin").value = "";
-        updateTags("", "");
+        syncContextUi("", "");
         setState("", "Entrée PIN", "Vérification sécurisée de l’accès PAY avant ouverture du cockpit réel.");
         setMsg("Champs effacés. Tu peux repartir proprement.", "");
       });
@@ -1094,18 +1154,23 @@
       });
 
       $("phone").addEventListener("input", () => {
-        const phone = window.DIGIY_SESSION.normalizePhone($("phone").value);
-        const currentSlug = window.DIGIY_SESSION.normalizeSlug($("slug").value);
+        const phone = SESSION.normalizePhone($("phone").value);
+        const currentSlug = SESSION.normalizeSlug($("slug").value);
+
         if(!currentSlug || currentSlug.startsWith("pay-")){
           $("slug").value = inferSlugFromPhone(phone);
         }
-        updateTags(window.DIGIY_SESSION.normalizeSlug($("slug").value), phone);
+
+        syncContextUi(
+          SESSION.normalizeSlug($("slug").value),
+          phone
+        );
       });
 
       $("slug").addEventListener("input", () => {
-        updateTags(
-          window.DIGIY_SESSION.normalizeSlug($("slug").value),
-          window.DIGIY_SESSION.normalizePhone($("phone").value)
+        syncContextUi(
+          SESSION.normalizeSlug($("slug").value),
+          SESSION.normalizePhone($("phone").value)
         );
       });
     }
