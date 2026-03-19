@@ -484,7 +484,7 @@
         <div class="mark">₣</div>
         <div>
           <div class="brand-title">Cerveau PAY — Moule vierge</div>
-          <div class="brand-sub" id="brainMeta">LocalStorage actif · Brouillon local</div>
+          <div class="brand-sub" id="brainMeta">Clé Brain locale par slug</div>
         </div>
       </div>
 
@@ -538,7 +538,6 @@
             <div class="card-title">Base commune</div>
             <div class="toolbar">
               <button class="btn outline" id="btnResetTemplate" type="button">Moule vierge</button>
-              <button class="btn gold" id="btnLoadDemo" type="button">Charger démo</button>
             </div>
           </div>
 
@@ -556,13 +555,13 @@
 
               <div class="field">
                 <label class="label" for="safetyReserve">Réserve de sécurité</label>
-                <input class="input" id="safetyReserve" type="number" min="0" step="1000" placeholder="150000" />
+                <input class="input" id="safetyReserve" type="number" min="0" step="1000" placeholder="Montant de réserve" />
                 <div class="hint">Le coussin minimum à protéger.</div>
               </div>
 
               <div class="field">
                 <label class="label" for="monthlyFixedCosts">Charges fixes mensuelles</label>
-                <input class="input" id="monthlyFixedCosts" type="number" min="0" step="1000" placeholder="85000" />
+                <input class="input" id="monthlyFixedCosts" type="number" min="0" step="1000" placeholder="Charges fixes du mois" />
                 <div class="hint">Loyer, internet, structure, etc.</div>
               </div>
 
@@ -574,7 +573,7 @@
 
               <div class="field">
                 <label class="label" for="minimumCash">Cash mini après engagements</label>
-                <input class="input" id="minimumCash" type="number" min="0" step="1000" placeholder="50000" />
+                <input class="input" id="minimumCash" type="number" min="0" step="1000" placeholder="Plancher de sécurité" />
                 <div class="hint">Plancher de sécurité après pression du mois.</div>
               </div>
 
@@ -597,17 +596,17 @@
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="creditLabel">Nom du crédit</label>
-                <input class="input" id="creditLabel" type="text" placeholder="Moto livraison" />
+                <input class="input" id="creditLabel" type="text" placeholder="Nom du crédit" />
               </div>
 
               <div class="field">
                 <label class="label" for="creditAmountLeft">Montant restant</label>
-                <input class="input" id="creditAmountLeft" type="number" min="0" step="1000" placeholder="240000" />
+                <input class="input" id="creditAmountLeft" type="number" min="0" step="1000" placeholder="Montant restant" />
               </div>
 
               <div class="field">
                 <label class="label" for="creditMonthly">Mensualité</label>
-                <input class="input" id="creditMonthly" type="number" min="0" step="1000" placeholder="40000" />
+                <input class="input" id="creditMonthly" type="number" min="0" step="1000" placeholder="Mensualité" />
               </div>
 
               <div class="field">
@@ -621,7 +620,7 @@
 
               <div class="field full">
                 <label class="label" for="creditNotes">Notes</label>
-                <textarea class="textarea" id="creditNotes" placeholder="Crédit principal à tenir sans retard"></textarea>
+                <textarea class="textarea" id="creditNotes" placeholder="Notes utiles sur ce crédit"></textarea>
               </div>
             </div>
 
@@ -639,17 +638,17 @@
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="debtLabel">Nom de la dette</label>
-                <input class="input" id="debtLabel" type="text" placeholder="Fournisseur boissons" />
+                <input class="input" id="debtLabel" type="text" placeholder="Nom de la dette" />
               </div>
 
               <div class="field">
                 <label class="label" for="debtAmount">Montant</label>
-                <input class="input" id="debtAmount" type="number" min="0" step="1000" placeholder="75000" />
+                <input class="input" id="debtAmount" type="number" min="0" step="1000" placeholder="Montant dû" />
               </div>
 
               <div class="field">
                 <label class="label" for="debtDueDays">Échéance (jours)</label>
-                <input class="input" id="debtDueDays" type="number" min="0" step="1" placeholder="7" />
+                <input class="input" id="debtDueDays" type="number" min="0" step="1" placeholder="Nombre de jours" />
               </div>
 
               <div class="field">
@@ -663,7 +662,7 @@
 
               <div class="field full">
                 <label class="label" for="debtNotes">Notes</label>
-                <textarea class="textarea" id="debtNotes" placeholder="Dette courte à solder vite"></textarea>
+                <textarea class="textarea" id="debtNotes" placeholder="Notes utiles sur cette dette"></textarea>
               </div>
             </div>
 
@@ -681,17 +680,17 @@
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="projectLabel">Nom du projet</label>
-                <input class="input" id="projectLabel" type="text" placeholder="Acheter congélateur" />
+                <input class="input" id="projectLabel" type="text" placeholder="Nom du projet" />
               </div>
 
               <div class="field">
                 <label class="label" for="projectTarget">Coût cible</label>
-                <input class="input" id="projectTarget" type="number" min="0" step="1000" placeholder="180000" />
+                <input class="input" id="projectTarget" type="number" min="0" step="1000" placeholder="Montant cible" />
               </div>
 
               <div class="field">
                 <label class="label" for="projectDeadline">Horizon (jours)</label>
-                <input class="input" id="projectDeadline" type="number" min="0" step="1" placeholder="45" />
+                <input class="input" id="projectDeadline" type="number" min="0" step="1" placeholder="Nombre de jours" />
               </div>
 
               <div class="field">
@@ -705,7 +704,7 @@
 
               <div class="field full">
                 <label class="label" for="projectNotes">Notes</label>
-                <textarea class="textarea" id="projectNotes" placeholder="Projet utile mais à lancer seulement si la caisse respire"></textarea>
+                <textarea class="textarea" id="projectNotes" placeholder="Notes utiles sur ce projet"></textarea>
               </div>
             </div>
 
@@ -721,7 +720,7 @@
           </div>
           <div class="card-body">
             <div class="status ok" id="statusBox">
-              Brouillon local prêt. Rien n’est envoyé au serveur.
+              Brain local prêt. Rien n’est envoyé au serveur.
             </div>
 
             <div class="toolbar" style="margin-top:12px">
@@ -734,8 +733,8 @@
             <input class="file-input" id="fileImport" type="file" accept="application/json,.json" />
 
             <div class="status warn" style="margin-top:12px">
-              Le navigateur garde le brouillon dans le localStorage du slug courant.
-              Le cockpit lit d’abord la clé officielle par slug, puis garde la compatibilité avec l’ancien brouillon.
+              Le navigateur garde le brain dans le localStorage du slug courant.
+              Le cockpit lit d’abord la clé officielle par slug, puis garde la compatibilité avec l’ancien rail.
             </div>
           </div>
         </article>
@@ -1047,63 +1046,6 @@
       credits: [],
       debts: [],
       projects: [],
-      rules: {
-        danger_debt_ratio_pct: 35,
-        minimum_cash_after_commitments_xof: 50000,
-        recommended_savings_pct: 15
-      }
-    };
-
-    const DEMO = {
-      currency: "XOF",
-      safety_reserve_xof: 100000,
-      monthly_fixed_costs_xof: 60000,
-      credits: [
-        {
-          label: "Moto activité",
-          amount_left_xof: 180000,
-          monthly_payment_xof: 30000,
-          priority: 1,
-          active: true,
-          notes: "Exemple de crédit principal à tenir"
-        }
-      ],
-      debts: [
-        {
-          label: "Fournisseur principal",
-          amount_xof: 50000,
-          due_in_days: 7,
-          priority: 1,
-          active: true,
-          notes: "Exemple de dette courte"
-        },
-        {
-          label: "Petit matériel",
-          amount_xof: 20000,
-          due_in_days: 21,
-          priority: 2,
-          active: true,
-          notes: "Exemple de dette du mois"
-        }
-      ],
-      projects: [
-        {
-          label: "Acheter équipement utile",
-          target_xof: 120000,
-          deadline_days: 45,
-          priority: 1,
-          active: true,
-          notes: "Projet utile à lancer seulement si la caisse respire"
-        },
-        {
-          label: "Amélioration image",
-          target_xof: 70000,
-          deadline_days: 30,
-          priority: 2,
-          active: true,
-          notes: "Projet image après urgences et base protégée"
-        }
-      ],
       rules: {
         danger_debt_ratio_pct: 35,
         minimum_cash_after_commitments_xof: 50000,
@@ -1609,7 +1551,7 @@
           brain = normalizeBrain(extracted);
           renderAll();
           saveDraft(false);
-          setStatus("ok", "JSON importé dans le brouillon local de ce slug.");
+          setStatus("ok", "JSON importé dans le brain local de ce slug.");
         }catch(_){
           setStatus("bad", "Import refusé : fichier illisible.");
         }
@@ -1644,14 +1586,7 @@
         brain = deepClone(TEMPLATE);
         renderAll();
         saveDraft(false);
-        setStatus("ok", "Moule vierge chargé dans le brouillon local de ce slug.");
-      });
-
-      document.getElementById("btnLoadDemo").addEventListener("click", () => {
-        brain = deepClone(DEMO);
-        renderAll();
-        saveDraft(false);
-        setStatus("ok", "Démo chargée dans le brouillon local de ce slug.");
+        setStatus("ok", "Moule vierge chargé dans le brain local de ce slug.");
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
