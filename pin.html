@@ -1002,12 +1002,31 @@
       }
     );
 
-    async function verifyPin(phone, pin){
-      const { data, error } = await sb.rpc("digiy_verify_pin", {
-        p_phone: phone,
-        p_module: "PAY",
-        p_pin: pin
-      });
+   async function openAccess(event) {
+  event.preventDefault();
+
+  try {
+    const qs = new URLSearchParams(window.location.search);
+    const slug =
+      (qs.get("slug") || window.DIGIY_GUARD?.getSlug?.() || "").trim();
+
+    const pin =
+      document.querySelector('input[name="pin"]')?.value ||
+      document.querySelector('#pin')?.value ||
+      "";
+
+    const result = await verifyPin(slug, pin);
+
+    const next = qs.get("next") || "/index.html";
+    const url = new URL(next, window.location.origin);
+    if (result?.slug) url.searchParams.set("slug", result.slug);
+
+    window.location.replace(url.toString());
+  } catch (err) {
+    console.error("[PAY pin] Error:", err);
+    alert(err.message || "Erreur d’accès PAY.");
+  }
+}
 
       if(error) throw error;
 
