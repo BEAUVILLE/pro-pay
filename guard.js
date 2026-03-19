@@ -1,6 +1,6 @@
-/* guard.js — ENTREPRENEUR MULTI SERVICES / PAY GUARD
+/* guard.js — MON ARGENT / PAY GUARD
    Rail attendu :
-   - slug-only : ?slug=build-221...
+   - slug-only : ?slug=pay-221...
    - window.DIGIY_GUARD.ready()
    - window.DIGIY_GUARD.state
    - window.DIGIY_GUARD.loginWithPin(slug, pin)
@@ -11,15 +11,15 @@
   const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
 
-  const MODULE_CODE = "BUILD";
+  const MODULE_CODE = "PAY";
   const LOGIN_URL = window.DIGIY_LOGIN_URL || "./pin.html";
   const PAY_URL = "https://commencer-a-payer.digiylyfe.com/";
 
   // Sécurité : pas de preview libre sur page protégée
   const ALLOW_PREVIEW_WITHOUT_IDENTITY = false;
 
-  const SESSION_KEY = "DIGIY_SESSION";
-  const ACCESS_KEY = "DIGIY_ACCESS";
+  const SESSION_KEY = "DIGIY_PAY_SESSION";
+const ACCESS_KEY = "DIGIY_PAY_ACCESS";
   const MODULE_PREFIX = "digiy_pay";
 
   const state = {
