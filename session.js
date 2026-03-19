@@ -3,6 +3,7 @@
 
   const SESSION_KEY = "digiy_pay_session";
   const MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8h
+  const MODULE_NAME = "PAY";
 
   function normalizeSlug(v){
     return String(v || "").trim().toLowerCase();
@@ -29,7 +30,7 @@
     const payload = {
       slug: cleanSlug,
       phone: cleanPhone,
-      module: "PAY",
+      module: MODULE_NAME,
       ts: Date.now()
     };
 
@@ -54,8 +55,14 @@
       const slug = normalizeSlug(parsed.slug);
       const phone = normalizePhone(parsed.phone);
       const ts = Number(parsed.ts || 0);
+      const moduleName = String(parsed.module || "").trim().toUpperCase();
 
       if(!slug){
+        localStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+
+      if(moduleName && moduleName !== MODULE_NAME){
         localStorage.removeItem(SESSION_KEY);
         return null;
       }
@@ -66,7 +73,6 @@
         return null;
       }
 
-      // refresh silencieux
       return save(slug, phone);
     }catch(_){
       try{ localStorage.removeItem(SESSION_KEY); }catch(__){}
@@ -96,8 +102,10 @@
       const url = new URL(window.location.href);
 
       if(cleanSlug) url.searchParams.set("slug", cleanSlug);
+      else url.searchParams.delete("slug");
+
       if(cleanPhone) url.searchParams.set("phone", cleanPhone);
-      if(!cleanPhone) url.searchParams.delete("phone");
+      else url.searchParams.delete("phone");
 
       window.history.replaceState({}, "", url.toString());
     }catch(_){}
