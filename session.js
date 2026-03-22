@@ -21,18 +21,34 @@
     }
   }
 
-  function save(slug, phone){
+  function buildPayload(slug, phone){
     const cleanSlug = normalizeSlug(slug);
     const cleanPhone = normalizePhone(phone);
+    const nowMs = Date.now();
 
     if(!cleanSlug) return null;
 
-    const payload = {
+    return {
       slug: cleanSlug,
       phone: cleanPhone,
       module: MODULE_NAME,
-      ts: Date.now()
+
+      access: true,
+      access_ok: true,
+      ok: true,
+      verified: true,
+
+      verified_at: nowMs,
+      validated_at: new Date(nowMs).toISOString(),
+      ts: nowMs,
+
+      reason: "pin_ok"
     };
+  }
+
+  function save(slug, phone){
+    const payload = buildPayload(slug, phone);
+    if(!payload) return null;
 
     try{
       localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
@@ -54,8 +70,21 @@
 
       const slug = normalizeSlug(parsed.slug);
       const phone = normalizePhone(parsed.phone);
-      const ts = Number(parsed.ts || 0);
       const moduleName = String(parsed.module || "").trim().toUpperCase();
+
+      const verifiedAt =
+        Number(parsed.verified_at || parsed.ts || 0) || 0;
+
+      const validatedAt =
+        parsed.validated_at ? new Date(parsed.validated_at).getTime() : 0;
+
+      const lastSeen = verifiedAt || validatedAt || 0;
+
+      const hasAccess =
+        !!parsed.access ||
+        !!parsed.access_ok ||
+        !!parsed.ok ||
+        !!parsed.has_access;
 
       if(!slug){
         localStorage.removeItem(SESSION_KEY);
@@ -67,7 +96,17 @@
         return null;
       }
 
-      const age = Date.now() - ts;
+      if(!hasAccess){
+        localStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+
+      if(!lastSeen){
+        localStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+
+      const age = Date.now() - lastSeen;
       if(age > MAX_AGE_MS){
         localStorage.removeItem(SESSION_KEY);
         return null;
