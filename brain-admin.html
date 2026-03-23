@@ -504,7 +504,7 @@
       <p>
         Ici tu poses la base du pro : réserve, charges fixes, crédits, dettes et projets.
         Tout reste d’abord local dans le navigateur, rangé par slug. Ensuite tu exportes
-        proprement ton JSON ou ta version prête pour le repo.
+        proprement ton JSON ou ta version prête pour GitHub.
       </p>
 
       <div class="hero-grid">
@@ -727,6 +727,8 @@
               <button class="btn green" id="btnSave" type="button">💾 Sauvegarder localement</button>
               <button class="btn blue" id="btnExport" type="button">⬇️ Export JSON</button>
               <button class="btn gold" id="btnExportRepo" type="button">🌍 Export pour repo</button>
+              <button class="btn outline" id="btnCopyRepoJson" type="button">📋 Copier JSON repo</button>
+              <button class="btn outline" id="btnSyncCockpit" type="button">🔄 Sync cockpit</button>
               <button class="btn outline" id="btnImportTrigger" type="button">⬆️ Import JSON</button>
               <button class="btn red" id="btnClearLocal" type="button">🗑️ Effacer local</button>
             </div>
@@ -735,7 +737,7 @@
 
             <div class="status warn" style="margin-top:12px">
               Le navigateur garde les données de pilotage dans le localStorage du slug courant.
-              Le cockpit lit uniquement la clé officielle et le brouillon de ce slug.
+              Le cockpit lit d’abord la clé officielle, puis le brouillon du slug.
             </div>
           </div>
         </article>
@@ -882,6 +884,8 @@
     }
 
     const CTX = getCtx();
+    const AUTOSAVE_DELAY_MS = 420;
+    let autosaveTimer = null;
 
     function requireSlugOrRedirect(){
       if(CTX.slug) return true;
@@ -1152,7 +1156,24 @@
         `${ctxParts.join(" · ")} · ${count} élément(s)`;
     }
 
-    function saveDraft(showMessage = true){
+    function buildExportObject(){
+      return normalizeBrain(deepClone(brain));
+    }
+
+    function buildRepoExportObject(){
+      return {
+        slug: CTX.slug,
+        phone: CTX.phone || "",
+        updated_at: new Date().toISOString(),
+        brain: buildExportObject()
+      };
+    }
+
+    function getCockpitHref(){
+      return buildCtxHref("./cockpit.html", CTX.slug, CTX.phone);
+    }
+
+    function saveDraft(showMessage = true, sourceLabel = "manuel"){
       const normalized = normalizeBrain(brain);
       const payload = JSON.stringify(normalized);
       const keys = getBrainKeysToWrite(CTX.slug);
@@ -1162,17 +1183,30 @@
       });
 
       if(window.DIGIY_SESSION && typeof window.DIGIY_SESSION.save === "function"){
-        try{ window.DIGIY_SESSION.save(CTX.slug, CTX.phone); }catch(_){}
+        try{
+          window.DIGIY_SESSION.save(CTX.slug, CTX.phone);
+          if(typeof window.DIGIY_SESSION.applyUrl === "function"){
+            window.DIGIY_SESSION.applyUrl(CTX.slug, CTX.phone);
+          }
+        }catch(_){}
       }
 
       if(showMessage){
         setStatus(
           "ok",
-          `Brain PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}`
+          `Brain PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}<br><strong>Source :</strong> ${esc(sourceLabel)}`
         );
       }
 
       updateMeta();
+      renderPreview();
+    }
+
+    function scheduleAutosave(sourceLabel = "auto"){
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => {
+        saveDraft(false, sourceLabel);
+      }, AUTOSAVE_DELAY_MS);
     }
 
     function bindBaseFields(){
@@ -1190,7 +1224,7 @@
         el.addEventListener("input", () => {
           writeField(map[id], el.value);
           renderAll();
-          saveDraft(false);
+          scheduleAutosave("champ_base");
         });
       });
     }
@@ -1248,7 +1282,7 @@
       brain.credits.push(item);
       clearCreditForm();
       renderAll();
-      saveDraft();
+      saveDraft(true, "ajout_credit");
     }
 
     function addDebt(){
@@ -1269,7 +1303,7 @@
       brain.debts.push(item);
       clearDebtForm();
       renderAll();
-      saveDraft();
+      saveDraft(true, "ajout_dette");
     }
 
     function addProject(){
@@ -1290,7 +1324,7 @@
       brain.projects.push(item);
       clearProjectForm();
       renderAll();
-      saveDraft();
+      saveDraft(true, "ajout_projet");
     }
 
     function clearCreditForm(){
@@ -1321,7 +1355,7 @@
       if(!Array.isArray(brain[type])) return;
       brain[type].splice(index, 1);
       renderAll();
-      saveDraft();
+      saveDraft(true, `suppression_${type}`);
     }
 
     function toggleItem(type, index){
@@ -1329,7 +1363,7 @@
       if(!item) return;
       item.active = item.active === false ? true : false;
       renderAll();
-      saveDraft();
+      saveDraft(true, `toggle_${type}`);
     }
 
     function priorityLabel(p){
@@ -1506,21 +1540,8 @@
         "badge " + (activeProjects.length ? "warn" : "ok");
     }
 
-    function buildExportObject(){
-      return normalizeBrain(deepClone(brain));
-    }
-
-    function buildRepoExportObject(){
-      return {
-        slug: CTX.slug,
-        phone: CTX.phone || "",
-        updated_at: new Date().toISOString(),
-        brain: buildExportObject()
-      };
-    }
-
     function renderPreview(){
-      const data = buildExportObject();
+      const data = buildRepoExportObject();
       document.getElementById("jsonPreview").textContent = JSON.stringify(data, null, 2);
     }
 
@@ -1547,6 +1568,15 @@
       URL.revokeObjectURL(url);
     }
 
+    async function copyText(text, okMessage){
+      try{
+        await navigator.clipboard.writeText(String(text || ""));
+        setStatus("ok", okMessage);
+      }catch(_){
+        setStatus("warn", "Copie impossible sur ce navigateur.");
+      }
+    }
+
     function importJsonFile(file){
       const reader = new FileReader();
       reader.onload = () => {
@@ -1561,7 +1591,7 @@
 
           brain = normalizeBrain(extracted);
           renderAll();
-          saveDraft(false);
+          saveDraft(false, "import_json");
           setStatus("ok", "JSON importé dans le pilotage local de ce slug.");
         }catch(_){
           setStatus("bad", "Import refusé : fichier illisible.");
@@ -1570,13 +1600,21 @@
       reader.readAsText(file);
     }
 
+    function syncCockpit(){
+      saveDraft(false, "sync_cockpit");
+      setStatus(
+        "ok",
+        `Brain synchronisé pour le cockpit.<br><strong>Clé :</strong> ${esc(getOfficialBrainKey(CTX.slug))}<br><a href="${esc(getCockpitHref())}" style="color:#bbf7d0;text-decoration:underline">Ouvrir le cockpit</a>`
+      );
+    }
+
     function bindActions(){
       document.getElementById("btnAddCredit").addEventListener("click", addCredit);
       document.getElementById("btnAddDebt").addEventListener("click", addDebt);
       document.getElementById("btnAddProject").addEventListener("click", addProject);
 
-      document.getElementById("btnSave").addEventListener("click", () => saveDraft(true));
-      document.getElementById("btnSaveTop").addEventListener("click", () => saveDraft(true));
+      document.getElementById("btnSave").addEventListener("click", () => saveDraft(true, "manuel"));
+      document.getElementById("btnSaveTop").addEventListener("click", () => saveDraft(true, "manuel"));
 
       document.getElementById("btnExport").addEventListener("click", () => {
         const filename = `pay-brain-${CTX.slug || "local"}.json`;
@@ -1589,6 +1627,15 @@
         downloadJson(filename, buildRepoExportObject());
         setStatus("ok", `Export repo prêt : ${filename}`);
       });
+
+      document.getElementById("btnCopyRepoJson").addEventListener("click", () => {
+        copyText(
+          JSON.stringify(buildRepoExportObject(), null, 2),
+          "JSON repo copié dans le presse-papiers."
+        );
+      });
+
+      document.getElementById("btnSyncCockpit").addEventListener("click", syncCockpit);
 
       document.getElementById("btnImportTrigger").addEventListener("click", () => {
         document.getElementById("fileImport").click();
@@ -1603,7 +1650,7 @@
       document.getElementById("btnResetTemplate").addEventListener("click", () => {
         brain = deepClone(TEMPLATE);
         renderAll();
-        saveDraft(false);
+        saveDraft(false, "moule_vierge");
         setStatus("ok", "Moule vierge chargé dans le pilotage local de ce slug.");
       });
 
@@ -1616,6 +1663,19 @@
         brain = deepClone(TEMPLATE);
         renderAll();
         setStatus("warn", "Toutes les clés de pilotage locales de ce slug ont été effacées. Moule vierge rechargé.");
+      });
+
+      [
+        "creditLabel","creditAmountLeft","creditMonthly","creditPriority","creditNotes",
+        "debtLabel","debtAmount","debtDueDays","debtPriority","debtNotes",
+        "projectLabel","projectTarget","projectDeadline","projectPriority","projectNotes"
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.addEventListener("input", () => {
+          renderPreview();
+          updateMeta();
+        });
       });
     }
 
