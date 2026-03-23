@@ -1960,48 +1960,45 @@
       return null;
     }
 
-    async function loadPayBrain(){
-      PAY_BRAIN = null;
-      PAY_BRAIN_SOURCE = "none";
+   async function loadPayBrain(){
+  PAY_BRAIN = null;
+  PAY_BRAIN_SOURCE = "none";
 
-      if(!SLUG){
-        return;
-      }
+  if(!SLUG) return;
 
-      const localFound = readBrainFromLocalStorage(SLUG);
-      if(localFound && localFound.data){
-        PAY_BRAIN = normalizeBrain(localFound.data);
-        PAY_BRAIN_SOURCE = localFound.label || "local";
-        return;
-      }
+  // 1️⃣ LOCAL (prioritaire)
+  const local = localStorage.getItem(`digiy_pay_brain:${SLUG}`);
+  if(local){
+    try{
+      PAY_BRAIN = JSON.parse(local);
+      PAY_BRAIN_SOURCE = "local";
+      return;
+    }catch(e){}
+  }
 
-      PAY_BRAIN = null;
-      PAY_BRAIN_SOURCE = "none";
+  // 2️⃣ FETCH REPO (fallback)
+  try{
+    const res = await fetch("./data/pay-brain.json?ts=" + Date.now());
+    const json = await res.json();
+
+    if(json && typeof json === "object"){
+      PAY_BRAIN = json;
+      PAY_BRAIN_SOURCE = "repo";
+
+      // 💾 On sauvegarde local automatiquement
+      localStorage.setItem(
+        `digiy_pay_brain:${SLUG}`,
+        JSON.stringify(json)
+      );
+
+      return;
     }
+  }catch(e){
+    console.warn("brain fetch error", e);
+  }
 
-    function brainSourceText(){
-      const s = normalizeSlug(SLUG);
-
-      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain:${s}`){
-        return "Pilotage par slug chargé.";
-      }
-
-      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain_draft:${s}`){
-        return "Pilotage brouillon chargé.";
-      }
-
-      return "Aucun pilotage local chargé.";
-    }
-
-    function normalizeRpcPayload(payload){
-      if(!payload) return null;
-      if(typeof payload === "object") return payload;
-      if(typeof payload === "string"){
-        const parsed = safeJsonParse(payload.trim());
-        return parsed && typeof parsed === "object" ? parsed : null;
-      }
-      return null;
-    }
+  PAY_BRAIN = null;
+}
 
     function sumCreditsLeft(brain){
       return (brain?.credits || [])
