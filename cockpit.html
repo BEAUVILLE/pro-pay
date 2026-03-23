@@ -1774,7 +1774,7 @@
     function normalizeSlug(v){
       return String(v || "").trim().toLowerCase();
     }
-
+    
     function normalizePhone(v){
       return String(v || "").replace(/[^\d]/g, "");
     }
@@ -1786,6 +1786,29 @@
         return null;
       }
     }
+    function normalizeRpcPayload(payload){
+  if(payload == null) return null;
+
+  let value = payload;
+
+  // Supabase RPC renvoie parfois { data: ... }
+  if(typeof value === "object" && value !== null && "data" in value){
+    value = value.data;
+  }
+
+  // Si tableau → on prend le premier
+  if(Array.isArray(value)){
+    if(value.length === 0) return null;
+    return value[0] ?? null;
+  }
+
+  // Objet direct
+  if(typeof value === "object" && value !== null){
+    return value;
+  }
+
+  return value;
+}
 
     function num(v){
       const n = Number(v || 0);
