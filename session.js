@@ -57,6 +57,12 @@
     return payload;
   }
 
+  function clear(){
+    try{
+      localStorage.removeItem(SESSION_KEY);
+    }catch(_){}
+  }
+
   function get(){
     try{
       const raw = localStorage.getItem(SESSION_KEY);
@@ -64,7 +70,7 @@
 
       const parsed = safeJsonParse(raw);
       if(!parsed || typeof parsed !== "object"){
-        localStorage.removeItem(SESSION_KEY);
+        clear();
         return null;
       }
 
@@ -72,12 +78,8 @@
       const phone = normalizePhone(parsed.phone);
       const moduleName = String(parsed.module || "").trim().toUpperCase();
 
-      const verifiedAt =
-        Number(parsed.verified_at || parsed.ts || 0) || 0;
-
-      const validatedAt =
-        parsed.validated_at ? new Date(parsed.validated_at).getTime() : 0;
-
+      const verifiedAt = Number(parsed.verified_at || parsed.ts || 0) || 0;
+      const validatedAt = parsed.validated_at ? new Date(parsed.validated_at).getTime() : 0;
       const lastSeen = verifiedAt || validatedAt || 0;
 
       const hasAccess =
@@ -87,51 +89,53 @@
         !!parsed.has_access;
 
       if(!slug){
-        localStorage.removeItem(SESSION_KEY);
+        clear();
         return null;
       }
 
       if(moduleName && moduleName !== MODULE_NAME){
-        localStorage.removeItem(SESSION_KEY);
+        clear();
         return null;
       }
 
       if(!hasAccess){
-        localStorage.removeItem(SESSION_KEY);
+        clear();
         return null;
       }
 
       if(!lastSeen){
-        localStorage.removeItem(SESSION_KEY);
+        clear();
         return null;
       }
 
       const age = Date.now() - lastSeen;
       if(age > MAX_AGE_MS){
-        localStorage.removeItem(SESSION_KEY);
+        clear();
         return null;
       }
 
       return save(slug, phone);
     }catch(_){
-      try{ localStorage.removeItem(SESSION_KEY); }catch(__){}
+      clear();
       return null;
     }
   }
 
-  function clear(){
+  function read(){
+    return get();
+  }
+
+  function fromUrl(){
     try{
-      localStorage.removeItem(SESSION_KEY);
-    }catch(_){}
-  }
+      const url = new URL(window.location.href);
+      const slug = normalizeSlug(url.searchParams.get("slug"));
+      const phone = normalizePhone(url.searchParams.get("phone"));
 
-  function requireSession(pinUrl){
-    const s = get();
-    if(!s){
-      window.location.href = pinUrl || "./pin.html";
+      if(!slug) return null;
+      return { slug, phone };
+    }catch(_){
       return null;
     }
-    return s;
   }
 
   function applyUrl(slug, phone){
@@ -150,26 +154,61 @@
     }catch(_){}
   }
 
-  function fromUrl(){
-    try{
-      const url = new URL(window.location.href);
-      const slug = normalizeSlug(url.searchParams.get("slug"));
-      const phone = normalizePhone(url.searchParams.get("phone"));
+  function boot(){
+    const urlCtx = fromUrl();
+    if(urlCtx && urlCtx.slug){
+      const saved = save(urlCtx.slug, urlCtx.phone);
+      applyUrl(saved?.slug || urlCtx.slug, saved?.phone || urlCtx.phone);
+      return saved || null;
+    }
 
-      if(!slug) return null;
-      return { slug, phone };
+    const session = get();
+    if(session){
+      applyUrl(session.slug, session.phone);
+      return session;
+    }
+
+    return null;
+  }
+
+  function buildPinUrl(pinUrl){
+    try{
+      const target = pinUrl || "./pin.html";
+      const url = new URL(target, window.location.href);
+
+      const current = new URL(window.location.href);
+      const redirect =
+        current.pathname.split("/").pop() || "cockpit.html";
+
+      if(!url.searchParams.get("redirect")){
+        url.searchParams.set("redirect", redirect);
+      }
+
+      return url.toString();
     }catch(_){
+      return pinUrl || "./pin.html";
+    }
+  }
+
+  function requireSession(pinUrl){
+    const s = get();
+    if(!s){
+      window.location.href = buildPinUrl(pinUrl);
       return null;
     }
+    applyUrl(s.slug, s.phone);
+    return s;
   }
 
   window.DIGIY_SESSION = {
     save,
     get,
+    read,
     clear,
     require: requireSession,
     applyUrl,
     fromUrl,
+    boot,
     normalizeSlug,
     normalizePhone
   };
