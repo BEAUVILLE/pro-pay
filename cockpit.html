@@ -1756,19 +1756,51 @@
     );
 
     const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
-    const PAY_BRAIN_FALLBACK_URL = "./data/pay-brain.json";
+    const PAY_BRAIN_FALLBACK_URL = "";
 
     let SLUG = "";
     let PHONE = "";
-    let COCKPIT = null;
-    let MANUAL_MOVES = [];
     let PAY_BRAIN = null;
     let PAY_BRAIN_SOURCE = "none";
+    let MANUAL_SUMMARY = {
+      inPro: 0,
+      outPro: 0,
+      outPerso: 0,
+      savings: 0,
+      todayPerso: 0
+    };
     let LAST_CALC = null;
 
-    function money(n){
-      const v = Number(n || 0);
-      return Math.round(v).toLocaleString("fr-FR") + " F CFA";
+    function normalizeSlug(v){
+      return String(v || "").trim().toLowerCase();
+    }
+
+    function normalizePhone(v){
+      return String(v || "").replace(/[^\d]/g, "");
+    }
+
+    function safeJsonParse(raw){
+      try{
+        return JSON.parse(raw);
+      }catch(_){
+        return null;
+      }
+    }
+
+    function num(v){
+      const n = Number(v || 0);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function money(v){
+      return Math.round(num(v)).toLocaleString("fr-FR") + " F CFA";
+    }
+
+    function percent(part, total){
+      const p = num(part);
+      const t = num(total);
+      if(t <= 0) return 0;
+      return (p / t) * 100;
     }
 
     function esc(v){
@@ -1780,529 +1812,149 @@
         .replace(/'/g, "&#39;");
     }
 
-    function safeJsonParse(raw){
-      try{ return JSON.parse(raw); }catch(_){ return null; }
+    function todayLocalDate(){
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     }
 
-    function normalizeSlug(v){
-      return String(v || "").trim().toLowerCase();
+    function toast(text){
+      const el = document.getElementById("toast");
+      if(!el) return;
+      el.textContent = String(text || "");
+      el.classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => el.classList.remove("show"), 2200);
     }
 
-    function normalizePhone(v){
-      return String(v || "").replace(/[^\d]/g, "");
-    }
-
-    function normalizeMovementDate(raw){
-      const value = String(raw || "").trim();
-      if(!value) return null;
-
-      if(/^\d{4}-\d{2}-\d{2}$/.test(value)){
-        const d = new Date(value + "T00:00:00");
-        return Number.isNaN(d.getTime()) ? null : d;
-      }
-
-      const d = new Date(value);
-      return Number.isNaN(d.getTime()) ? null : d;
-    }
-
-    function monthBounds(date = new Date()){
-      const start = new Date(date.getFullYear(), date.getMonth(), 1);
-      const end = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-
-      const ymd = (d) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${y}-${m}-${day}`;
-      };
-
-      return {
-        start,
-        end,
-        startYmd: ymd(start),
-        endYmd: ymd(end)
-      };
-    }
-
-    function sameMonth(a, b){
-      if(!(a instanceof Date) || Number.isNaN(a.getTime())) return false;
-      if(!(b instanceof Date) || Number.isNaN(b.getTime())) return false;
-      return (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth()
-      );
-    }
-
-    function sameDay(a, b){
-      if(!(a instanceof Date) || Number.isNaN(a.getTime())) return false;
-      if(!(b instanceof Date) || Number.isNaN(b.getTime())) return false;
-      return (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate()
-      );
-    }
-
-    function toast(msg, duration = 2200){
-      const t = document.getElementById("toast");
-      if(!t) return;
-      t.textContent = String(msg || "");
-      t.classList.add("show");
-      window.clearTimeout(t._timer);
-      t._timer = window.setTimeout(() => t.classList.remove("show"), duration);
-    }
-
-    function setState(kind, title, txt){
+    function setState(kind, title, text){
       const box = document.getElementById("stateBox");
       if(!box) return;
-      box.className = "state" + (kind ? " " + kind : "");
+      box.className = "state " + kind;
       box.innerHTML = `
-        <div class="state-title">${esc(title || "État")}</div>
-        <div class="state-txt">${esc(txt || "")}</div>
+        <div class="state-title">${esc(title || "")}</div>
+        <div class="state-txt">${esc(text || "")}</div>
       `;
-    }
-
-    function setEmptyEverywhere(message){
-      const safe = esc(message || "Aucune donnée chargée.");
-      [
-        "modulesList","channelsList","channelsBars","resultList",
-        "creditsList","debtsList","projectsList","rescuePlanList"
-      ].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.innerHTML = `<div class="empty">${safe}</div>`;
-      });
-    }
-
-    function normalizeArray(arr){
-      return Array.isArray(arr) ? arr : [];
-    }
-
-    function priorityLabel(v){
-      const n = Number(v || 0);
-      if(n <= 1) return "Priorité haute";
-      if(n === 2) return "Priorité moyenne";
-      return "Priorité normale";
-    }
-
-    function strategicLevelLabel(level){
-      if(level === "PROTEGER") return "PROTÉGER";
-      if(level === "TENIR") return "TENIR";
-      if(level === "CONSOLIDER") return "CONSOLIDER";
-      if(level === "ACCELERER") return "ACCÉLÉRER";
-      return "—";
-    }
-
-    function strategicClass(level){
-      if(level === "PROTEGER") return "bad";
-      if(level === "TENIR") return "orange";
-      if(level === "CONSOLIDER") return "warn";
-      if(level === "ACCELERER") return "ok";
-      return "warn";
-    }
-
-    function buildContextHref(page, slug, phone){
-      const s = normalizeSlug(slug);
-      const p = normalizePhone(phone);
-      const params = [];
-      if(s) params.push("slug=" + encodeURIComponent(s));
-      if(p) params.push("phone=" + encodeURIComponent(p));
-      return params.length ? `${page}?${params.join("&")}` : page;
     }
 
     function setContextLinks(slug, phone){
-      const adminHref = buildContextHref("./admin.html", slug, phone);
-      const brainHref = buildContextHref("./brain-admin.html", slug, phone);
-
-      const idsAdmin = ["btnGoAdmin", "topAdminLink", "hudAdminLink"];
-      const idsBrain = ["topBrainLink", "hudBrainLink"];
-
-      idsAdmin.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.href = adminHref;
-      });
-
-      idsBrain.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.href = brainHref;
-      });
-    }
-
-    function renderModules(items){
-      const el = document.getElementById("modulesList");
-      const arr = normalizeArray(items);
-      if(!arr.length){
-        el.innerHTML = `<div class="empty">Aucun module visible pour l'instant.</div>`;
-        return;
-      }
-
-      el.innerHTML = arr.map(row => `
-        <div class="row">
-          <div class="row-ico green">📦</div>
-          <div class="row-body">
-            <div class="row-title">${esc(row.source_module || "MODULE")}</div>
-            <div class="row-meta">Flux remonté depuis le module métier</div>
-          </div>
-          <div class="row-amount green">${money(row.amount_xof)}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderChannels(items){
-      const el = document.getElementById("channelsList");
-      const arr = normalizeArray(items);
-      if(!arr.length){
-        el.innerHTML = `<div class="empty">Aucun canal visible pour l'instant.</div>`;
-        return;
-      }
-
-      el.innerHTML = arr.map(row => `
-        <div class="row">
-          <div class="row-ico gold">💳</div>
-          <div class="row-body">
-            <div class="row-title">${esc(String(row.channel || "AUTRE").toUpperCase())}</div>
-            <div class="row-meta">Canal de paiement ou d'enregistrement remonté dans PAY</div>
-          </div>
-          <div class="row-amount gold">${money(row.amount_xof)}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderChannelBars(items){
-      const el = document.getElementById("channelsBars");
-      const arr = normalizeArray(items);
-      if(!arr.length){
-        el.innerHTML = `<div class="empty">Aucune répartition canal pour l'instant.</div>`;
-        return;
-      }
-
-      const max = Math.max(...arr.map(x => Number(x.amount_xof || 0)), 1);
-      el.innerHTML = arr.map(row => {
-        const amount = Number(row.amount_xof || 0);
-        const pct = Math.min(100, Math.round((amount / max) * 100));
-        return `
-          <div class="bar-row">
-            <div class="bar-label">${esc(String(row.channel || "AUTRE").toUpperCase())}</div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:${pct}%;background:#facc15"></div>
-            </div>
-            <div class="bar-val" style="color:#fde68a">${money(amount)}</div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function renderResultRows(calc, strategic){
-      const el = document.getElementById("resultList");
-      el.innerHTML = `
-        <div class="row">
-          <div class="row-ico gold">🧭</div>
-          <div class="row-body">
-            <div class="row-title">VERDICT DU MOIS</div>
-            <div class="row-meta">Le rôle réel du terrain : protéger, tenir, consolider ou accélérer.</div>
-          </div>
-          <div class="row-amount gold">${esc(strategicLevelLabel(strategic.level))}</div>
-        </div>
-
-        <div class="row">
-          <div class="row-ico gold">💼</div>
-          <div class="row-body">
-            <div class="row-title">NET PRO</div>
-            <div class="row-meta">Entrées pro − dépenses pro. La lecture principale.</div>
-          </div>
-          <div class="row-amount gold">${money(calc.netPro)}</div>
-        </div>
-
-        <div class="row">
-          <div class="row-ico green">🛟</div>
-          <div class="row-body">
-            <div class="row-title">MARGE PROTÉGÉE</div>
-            <div class="row-meta">Ce qu'il reste après la pression visible du mois.</div>
-          </div>
-          <div class="row-amount ${strategic.marge >= 0 ? "green" : "danger"}">${money(strategic.marge)}</div>
-        </div>
-
-        <div class="row">
-          <div class="row-ico red">⚠️</div>
-          <div class="row-body">
-            <div class="row-title">SURCOÛT DÉTECTÉ</div>
-            <div class="row-meta">Crédits mensuels + dettes proches + perso visible.</div>
-          </div>
-          <div class="row-amount danger">${money(strategic.pressure)}</div>
-        </div>
-      `;
-    }
-
-    function renderCredits(items){
-      const el = document.getElementById("creditsList");
-      const arr = normalizeArray(items).filter(x => x && x.active !== false);
-      if(!arr.length){
-        el.innerHTML = `<div class="empty">Aucun crédit déclaré dans le JSON.</div>`;
-        return;
-      }
-
-      el.innerHTML = arr.map(row => `
-        <div class="row">
-          <div class="row-ico violet">🏦</div>
-          <div class="row-body">
-            <div class="row-title">${esc(row.label || "Crédit")}</div>
-            <div class="row-meta">
-              ${esc(priorityLabel(row.priority))} · Mensuel : ${esc(money(row.monthly_payment_xof || 0))}
-              ${row.notes ? " · " + esc(row.notes) : ""}
-            </div>
-          </div>
-          <div class="row-amount violet">${money(row.amount_left_xof || 0)}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderDebts(items){
-      const el = document.getElementById("debtsList");
-      const arr = normalizeArray(items).filter(x => x && x.active !== false);
-      if(!arr.length){
-        el.innerHTML = `<div class="empty">Aucune dette déclarée dans le JSON.</div>`;
-        return;
-      }
-
-      el.innerHTML = arr.map(row => `
-        <div class="row">
-          <div class="row-ico red">🧾</div>
-          <div class="row-body">
-            <div class="row-title">${esc(row.label || "Dette")}</div>
-            <div class="row-meta">
-              ${esc(priorityLabel(row.priority))} · Échéance : ${esc(String(row.due_in_days ?? "—"))} jour(s)
-              ${row.notes ? " · " + esc(row.notes) : ""}
-            </div>
-          </div>
-          <div class="row-amount danger">${money(row.amount_xof || 0)}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderProjects(items){
-      const el = document.getElementById("projectsList");
-      const arr = normalizeArray(items).filter(x => x && x.active !== false);
-      if(!arr.length){
-        el.innerHTML = `<div class="empty">Aucun projet déclaré dans le JSON.</div>`;
-        return;
-      }
-
-      el.innerHTML = arr.map(row => `
-        <div class="row">
-          <div class="row-ico gold">🚀</div>
-          <div class="row-body">
-            <div class="row-title">${esc(row.label || "Projet")}</div>
-            <div class="row-meta">
-              ${esc(priorityLabel(row.priority))} · Horizon : ${esc(String(row.deadline_days ?? "—"))} jour(s)
-              ${row.notes ? " · " + esc(row.notes) : ""}
-            </div>
-          </div>
-          <div class="row-amount gold">${money(row.target_xof || 0)}</div>
-        </div>
-      `).join("");
-    }
-
-    async function loadManualMovements(){
-      const bounds = monthBounds(new Date());
-
-      const { data, error } = await sb
-        .from(PAY_MOVEMENTS_TABLE)
-        .select("id,movement_date,amount_xof")
-        .eq("slug", SLUG)
-        .eq("status", "posted")
-        .eq("scope", "personal")
-        .eq("direction", "out")
-        .gte("movement_date", bounds.startYmd)
-        .lt("movement_date", bounds.endYmd)
-        .order("movement_date", { ascending:true })
-        .order("id", { ascending:true })
-        .limit(120);
-
-      if(error) throw error;
-
-      MANUAL_MOVES = (Array.isArray(data) ? data : []).map(row => ({
-        id: row.id,
-        movement_date: row.movement_date,
-        amount_xof: Number(row.amount_xof || 0),
-        __date: normalizeMovementDate(row.movement_date)
-      }));
-    }
-
-    function isBrainLikeObject(obj){
-      return !!(
-        obj &&
-        typeof obj === "object" &&
-        !Array.isArray(obj) &&
-        (
-          "currency" in obj ||
-          "safety_reserve_xof" in obj ||
-          "monthly_fixed_costs_xof" in obj ||
-          "credits" in obj ||
-          "debts" in obj ||
-          "projects" in obj ||
-          "rules" in obj
-        )
-      );
-    }
-
-    function extractBrainObject(value, slug, phone, depth = 0){
-      if(depth > 6) return null;
-      if(value == null) return null;
-
-      if(typeof value === "string"){
-        const parsed = safeJsonParse(value.trim());
-        return parsed ? extractBrainObject(parsed, slug, phone, depth + 1) : null;
-      }
-
-      if(typeof value !== "object" || Array.isArray(value)) return null;
-      if(isBrainLikeObject(value)) return value;
-
       const s = normalizeSlug(slug);
       const p = normalizePhone(phone);
+      const qs = [];
+      if(s) qs.push("slug=" + encodeURIComponent(s));
+      if(p) qs.push("phone=" + encodeURIComponent(p));
+      const suffix = qs.length ? `?${qs.join("&")}` : "";
 
-      const directKeys = [slug, s, phone, p].filter(Boolean);
-      for(const key of directKeys){
-        if(Object.prototype.hasOwnProperty.call(value, key)){
-          const found = extractBrainObject(value[key], slug, phone, depth + 1);
-          if(found) return found;
-        }
-      }
-
-      const nestedKeys = ["brain", "data", "payload", "value", "json", "state", "content"];
-      for(const key of nestedKeys){
-        if(Object.prototype.hasOwnProperty.call(value, key)){
-          const found = extractBrainObject(value[key], slug, phone, depth + 1);
-          if(found) return found;
-        }
-      }
-
-      for(const [k, v] of Object.entries(value)){
-        const lk = String(k || "").toLowerCase();
-        if((s && lk.includes(s)) || (p && lk.includes(p))){
-          const found = extractBrainObject(v, slug, phone, depth + 1);
-          if(found) return found;
-        }
-      }
-
-      return null;
-    }
-
-    function getPreferredBrainStorageCandidates(slug, phone){
-      const s = normalizeSlug(slug);
-      const p = normalizePhone(phone);
-
-      return [
-        s ? { key: `digiy_pay_brain:${s}`, label: `local:digiy_pay_brain:${s}` } : null,
-        s ? { key: `digiy_pay_brain_draft_${s}`, label: `local:digiy_pay_brain_draft_${s}` } : null,
-        p ? { key: `digiy_pay_brain:${p}`, label: `local:digiy_pay_brain:${p}` } : null
-      ].filter(Boolean);
-    }
-
-    function getLegacyBrainStorageCandidates(slug, phone){
-      const s = normalizeSlug(slug);
-      const p = normalizePhone(phone);
-
-      const bases = [
-        "digiy_pay_brain",
-        "digiy_pay_brain_draft",
-        "digiy-pay-brain",
-        "pay_brain",
-        "pay-brain",
-        "brain_admin",
-        "brain-admin",
-        "digiy_brain",
-        "digiy-brain",
-        "brain"
+      const ids = [
+        "topBrainLink",
+        "hudBrainLink"
       ];
-
-      const out = [];
-
-      [s, p].filter(Boolean).forEach(id => {
-        bases.forEach(base => {
-          out.push(`${base}:${id}`);
-          out.push(`${base}::${id}`);
-          out.push(`${base}/${id}`);
-          out.push(`${base}-${id}`);
-          out.push(`${base}_${id}`);
-          out.push(`${base}|${id}`);
-        });
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.href = "./brain-admin.html" + suffix;
       });
 
-      return [...new Set(out)];
+      [
+        "topAdminLink",
+        "hudAdminLink",
+        "btnGoAdmin"
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.href = "./admin.html" + suffix;
+      });
     }
 
-    function scanLocalStorageForBrain(slug, phone){
-      const out = [];
+    function deepClone(obj){
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function normalizeBrain(input = {}){
+      const raw = (input && typeof input === "object") ? input : {};
+      return {
+        currency: String(raw.currency || "XOF").trim() || "XOF",
+        safety_reserve_xof: num(raw.safety_reserve_xof),
+        monthly_fixed_costs_xof: num(raw.monthly_fixed_costs_xof),
+        credits: Array.isArray(raw.credits) ? raw.credits.map(item => ({
+          label: String(item?.label || "").trim(),
+          amount_left_xof: num(item?.amount_left_xof),
+          monthly_payment_xof: num(item?.monthly_payment_xof),
+          priority: String(item?.priority || "2"),
+          notes: String(item?.notes || "").trim(),
+          active: item?.active !== false
+        })) : [],
+        debts: Array.isArray(raw.debts) ? raw.debts.map(item => ({
+          label: String(item?.label || "").trim(),
+          amount_left_xof: num(item?.amount_left_xof ?? item?.amount_xof),
+          due_days: num(item?.due_days ?? item?.due_in_days),
+          priority: String(item?.priority || "2"),
+          notes: String(item?.notes || "").trim(),
+          active: item?.active !== false
+        })) : [],
+        projects: Array.isArray(raw.projects) ? raw.projects.map(item => ({
+          label: String(item?.label || "").trim(),
+          target_xof: num(item?.target_xof),
+          deadline_days: num(item?.deadline_days),
+          priority: String(item?.priority || "2"),
+          notes: String(item?.notes || "").trim(),
+          active: item?.active !== false
+        })) : [],
+        rules: {
+          danger_debt_ratio_pct: num(raw.rules?.danger_debt_ratio_pct ?? 35),
+          minimum_cash_after_commitments_xof: num(raw.rules?.minimum_cash_after_commitments_xof ?? 50000),
+          recommended_savings_pct: num(raw.rules?.recommended_savings_pct ?? 15)
+        }
+      };
+    }
+
+    function extractBrainObject(raw, slug){
+      const parsed = typeof raw === "string" ? safeJsonParse(raw) : raw;
+      if(!parsed || typeof parsed !== "object") return null;
+
+      if(Array.isArray(parsed.credits) || Array.isArray(parsed.debts) || Array.isArray(parsed.projects)){
+        return parsed;
+      }
+
       const s = normalizeSlug(slug);
-      const p = normalizePhone(phone);
+      if(s && parsed[s] && typeof parsed[s] === "object"){
+        return parsed[s];
+      }
 
-      try{
-        for(let i = 0; i < localStorage.length; i += 1){
-          const rawKey = localStorage.key(i);
-          const key = String(rawKey || "");
-          const low = key.toLowerCase();
-
-          const hasBrainWord =
-            low.includes("brain") ||
-            low.includes("pay_brain") ||
-            low.includes("pay-brain") ||
-            low.includes("digiy_pay_brain") ||
-            low.includes("digiy_pay_brain_draft");
-
-          const hasSlug = s && low.includes(s);
-          const hasPhone = p && low.includes(p);
-
-          if(hasBrainWord && (hasSlug || hasPhone)){
-            out.push(key);
-          }
-        }
-      }catch(_){}
-
-      return [...new Set(out)];
-    }
-
-    function readBrainValueByKey(key, slug, phone){
-      try{
-        const raw = localStorage.getItem(key);
-        if(!raw) return null;
-
-        const found = extractBrainObject(raw, slug, phone);
-        if(found){
-          return { key, data: found };
-        }
-      }catch(_){}
+      if(parsed.brain && typeof parsed.brain === "object"){
+        return parsed.brain;
+      }
 
       return null;
     }
 
-    function readBrainFromLocalStorage(slug, phone){
-      const preferred = getPreferredBrainStorageCandidates(slug, phone);
+    function getOfficialBrainKey(slug){
+      const s = normalizeSlug(slug);
+      return s ? `digiy_pay_brain:${s}` : "";
+    }
 
-      for(const entry of preferred){
-        const found = readBrainValueByKey(entry.key, slug, phone);
-        if(found && found.data){
-          return {
-            key: entry.key,
-            label: entry.label,
-            data: found.data
-          };
-        }
-      }
+    function getDraftBrainKey(slug){
+      const s = normalizeSlug(slug);
+      return s ? `digiy_pay_brain_draft:${s}` : "";
+    }
 
-      const preferredKeys = new Set(preferred.map(x => x.key));
-      const legacyKeys = [
-        ...getLegacyBrainStorageCandidates(slug, phone),
-        ...scanLocalStorageForBrain(slug, phone)
-      ].filter(key => !preferredKeys.has(key));
+    function readBrainFromLocalStorage(slug){
+      const officialKey = getOfficialBrainKey(slug);
+      const draftKey = getDraftBrainKey(slug);
 
-      for(const key of [...new Set(legacyKeys)]){
-        const found = readBrainValueByKey(key, slug, phone);
-        if(found && found.data){
-          return {
-            key,
-            label: `local:${key}`,
-            data: found.data
-          };
-        }
+      for(const key of [officialKey, draftKey]){
+        if(!key) continue;
+
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) continue;
+
+          const found = extractBrainObject(raw, slug);
+          if(found){
+            return {
+              key,
+              label: `local:${key}`,
+              data: found
+            };
+          }
+        }catch(_){}
       }
 
       return null;
@@ -2312,27 +1964,15 @@
       PAY_BRAIN = null;
       PAY_BRAIN_SOURCE = "none";
 
-      const fromLocal = readBrainFromLocalStorage(SLUG, PHONE);
-      if(fromLocal && fromLocal.data){
-        PAY_BRAIN = fromLocal.data;
-        PAY_BRAIN_SOURCE = fromLocal.label || (`local:${fromLocal.key}`);
+      if(!SLUG){
         return;
       }
 
-      try{
-        const res = await fetch(PAY_BRAIN_FALLBACK_URL, { cache: "no-store" });
-        if(!res.ok) throw new Error("JSON non trouvé.");
-
-        const json = await res.json();
-        const extracted = extractBrainObject(json, SLUG, PHONE);
-
-        if(extracted){
-          PAY_BRAIN = extracted;
-          PAY_BRAIN_SOURCE = `file:${PAY_BRAIN_FALLBACK_URL}`;
-          return;
-        }
-      }catch(err){
-        console.warn("[PAY brain fallback]", err);
+      const localFound = readBrainFromLocalStorage(SLUG);
+      if(localFound && localFound.data){
+        PAY_BRAIN = normalizeBrain(localFound.data);
+        PAY_BRAIN_SOURCE = localFound.label || "local";
+        return;
       }
 
       PAY_BRAIN = null;
@@ -2341,902 +1981,748 @@
 
     function brainSourceText(){
       const s = normalizeSlug(SLUG);
-      const p = normalizePhone(PHONE);
 
       if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain:${s}`){
         return "Pilotage par slug chargé.";
       }
 
-      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain_draft_${s}`){
+      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain_draft:${s}`){
         return "Pilotage brouillon chargé.";
       }
 
-      if(PAY_BRAIN_SOURCE === `local:digiy_pay_brain:${p}`){
-        return "Pilotage par téléphone chargé.";
-      }
-
-      if(PAY_BRAIN_SOURCE.startsWith("local:")){
-        return "Pilotage local chargé.";
-      }
-
-      if(PAY_BRAIN_SOURCE === `file:${PAY_BRAIN_FALLBACK_URL}`){
-        return "Pilotage de secours chargé.";
-      }
-
-      return "Pilotage non trouvé.";
+      return "Aucun pilotage local chargé.";
     }
 
-    function computePersonalOutVisible(referenceDate = new Date()){
-      return MANUAL_MOVES
-        .filter(x => x.__date && sameMonth(x.__date, referenceDate))
-        .reduce((sum, x) => sum + Number(x.amount_xof || 0), 0);
-    }
-
-    function computePersonalOutToday(referenceDate = new Date()){
-      return MANUAL_MOVES
-        .filter(x => x.__date && sameDay(x.__date, referenceDate))
-        .reduce((sum, x) => sum + Number(x.amount_xof || 0), 0);
-    }
-
-    function openEngagementsPanel(){
-      const btn = document.querySelector('.tab[data-tab="engagements"]');
-      if(btn){
-        btn.click();
-        const anchor = document.getElementById("panel-engagements");
-        if(anchor){
-          setTimeout(() => {
-            try{ anchor.scrollIntoView({ behavior:"smooth", block:"start" }); }catch(_){}
-          }, 40);
-        }
+    function normalizeRpcPayload(payload){
+      if(!payload) return null;
+      if(typeof payload === "object") return payload;
+      if(typeof payload === "string"){
+        const parsed = safeJsonParse(payload.trim());
+        return parsed && typeof parsed === "object" ? parsed : null;
       }
-    }
-
-    function activeItems(arr){
-      return normalizeArray(arr).filter(x => x && x.active !== false);
+      return null;
     }
 
     function sumCreditsLeft(brain){
-      return activeItems(brain?.credits).reduce((s, x) => s + Number(x.amount_left_xof || 0), 0);
+      return (brain?.credits || [])
+        .filter(x => x.active !== false)
+        .reduce((sum, x) => sum + num(x.amount_left_xof), 0);
     }
 
     function sumCreditsMonthly(brain){
-      return activeItems(brain?.credits).reduce((s, x) => s + Number(x.monthly_payment_xof || 0), 0);
+      return (brain?.credits || [])
+        .filter(x => x.active !== false)
+        .reduce((sum, x) => sum + num(x.monthly_payment_xof), 0);
     }
 
     function sumDebtsTotal(brain){
-      return activeItems(brain?.debts).reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+      return (brain?.debts || [])
+        .filter(x => x.active !== false)
+        .reduce((sum, x) => sum + num(x.amount_left_xof), 0);
     }
 
     function sumDebtsSoon(brain){
-      return activeItems(brain?.debts)
-        .filter(x => Number(x.due_in_days || 999999) <= 30)
-        .reduce((s, x) => s + Number(x.amount_xof || 0), 0);
+      return (brain?.debts || [])
+        .filter(x => x.active !== false)
+        .filter(x => num(x.due_days) <= 30 || num(x.due_days) === 0)
+        .reduce((sum, x) => sum + num(x.amount_left_xof), 0);
     }
 
     function sumProjectsTotal(brain){
-      return activeItems(brain?.projects).reduce((s, x) => s + Number(x.target_xof || 0), 0);
+      return (brain?.projects || [])
+        .filter(x => x.active !== false)
+        .reduce((sum, x) => sum + num(x.target_xof), 0);
     }
 
-    function highestPriorityProject(brain){
-      const arr = activeItems(brain?.projects).slice().sort((a,b) => {
-        const pa = Number(a.priority || 999);
-        const pb = Number(b.priority || 999);
-        if(pa !== pb) return pa - pb;
-        return Number(a.deadline_days || 999999) - Number(b.deadline_days || 999999);
-      });
-      return arr[0] || null;
+    function getTopProject(brain){
+      const list = (brain?.projects || [])
+        .filter(x => x.active !== false)
+        .slice()
+        .sort((a,b) => {
+          const pa = num(a.priority || 9);
+          const pb = num(b.priority || 9);
+          if(pa !== pb) return pa - pb;
+          return num(a.deadline_days || 99999) - num(b.deadline_days || 99999);
+        });
+      return list[0] || null;
+    }
+
+    function pickColorClass(value, positiveClass = "green", negativeClass = "danger"){
+      return num(value) >= 0 ? positiveClass : negativeClass;
     }
 
     function buildStrategicView(calc){
-      const monthNet = Number(calc.monthNet || 0);
-      const personalOutVisible = Number(calc.personalOutVisible || 0);
-      const creditsMonthly = Number(calc.creditsMonthly || 0);
-      const debtsSoon = Number(calc.debtsSoon || 0);
+      const reserve = num(calc.safetyReserve);
+      const after = num(calc.afterCommitments);
+      const debtsSoon = num(calc.debtsSoon);
+      const creditsMonthly = num(calc.creditsMonthly);
+      const fixedCosts = num(calc.fixedCosts);
+      const pressure = debtsSoon + creditsMonthly + fixedCosts + num(calc.personalOutToday);
+      const net = num(calc.netPro);
 
-      const pressure = creditsMonthly + debtsSoon + personalOutVisible;
-      const marge = monthNet - pressure;
+      let level = "PROTÉGER";
+      let chip = "bad";
+      let message = "Le terrain demande de garder le cash, ralentir les sorties et calmer toute nouvelle charge.";
+      let danger = "Ne lance rien qui augmente la pression du mois.";
+      let cap = "Cap conseillé : refaire du souffle avant toute accélération.";
 
-      let level = "PROTEGER";
-
-      if(marge > 0 && monthNet > 0 && marge < monthNet * 0.25){
-        level = "TENIR";
-      }
-
-      if(monthNet > 0 && marge >= monthNet * 0.25){
+      if(after > reserve && net > 0 && pressure <= net * 0.45){
+        level = "ACCÉLÉRER";
+        chip = "ok";
+        message = "La base tient. Tu peux avancer sur le bon projet sans casser la caisse.";
+        danger = "Accélérer oui, mais seulement sur le projet utile.";
+        cap = "Cap conseillé : investir avec précision, pas avec orgueil.";
+      }else if(after > 0 && net > 0){
         level = "CONSOLIDER";
+        chip = "warn";
+        message = "Le mois tient, mais la marge n'est pas assez large pour faire n'importe quoi.";
+        danger = "Évite les dépenses de posture.";
+        cap = "Cap conseillé : consolider la base, lisser les échéances, préparer le prochain cran.";
+      }else if(after <= 0 && net > 0){
+        level = "TENIR";
+        chip = "orange";
+        message = "L'activité tourne, mais la pression mange trop vite la marge.";
+        danger = "Chaque nouvelle sortie mal pensée peut t'étouffer.";
+        cap = "Cap conseillé : rentrer du cash utile, couper le bruit, repousser le décor.";
       }
 
-      if(monthNet > 0 && marge >= monthNet * 0.5){
-        level = "ACCELERER";
-      }
-
-      if(monthNet <= 0 && marge <= 0){
-        level = "PROTEGER";
-      }
-
-      return {
-        marge,
-        pressure,
-        level,
-        ratio: monthNet > 0 ? (marge / monthNet) : 0
-      };
+      return { level, chip, message, danger, cap, pressure };
     }
 
-    function buildStrategicMessage(view){
-      const { level } = view;
+    function renderStrategicBlock(strategic){
+      document.getElementById("cakeStrategicLevel").textContent = strategic.level;
+      document.getElementById("strategicMain").textContent = strategic.level;
+      document.getElementById("strategicMsg").textContent = strategic.message;
+      document.getElementById("dangerMsg").textContent = strategic.danger;
+      document.getElementById("monthlyCap").textContent = strategic.cap;
 
-      if(level === "PROTEGER"){
-        return "Le rôle du mois n'est pas de grandir. Il est de protéger la caisse. Toute dépense non vitale est une erreur.";
-      }
-
-      if(level === "TENIR"){
-        return "Le terrain tient, mais ne supporte pas les erreurs. Chaque dépense doit être justifiée.";
-      }
-
-      if(level === "CONSOLIDER"){
-        return "La base tient. Tu peux avancer, mais uniquement sur ce qui renforce la structure.";
-      }
-
-      if(level === "ACCELERER"){
-        return "Le terrain peut porter une poussée. Tu peux accélérer sans casser la base, à condition de rester propre.";
-      }
-
-      return "";
+      const chip = document.getElementById("strategicChip");
+      chip.className = "decision-chip " + strategic.chip;
+      chip.textContent =
+        strategic.chip === "ok" ? "Base solide"
+        : strategic.chip === "warn" ? "Marge à surveiller"
+        : strategic.chip === "orange" ? "Pression forte"
+        : "Zone rouge";
     }
 
-    function detectFinancialDanger(view){
-      const { marge, pressure } = view;
-
-      if(marge < 0){
-        return "Les engagements mangent la caisse. Stop immédiat des nouvelles dépenses non vitales.";
-      }
-
-      if(pressure > 0 && marge < pressure * 0.5){
-        return "Tension forte : les charges prennent trop de place. Réduire avant d'investir.";
-      }
-
-      return "Pas d'alerte majeure détectée sur la pression visible du mois. Garde quand même la discipline.";
-    }
-
-    function buildMonthlyCap(view){
-      const { level } = view;
-
-      if(level === "PROTEGER"){
-        return "Cap du mois : couper, ralentir, tenir. Aucun nouveau projet tant que la base n'est pas protégée.";
-      }
-
-      if(level === "TENIR"){
-        return "Cap du mois : maintenir. Éviter toute charge inutile et toute dépense d'orgueil.";
-      }
-
-      if(level === "CONSOLIDER"){
-        return "Cap du mois : renforcer. Priorité aux dépenses utiles qui solidifient le socle.";
-      }
-
-      if(level === "ACCELERER"){
-        return "Cap du mois : avancer. Ne lancer que ce que le terrain peut absorber sans se trahir.";
-      }
-
-      return "";
-    }
-
-    function strategicMainText(view){
-      if(view.level === "PROTEGER") return "Protéger la base";
-      if(view.level === "TENIR") return "Tenir sans erreur";
-      if(view.level === "CONSOLIDER") return "Consolider le socle";
-      if(view.level === "ACCELERER") return "Accélérer proprement";
-      return "Lecture en cours";
-    }
-
-    function computeDecision(calc, brain){
-      const rules = brain?.rules || {};
-      const minCash = Number(rules.minimum_cash_after_commitments_xof || 0);
-      const dangerDebtRatioPct = Number(rules.danger_debt_ratio_pct || 35);
-      const recommendedSavingsPct = Number(rules.recommended_savings_pct || 15);
-
-      const afterCommitments = calc.afterCommitments;
-      const debtRatio = calc.monthIn > 0 ? Math.round((calc.debtsSoon / calc.monthIn) * 100) : 0;
-      const savingsRatio = calc.monthIn > 0 ? Math.round((calc.monthSavings / calc.monthIn) * 100) : 0;
-      const topProject = highestPriorityProject(brain);
-
-      let chipClass = "ok";
-      let chipText = "Base saine";
-      let main = "Le terrain peut encore décider proprement";
-      let sub = "La base respire. Le vrai sujet est d'avancer sans introduire un surcoût idiot.";
-
-      if(afterCommitments < 0){
-        chipClass = "bad";
-        chipText = "Protéger";
-        main = "Le mois doit défendre la caisse";
-        sub = "Après crédits et dettes proches, le reste devient négatif. La priorité n'est pas le prestige : c'est la survie intelligente.";
-      }else if(afterCommitments < minCash){
-        chipClass = "warn";
-        chipText = "Tenir";
-        main = "Tu tiens, mais tu n'as pas le droit à l'erreur";
-        sub = "Le reste après engagements est en dessous du plancher de sécurité. Toute dépense trop tôt peut casser la marche suivante.";
-      }else if(debtRatio >= dangerDebtRatioPct){
-        chipClass = "warn";
-        chipText = "Nettoyer";
-        main = "La pression dette fatigue le terrain";
-        sub = "La part des dettes proches pèse lourd par rapport aux entrées du mois. Il vaut mieux nettoyer avant d'ouvrir un nouveau front.";
-      }
-
-      if(chipClass === "ok" && topProject){
-        if(afterCommitments >= Number(topProject.target_xof || 0)){
-          main = "Projet absorbable";
-          sub = `Le projet prioritaire "${topProject.label}" peut être porté par le terrain actuel sans casser la réserve déclarée.`;
-        }else{
-          main = "Projet trop tôt";
-          sub = `Le projet prioritaire "${topProject.label}" reste au-dessus du reste manœuvrable actuel. Lancer trop tôt serait une erreur financière.`;
+    function renderResultRows(calc, strategic){
+      const rows = [
+        {
+          ico:"💼",
+          icoClass:"gold",
+          title:"Net pro du mois",
+          meta:"Ce que l'activité a réellement produit après dépenses pro.",
+          amount: money(calc.netPro),
+          amountClass: pickColorClass(calc.netPro, "gold", "danger")
+        },
+        {
+          ico:"🛟",
+          icoClass:"green",
+          title:"Reste après engagements",
+          meta:"Disponible pro moins crédits mensuels et dettes proches.",
+          amount: money(calc.afterCommitments),
+          amountClass: pickColorClass(calc.afterCommitments, "green", "danger")
+        },
+        {
+          ico:"⚠️",
+          icoClass:"red",
+          title:"Pression visible",
+          meta:"Crédits, dettes proches, charges fixes et perso visible.",
+          amount: money(strategic.pressure),
+          amountClass:"danger"
+        },
+        {
+          ico:"🎯",
+          icoClass:"orange",
+          title:"Cap du mois",
+          meta: strategic.cap,
+          amount: strategic.level,
+          amountClass:"orange"
         }
-      }
+      ];
 
-      if(savingsRatio < recommendedSavingsPct && calc.monthIn > 0){
-        sub += ` L'épargne visible reste sous l'objectif conseillé de ${recommendedSavingsPct}%.`;
-      }
+      const html = rows.map(row => `
+        <div class="row">
+          <div class="row-ico ${row.icoClass}">${row.ico}</div>
+          <div class="row-body">
+            <div class="row-title">${esc(row.title)}</div>
+            <div class="row-meta">${esc(row.meta)}</div>
+          </div>
+          <div class="row-amount ${row.amountClass}">${esc(row.amount)}</div>
+        </div>
+      `).join("");
 
-      return { chipClass, chipText, main, sub };
+      document.getElementById("resultList").innerHTML = html;
     }
 
-    function computeProjectStatus(calc, brain){
-      const topProject = highestPriorityProject(brain);
-      const safetyReserve = Number(calc.safetyReserve || 0);
-      const afterCommitments = Number(calc.afterCommitments || 0);
+    function renderModules(modules){
+      const el = document.getElementById("modulesList");
+      const list = Array.isArray(modules) ? modules : [];
 
-      if(!topProject){
-        return {
-          badgeClass:"warn",
-          badgeText:"Aucun projet",
-          main:"Aucun projet prioritaire déclaré",
-          sub:"Le cockpit ne voit pas encore de projet dans le JSON. Tu peux protéger la caisse et déclarer l'objectif plus tard.",
-          topBadgeClass:"warn",
-          topBadgeText:"Vide",
-          topMain:"Pas de projet visible",
-          topSub:"Ajoute un projet dans le pilotage pour activer cette lecture.",
-          gapBadgeClass:"warn",
-          gapBadgeText:"Sans calcul",
-          gapValue:0,
-          capacityText:money(afterCommitments)
-        };
-      }
+      document.getElementById("kpiModCount").textContent = String(list.length);
 
-      const target = Number(topProject.target_xof || 0);
-      const gap = target - afterCommitments;
-      const safeGap = target + safetyReserve - afterCommitments;
-
-      let badgeClass = "ok";
-      let badgeText = "Absorbable";
-      let main = "Projet lançable";
-      let sub = `Le projet prioritaire "${topProject.label}" peut être couvert sans abîmer la base.`;
-
-      if(afterCommitments < 0){
-        badgeClass = "bad";
-        badgeText = "À geler";
-        main = "Projet à geler";
-        sub = `Le mois est déjà sous pression. Le projet "${topProject.label}" doit attendre pendant que tu protèges la caisse.`;
-      }else if(afterCommitments < safetyReserve){
-        badgeClass = "orange";
-        badgeText = "Trop tôt";
-        main = "Projet à ralentir";
-        sub = `Le pro respire encore trop peu. Avant d'ouvrir "${topProject.label}", il faut d'abord reconstituer la réserve de sécurité.`;
-      }else if(afterCommitments < target){
-        badgeClass = "warn";
-        badgeText = "Partiel";
-        main = "Projet partiellement absorbable";
-        sub = `Le projet "${topProject.label}" n'est pas encore complètement couvert par le terrain actuel.`;
-      }
-
-      return {
-        badgeClass,
-        badgeText,
-        main,
-        sub,
-        topBadgeClass: badgeClass,
-        topBadgeText: priorityLabel(topProject.priority),
-        topMain: topProject.label || "Projet prioritaire",
-        topSub: `Cible : ${money(target)} · Horizon : ${String(topProject.deadline_days ?? "—")} jour(s)${topProject.notes ? " · " + topProject.notes : ""}`,
-        gapBadgeClass: gap <= 0 ? "ok" : (safeGap <= 0 ? "warn" : badgeClass === "bad" ? "bad" : "orange"),
-        gapBadgeText: gap <= 0 ? "Marge dispo" : "Montant manquant",
-        gapValue: gap <= 0 ? Math.abs(gap) : gap,
-        capacityText: money(afterCommitments)
-      };
-    }
-
-    function buildRescuePlan(calc, brain){
-      const plan = [];
-      const rules = brain?.rules || {};
-      const recommendedSavingsPct = Number(rules.recommended_savings_pct || 15);
-      const topProject = highestPriorityProject(brain);
-
-      if(calc.afterCommitments < 0){
-        plan.push({
-          title:"Stopper les nouvelles sorties non vitales",
-          text:"Le reste après engagements est négatif. Le mois doit défendre la caisse avant toute autre ambition."
-        });
-      }
-
-      if(calc.debtsSoon > 0){
-        plan.push({
-          title:"Traiter d'abord les dettes proches",
-          text:`Priorité aux dettes qui tombent vite : ${money(calc.debtsSoon)} à neutraliser pour calmer la pression du mois.`
-        });
-      }
-
-      if(calc.creditsMonthly > 0){
-        plan.push({
-          title:"Sécuriser l'échéance crédit",
-          text:`Préserver au minimum ${money(calc.creditsMonthly)} pour ne pas casser le rythme des remboursements.`
-        });
-      }
-
-      if(calc.personalOutVisible > 0){
-        plan.push({
-          title:"Surveiller les sorties perso visibles",
-          text:`Le cockpit voit ${money(calc.personalOutVisible)} de sorties perso sur le mois. Cette couche doit rester sous contrôle pour ne pas fatiguer le pro.`
-        });
-      }
-
-      if(calc.monthSavings > 0 && calc.afterCommitments < calc.safetyReserve){
-        plan.push({
-          title:"Protéger l'épargne utile",
-          text:"Ne pas vider la réserve par panique. Elle sert à empêcher une mauvaise passe de tuer la marche suivante."
-        });
-      }
-
-      if(calc.monthIn > 0){
-        const savingsRatio = Math.round((calc.monthSavings / calc.monthIn) * 100);
-        if(savingsRatio < recommendedSavingsPct){
-          plan.push({
-            title:"Remonter doucement la couche de sécurité",
-            text:`L'épargne visible est à ${savingsRatio}% des entrées du mois. L'objectif conseillé reste autour de ${recommendedSavingsPct}%.`
-          });
-        }
-      }
-
-      if(topProject){
-        const target = Number(topProject.target_xof || 0);
-        if(calc.afterCommitments >= target){
-          plan.push({
-            title:"Projet absorbable sans casser la base",
-            text:`Le projet "${topProject.label}" peut être porté, à condition de garder la discipline et la réserve visible.`
-          });
-        }else{
-          const gap = Math.max(0, target - calc.afterCommitments);
-          plan.push({
-            title:"Reporter ou fractionner le projet",
-            text:`Le projet "${topProject.label}" est encore trop tôt. Il manque environ ${money(gap)} pour l'absorber proprement.`
-          });
-        }
-      }
-
-      if(!plan.length){
-        plan.push({
-          title:"Continuer le pilotage propre",
-          text:"Le cockpit ne voit pas d'alerte majeure ce mois-ci. L'objectif est de tenir la discipline et d'éviter le surcoût inutile."
-        });
-      }
-
-      return plan.slice(0, 6);
-    }
-
-    function renderRescuePlan(calc, brain){
-      const el = document.getElementById("rescuePlanList");
-      const steps = buildRescuePlan(calc, brain);
-      if(!steps.length){
-        el.innerHTML = `<div class="empty">Aucun plan généré pour l'instant.</div>`;
+      if(!list.length){
+        el.innerHTML = `<div class="empty">Aucun module visible pour ce mois.</div>`;
         return;
       }
 
-      el.innerHTML = steps.map((step, idx) => `
-        <div class="rescue-item">
-          <div class="rescue-num">${idx + 1}</div>
-          <div class="rescue-body">
-            <div class="rescue-title">${esc(step.title)}</div>
-            <div class="rescue-text">${esc(step.text)}</div>
+      const html = list.map(item => `
+        <div class="row">
+          <div class="row-ico green">📦</div>
+          <div class="row-body">
+            <div class="row-title">${esc(item.source_module || "Module")}</div>
+            <div class="row-meta">Contribution visible dans PAY.</div>
           </div>
+          <div class="row-amount gold">${money(item.amount_xof)}</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = html;
+    }
+
+    function renderChannels(channels){
+      const el = document.getElementById("channelsList");
+      const list = Array.isArray(channels) ? channels : [];
+
+      document.getElementById("kpiChanCount").textContent = String(list.length);
+
+      if(!list.length){
+        el.innerHTML = `<div class="empty">Aucun canal visible.</div>`;
+        return;
+      }
+
+      const html = list.map(item => `
+        <div class="row">
+          <div class="row-ico blue">💳</div>
+          <div class="row-body">
+            <div class="row-title">${esc(item.channel || "Canal")}</div>
+            <div class="row-meta">Canal remonté dans la période lue.</div>
+          </div>
+          <div class="row-amount blue">${money(item.amount_xof)}</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = html;
+    }
+
+    function renderChannelBars(channels){
+      const el = document.getElementById("channelsBars");
+      const list = Array.isArray(channels) ? channels : [];
+      const total = list.reduce((s, x) => s + num(x.amount_xof), 0);
+
+      document.getElementById("kpiEcoTotal").textContent = money(total);
+
+      if(!list.length || total <= 0){
+        el.innerHTML = `<div class="empty">Aucune répartition canal à afficher.</div>`;
+        return;
+      }
+
+      const colors = ["var(--green)", "var(--gold)", "var(--blue)", "var(--orange)", "var(--violet)"];
+
+      el.innerHTML = list.map((item, i) => `
+        <div class="bar-row">
+          <div class="bar-label">${esc(item.channel || "Canal")}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${Math.max(2, percent(item.amount_xof, total))}%;background:${colors[i % colors.length]}"></div>
+          </div>
+          <div class="bar-val">${money(item.amount_xof)}</div>
         </div>
       `).join("");
     }
 
-    function renderProjectStatus(calc, brain){
-      const status = computeProjectStatus(calc, brain);
-
-      const badge = document.getElementById("projectStatusBadge");
-      badge.className = "status-badge " + status.badgeClass;
-      badge.textContent = status.badgeText;
-
-      document.getElementById("projectStatusMain").textContent = status.main;
-      document.getElementById("projectStatusSub").textContent = status.sub;
-
-      const topBadge = document.getElementById("projectTopBadge");
-      topBadge.className = "status-badge " + status.topBadgeClass;
-      topBadge.textContent = status.topBadgeText;
-
-      document.getElementById("projectTopMain").textContent = status.topMain;
-      document.getElementById("projectTopSub").textContent = status.topSub;
-
-      document.getElementById("projectCapacityMain").textContent = status.capacityText;
-      document.getElementById("projectCapacitySub").textContent = "C'est la marge estimée après crédits mensuels et dettes proches.";
-
-      const gapBadge = document.getElementById("projectGapBadge");
-      gapBadge.className = "status-badge " + status.gapBadgeClass;
-      gapBadge.textContent = status.gapBadgeText;
-
-      document.getElementById("projectGapMain").textContent = money(status.gapValue);
-      document.getElementById("projectGapSub").textContent =
-        status.gapBadgeText === "Marge dispo"
-          ? "Cette marge reste théorique. Elle doit respecter la réserve de sécurité."
-          : "Montant estimé à trouver avant de lancer le projet proprement.";
-    }
-
-    function renderSynthesePatron(calc, brain){
-      const titleEl = document.getElementById("synthTitle");
-      const subEl = document.getElementById("synthSub");
-
-      const setBlock = (prefix, badgeClass, badgeText, main, text) => {
-        const badge = document.getElementById(prefix + "Badge");
-        const mainEl = document.getElementById(prefix + "Main");
-        const textEl = document.getElementById(prefix + "Text");
-        if(badge){
-          badge.className = "synth-badge " + badgeClass;
-          badge.textContent = badgeText;
-        }
-        if(mainEl) mainEl.textContent = main;
-        if(textEl) textEl.textContent = text;
-      };
-
-      const topProject = highestPriorityProject(brain);
-      const decision = computeDecision(calc, brain);
-
-      if(calc.afterCommitments < 0){
-        titleEl.textContent = "Le mois doit protéger la caisse";
-        subEl.textContent = "Le terrain existe, mais la pression visible devient trop lourde. La priorité n'est pas le rêve, c'est la base.";
-      }else if(calc.afterCommitments < calc.safetyReserve){
-        titleEl.textContent = "Le terrain tient, mais reste fragile";
-        subEl.textContent = "Le mois ne doit pas jouer avec des dépenses trop tôt. Une erreur peut casser la marche suivante.";
-      }else{
-        titleEl.textContent = "Le terrain peut décider plus proprement";
-        subEl.textContent = "La base respire mieux. L'enjeu est maintenant d'avancer sans introduire un surcoût inutile.";
-      }
-
-      if(calc.afterCommitments < 0){
-        setBlock(
-          "synthBreath",
-          "bad",
-          "Rouge",
-          "Respiration cassée",
-          `Le reste après engagements tombe à ${money(calc.afterCommitments)}.`
-        );
-      }else if(calc.afterCommitments < calc.safetyReserve){
-        setBlock(
-          "synthBreath",
-          "orange",
-          "Orange",
-          "Respiration courte",
-          `La marge existe encore mais reste sous la réserve de sécurité de ${money(calc.safetyReserve)}.`
-        );
-      }else{
-        setBlock(
-          "synthBreath",
-          "ok",
-          "Vert",
-          "Respiration correcte",
-          `Le pro garde ${money(calc.afterCommitments)} après les engagements proches.`
-        );
-      }
-
-      if(decision.chipClass === "bad"){
-        setBlock(
-          "synthMonth",
-          "bad",
-          "Protéger",
-          "Mois défensif",
-          "Les dettes proches et le crédit du mois prennent trop de place sur la marge."
-        );
-      }else if(decision.chipClass === "warn"){
-        setBlock(
-          "synthMonth",
-          "warn",
-          "Tenir",
-          "Mois serré",
-          "Le mois tient, mais ne pardonne pas les dépenses de confort."
-        );
-      }else{
-        setBlock(
-          "synthMonth",
-          "ok",
-          "Stable",
-          "Mois pilotable",
-          "Le terrain reste suffisamment propre pour décider sans se mentir."
-        );
-      }
-
-      if(!topProject){
-        setBlock(
-          "synthProject",
-          "warn",
-          "Vide",
-          "Pas de projet prioritaire",
-          "Aucun projet n'est déclaré dans le pilotage pour l'instant."
-        );
-      }else if(calc.afterCommitments < 0){
-        setBlock(
-          "synthProject",
-          "bad",
-          "Gel",
-          "Projet gelé",
-          `Le projet "${topProject.label}" doit attendre pendant la remise à flot.`
-        );
-      }else if(calc.afterCommitments < Number(topProject.target_xof || 0)){
-        setBlock(
-          "synthProject",
-          "warn",
-          "Trop tôt",
-          "Projet à ralentir",
-          `Le projet "${topProject.label}" n'est pas encore absorbable proprement.`
-        );
-      }else{
-        setBlock(
-          "synthProject",
-          "ok",
-          "Go",
-          "Projet absorbable",
-          `Le projet "${topProject.label}" peut être envisagé sans casser la base.`
-        );
-      }
-
-      if(calc.debtsSoon > 0){
-        setBlock(
-          "synthPriority",
-          "orange",
-          "Action",
-          "Nettoyer d'abord",
-          `Priorité à ${money(calc.debtsSoon)} de dettes proches et ${money(calc.creditsMonthly)} de crédit mensuel.`
-        );
-      }else if(calc.personalOutVisible > 0){
-        setBlock(
-          "synthPriority",
-          "warn",
-          "Vigilance",
-          "Surveiller les fuites",
-          `Le cockpit voit ${money(calc.personalOutVisible)} de sorties perso visibles ce mois-ci.`
-        );
-      }else{
-        setBlock(
-          "synthPriority",
-          "ok",
-          "Cap",
-          "Tenir la discipline",
-          "Consolider le net, garder l'épargne et avancer sans fuite."
-        );
-      }
-    }
-
-    function renderRecoveryBlock(calc){
-      const backToZero = Math.max(0, 0 - Number(calc.afterCommitments || 0));
-      const backToReserve = Math.max(0, Number(calc.safetyReserve || 0) - Number(calc.afterCommitments || 0));
-
-      const zeroBadge = document.getElementById("recoveryZeroBadge");
-      const reserveBadge = document.getElementById("recoveryReserveBadge");
-      const readBadge = document.getElementById("recoveryReadBadge");
-      const capBadge = document.getElementById("recoveryCapBadge");
-
-      document.getElementById("recoveryZeroMain").textContent = money(backToZero);
-      document.getElementById("recoveryReserveMain").textContent = money(backToReserve);
-
-      zeroBadge.className = "status-badge " + (backToZero > 0 ? "bad" : "ok");
-      zeroBadge.textContent = backToZero > 0 ? "Urgent" : "OK";
-
-      reserveBadge.className = "status-badge " + (backToReserve > 0 ? "orange" : "ok");
-      reserveBadge.textContent = backToReserve > 0 ? "À reconstruire" : "Réserve OK";
-
-      if(backToZero > 0){
-        document.getElementById("recoveryZeroSub").textContent =
-          `Il manque ${money(backToZero)} pour sortir la tête de l'eau et revenir à un reste nul après engagements.`;
-      }else{
-        document.getElementById("recoveryZeroSub").textContent =
-          "Le mois n'est plus négatif après engagements.";
-      }
-
-      if(backToReserve > 0){
-        document.getElementById("recoveryReserveSub").textContent =
-          `Il manque ${money(backToReserve)} pour revenir au-dessus de la réserve de sécurité terrain.`;
-      }else{
-        document.getElementById("recoveryReserveSub").textContent =
-          "La réserve de sécurité est déjà couverte.";
-      }
-
-      if(backToZero >= 100000){
-        readBadge.className = "status-badge bad";
-        readBadge.textContent = "Choc";
-        document.getElementById("recoveryReadMain").textContent = "Effort lourd";
-        document.getElementById("recoveryReadSub").textContent =
-          "Le pro doit remonter fort avant de respirer à nouveau. On coupe les fuites et on ramène du cash utile.";
-      }else if(backToZero > 0){
-        readBadge.className = "status-badge orange";
-        readBadge.textContent = "Pression";
-        document.getElementById("recoveryReadMain").textContent = "Effort réel";
-        document.getElementById("recoveryReadSub").textContent =
-          "Le mois peut être redressé, mais il faut une remontée disciplinée et rapide.";
-      }else{
-        readBadge.className = "status-badge ok";
-        readBadge.textContent = "Stable";
-        document.getElementById("recoveryReadMain").textContent = "Respiration retrouvée";
-        document.getElementById("recoveryReadSub").textContent =
-          "Le pro n'est plus sous l'eau sur la lecture engagements.";
-      }
-
-      if(backToReserve > 0){
-        capBadge.className = "status-badge warn";
-        capBadge.textContent = "Cap prudent";
-        document.getElementById("recoveryCapMain").textContent = "Remonter avant d'élargir";
-        document.getElementById("recoveryCapSub").textContent =
-          "Objectif : revenir d'abord à 0, puis reconstituer la réserve avant tout nouveau projet.";
-      }else{
-        capBadge.className = "status-badge ok";
-        capBadge.textContent = "Cap propre";
-        document.getElementById("recoveryCapMain").textContent = "Consolider puis avancer";
-        document.getElementById("recoveryCapSub").textContent =
-          "La base redevient plus saine. Les projets peuvent revenir seulement avec discipline.";
-      }
-    }
-
-    function renderTargetsBlock(calc){
-      const debtsSoon = Number(calc.debtsSoon || 0);
-      const creditsMonthly = Number(calc.creditsMonthly || 0);
-      const afterCommitments = Number(calc.afterCommitments || 0);
-      const safetyReserve = Number(calc.safetyReserve || 0);
-
-      const target7 = Math.max(0, debtsSoon);
-      const target30 = Math.max(0, safetyReserve - afterCommitments);
-
-      const t7Badge = document.getElementById("target7Badge");
-      const t30Badge = document.getElementById("target30Badge");
-      const readBadge = document.getElementById("targetReadBadge");
-      const capBadge = document.getElementById("targetCapBadge");
-
-      document.getElementById("target7Main").textContent = money(target7);
-      document.getElementById("target30Main").textContent = money(target30);
-
-      t7Badge.className = "status-badge " + (target7 > 0 ? "bad" : "ok");
-      t7Badge.textContent = target7 > 0 ? "Urgence" : "Calme";
-
-      t30Badge.className = "status-badge " + (target30 > 0 ? "orange" : "ok");
-      t30Badge.textContent = target30 > 0 ? "Reconstruction" : "Zone saine";
-
-      if(target7 > 0){
-        document.getElementById("target7Sub").textContent =
-          `Objectif court : calmer d'abord les dettes proches avec ${money(target7)} à ramener vite.`;
-      }else{
-        document.getElementById("target7Sub").textContent =
-          "Pas de pression dette immédiate détectée sur 7 jours.";
-      }
-
-      if(target30 > 0){
-        document.getElementById("target30Sub").textContent =
-          `Objectif du mois : retrouver ${money(target30)} pour repasser au-dessus de la réserve de sécurité.`;
-      }else{
-        document.getElementById("target30Sub").textContent =
-          "Le mois a déjà retrouvé une lecture plus saine.";
-      }
-
-      if(target30 >= 200000){
-        readBadge.className = "status-badge bad";
-        readBadge.textContent = "Lourd";
-        document.getElementById("targetReadMain").textContent = "Redressement costaud";
-        document.getElementById("targetReadSub").textContent =
-          "Le chantier du mois est important. Il faut cash utile, discipline et zéro fuite.";
-      }else if(target30 > 0){
-        readBadge.className = "status-badge orange";
-        readBadge.textContent = "Sérieux";
-        document.getElementById("targetReadMain").textContent = "Redressement progressif";
-        document.getElementById("targetReadSub").textContent =
-          "Le mois peut être remis debout avec un effort régulier et un pilotage serré.";
-      }else{
-        readBadge.className = "status-badge ok";
-        readBadge.textContent = "Stable";
-        document.getElementById("targetReadMain").textContent = "Base retrouvée";
-        document.getElementById("targetReadSub").textContent =
-          "Le cockpit ne voit plus de redressement urgent à mener.";
-      }
-
-      if(target7 > 0){
-        capBadge.className = "status-badge warn";
-        capBadge.textContent = "Terrain";
-        document.getElementById("targetCapMain").textContent = "7 jours : urgence, 30 jours : structure";
-        document.getElementById("targetCapSub").textContent =
-          `D'abord absorber ${money(target7)} de pression proche, puis sécuriser le mois avec ${money(target30)} de remontée totale.`;
-      }else if(creditsMonthly > 0){
-        capBadge.className = "status-badge orange";
-        capBadge.textContent = "Surveillance";
-        document.getElementById("targetCapMain").textContent = "Tenir le crédit, rebâtir la marge";
-        document.getElementById("targetCapSub").textContent =
-          `Le crédit mensuel de ${money(creditsMonthly)} reste à tenir pendant la reconstruction.`;
-      }else{
-        capBadge.className = "status-badge ok";
-        capBadge.textContent = "Cap propre";
-        document.getElementById("targetCapMain").textContent = "Consolider tranquillement";
-        document.getElementById("targetCapSub").textContent =
-          "Le cockpit peut repasser en mode consolidation et discipline.";
-      }
-    }
-
-    function renderStrategicBlock(strategic){
-      const chip = document.getElementById("strategicChip");
-      const levelLabel = strategicLevelLabel(strategic.level);
-
-      document.getElementById("strategicMain").textContent = strategicMainText(strategic);
-      document.getElementById("strategicMsg").textContent = buildStrategicMessage(strategic);
-      document.getElementById("dangerMsg").textContent = detectFinancialDanger(strategic);
-      document.getElementById("monthlyCap").textContent = buildMonthlyCap(strategic);
-
-      chip.className = "decision-chip " + strategicClass(strategic.level);
-      chip.textContent = levelLabel;
-
-      document.getElementById("cakeStrategicLevel").textContent = levelLabel;
-      document.getElementById("cakeProtectedMargin").textContent = money(strategic.marge);
-      document.getElementById("cakeProtectedMargin").className = "cake-value " + (strategic.marge >= 0 ? "green" : "danger");
-      document.getElementById("cakePressure").textContent = money(strategic.pressure);
-    }
-
     function renderEngagements(calc, brain){
-      const credits = activeItems(brain?.credits);
-      const debts = activeItems(brain?.debts);
-      const projects = activeItems(brain?.projects);
-
-      renderCredits(credits);
-      renderDebts(debts);
-      renderProjects(projects);
-      renderRescuePlan(calc, brain);
-      renderProjectStatus(calc, brain);
-      renderSynthesePatron(calc, brain);
-      renderRecoveryBlock(calc);
-      renderTargetsBlock(calc);
+      const credits = (brain?.credits || []).filter(x => x.active !== false);
+      const debts = (brain?.debts || []).filter(x => x.active !== false);
+      const projects = (brain?.projects || []).filter(x => x.active !== false);
+      const topProject = getTopProject(brain);
 
       document.getElementById("cakeCreditsLeft").textContent = money(calc.creditsLeft);
       document.getElementById("cakeCreditsMonthly").textContent = money(calc.creditsMonthly);
       document.getElementById("cakeDebtsSoon").textContent = money(calc.debtsSoon);
       document.getElementById("cakeDebtsTotal").textContent = money(calc.debtsTotal);
       document.getElementById("cakeProjectsTotal").textContent = money(calc.projectsTotal);
-
-      const afterEl = document.getElementById("kpiAfterCommitments");
-      afterEl.textContent = money(calc.afterCommitments);
-      afterEl.className = "kpi-val " + (calc.afterCommitments >= 0 ? "gold" : "danger");
-
+      document.getElementById("kpiAfterCommitments").textContent = money(calc.afterCommitments);
+      document.getElementById("kpiAfterCommitments").className = "kpi-val " + pickColorClass(calc.afterCommitments, "green", "danger");
       document.getElementById("kpiSafetyReserve").textContent = money(calc.safetyReserve);
       document.getElementById("kpiFixedCosts").textContent = money(calc.fixedCosts);
 
-      const decision = computeDecision(calc, brain);
-      document.getElementById("decisionMain").textContent = decision.main;
-      document.getElementById("decisionSub").textContent = decision.sub;
-
-      const chip = document.getElementById("decisionChip");
-      chip.textContent = decision.chipText;
-      chip.className = "decision-chip " + decision.chipClass;
+      renderCreditsList(credits);
+      renderDebtsList(debts);
+      renderProjectsList(projects);
+      renderDecision(calc, topProject);
+      renderRecovery(calc);
+      renderTargets(calc);
+      renderSynth(calc, topProject);
+      renderProjectStatus(calc, topProject);
+      renderRescuePlan(calc, topProject);
     }
 
     function renderEngagementsFallback(calc){
-      renderCredits([]);
-      renderDebts([]);
-      renderProjects([]);
+      document.getElementById("cakeCreditsLeft").textContent = "—";
+      document.getElementById("cakeCreditsMonthly").textContent = "—";
+      document.getElementById("cakeDebtsSoon").textContent = "—";
+      document.getElementById("cakeDebtsTotal").textContent = "—";
+      document.getElementById("cakeProjectsTotal").textContent = "—";
+      document.getElementById("kpiAfterCommitments").textContent = money(calc.afterCommitments);
+      document.getElementById("kpiAfterCommitments").className = "kpi-val " + pickColorClass(calc.afterCommitments, "green", "danger");
+      document.getElementById("kpiSafetyReserve").textContent = "—";
+      document.getElementById("kpiFixedCosts").textContent = "—";
 
-      const rescueEl = document.getElementById("rescuePlanList");
-      if(rescueEl){
-        rescueEl.innerHTML = `<div class="empty">Le plan de protection a besoin du pilotage ou du fichier de secours.</div>`;
+      document.getElementById("creditsList").innerHTML = `<div class="empty">Aucun brain PAY local pour afficher les crédits.</div>`;
+      document.getElementById("debtsList").innerHTML = `<div class="empty">Aucun brain PAY local pour afficher les dettes.</div>`;
+      document.getElementById("projectsList").innerHTML = `<div class="empty">Aucun brain PAY local pour afficher les projets.</div>`;
+
+      renderDecision(calc, null, true);
+      renderRecovery(calc, true);
+      renderTargets(calc, true);
+      renderSynth(calc, null, true);
+      renderProjectStatus(calc, null, true);
+      renderRescuePlan(calc, null, true);
+    }
+
+    function renderCreditsList(credits){
+      const el = document.getElementById("creditsList");
+      if(!credits.length){
+        el.innerHTML = `<div class="empty">Aucun crédit déclaré.</div>`;
+        return;
       }
 
-      document.getElementById("synthTitle").textContent = "Synthèse indisponible";
-      document.getElementById("synthSub").textContent = "Le bandeau patron a besoin du pilotage ou du fichier de secours.";
+      el.innerHTML = credits.map(item => `
+        <div class="row">
+          <div class="row-ico violet">🏦</div>
+          <div class="row-body">
+            <div class="row-title">${esc(item.label || "Crédit")}</div>
+            <div class="row-meta">Mensuel : ${money(item.monthly_payment_xof)} · Priorité ${esc(item.priority)}</div>
+          </div>
+          <div class="row-amount violet">${money(item.amount_left_xof)}</div>
+        </div>
+      `).join("");
+    }
 
-      ["synthBreath","synthMonth","synthProject","synthPriority"].forEach(prefix => {
-        const badge = document.getElementById(prefix + "Badge");
-        const main = document.getElementById(prefix + "Main");
-        const text = document.getElementById(prefix + "Text");
-        if(badge){
-          badge.className = "synth-badge warn";
-          badge.textContent = "Pilotage manquant";
+    function renderDebtsList(debts){
+      const el = document.getElementById("debtsList");
+      if(!debts.length){
+        el.innerHTML = `<div class="empty">Aucune dette déclarée.</div>`;
+        return;
+      }
+
+      el.innerHTML = debts.map(item => `
+        <div class="row">
+          <div class="row-ico red">🧾</div>
+          <div class="row-body">
+            <div class="row-title">${esc(item.label || "Dette")}</div>
+            <div class="row-meta">Échéance : ${esc(String(item.due_days))} jour(s) · Priorité ${esc(item.priority)}</div>
+          </div>
+          <div class="row-amount danger">${money(item.amount_left_xof)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderProjectsList(projects){
+      const el = document.getElementById("projectsList");
+      if(!projects.length){
+        el.innerHTML = `<div class="empty">Aucun projet déclaré.</div>`;
+        return;
+      }
+
+      el.innerHTML = projects.map(item => `
+        <div class="row">
+          <div class="row-ico gold">🚀</div>
+          <div class="row-body">
+            <div class="row-title">${esc(item.label || "Projet")}</div>
+            <div class="row-meta">Horizon : ${esc(String(item.deadline_days))} jour(s) · Priorité ${esc(item.priority)}</div>
+          </div>
+          <div class="row-amount gold">${money(item.target_xof)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderDecision(calc, topProject, noBrain = false){
+      let text = "Lecture incomplète.";
+      let sub = "Ajoute le pilotage local pour une lecture d'engagements complète.";
+      let chipClass = "warn";
+      let chipText = "Brain absent";
+
+      if(!noBrain){
+        if(calc.afterCommitments <= 0){
+          text = "Freiner et recharger la base";
+          sub = "La pression visible mange la marge. Il faut reconstituer du souffle avant d'ouvrir un nouveau front.";
+          chipClass = "bad";
+          chipText = "Zone rouge";
+        }else if(calc.afterCommitments <= calc.safetyReserve){
+          text = "Consolider avant d'accélérer";
+          sub = "Le mois tient, mais la réserve n'est pas largement sécurisée.";
+          chipClass = "orange";
+          chipText = "Tension";
+        }else if(topProject && calc.afterCommitments < num(topProject.target_xof)){
+          text = "Projet trop tôt";
+          sub = "Le projet prioritaire existe, mais la marge actuelle ne couvre pas encore le bon cran.";
+          chipClass = "warn";
+          chipText = "Patience";
+        }else{
+          text = "Fenêtre propre";
+          sub = "La base tient assez pour avancer utilement sans se casser.";
+          chipClass = "ok";
+          chipText = "Go propre";
         }
-        if(main) main.textContent = "Lecture indisponible";
-        if(text) text.textContent = "Le cockpit a besoin du pilotage pour produire cette synthèse.";
+      }
+
+      document.getElementById("decisionMain").textContent = text;
+      document.getElementById("decisionSub").textContent = sub;
+      const chip = document.getElementById("decisionChip");
+      chip.className = "decision-chip " + chipClass;
+      chip.textContent = chipText;
+    }
+
+    function renderRecovery(calc, noBrain = false){
+      const zero = Math.max(0, 0 - num(calc.afterCommitments));
+      const reserveGap = Math.max(0, num(calc.safetyReserve) - num(calc.afterCommitments));
+
+      document.getElementById("recoveryZeroMain").textContent = noBrain ? "—" : money(zero);
+      document.getElementById("recoveryReserveMain").textContent = noBrain ? "—" : money(reserveGap);
+
+      const zeroBadge = document.getElementById("recoveryZeroBadge");
+      zeroBadge.className = "status-badge " + (zero > 0 ? "bad" : "ok");
+      zeroBadge.textContent = zero > 0 ? "À remonter" : "À l'équilibre";
+
+      const reserveBadge = document.getElementById("recoveryReserveBadge");
+      reserveBadge.className = "status-badge " + (reserveGap > 0 ? "orange" : "ok");
+      reserveBadge.textContent = reserveGap > 0 ? "Réserve trouée" : "Réserve tenue";
+
+      if(noBrain){
+        document.getElementById("recoveryReadMain").textContent = "Brain absent";
+        document.getElementById("recoveryReadSub").textContent = "Ajoute le pilotage local pour lire la vraie distance de redressement.";
+        document.getElementById("recoveryCapMain").textContent = "Lecture partielle";
+        document.getElementById("recoveryCapSub").textContent = "La logique terrain complète dépend du brain.";
+        return;
+      }
+
+      document.getElementById("recoveryReadMain").textContent =
+        zero > 0 ? "Retrouver du cash utile" : "Mois respirable";
+      document.getElementById("recoveryReadSub").textContent =
+        zero > 0 ? "Commence par refaire une base neutre avant tout projet." : "Le mois n'est pas mangé par la pression immédiate.";
+
+      document.getElementById("recoveryCapMain").textContent =
+        reserveGap > 0 ? "Refaire la réserve" : "Réserve préservée";
+      document.getElementById("recoveryCapSub").textContent =
+        reserveGap > 0 ? "Remonte au-dessus du seuil de sécurité avant de relancer autre chose." : "Le seuil de sécurité n'est pas cassé.";
+    }
+
+    function renderTargets(calc, noBrain = false){
+      const zero = Math.max(0, 0 - num(calc.afterCommitments));
+      const reserveGap = Math.max(0, num(calc.safetyReserve) - num(calc.afterCommitments));
+      const target7 = zero > 0 ? Math.ceil(zero / 7) * 7 : 0;
+      const target30 = reserveGap > 0 ? reserveGap : zero;
+
+      document.getElementById("target7Main").textContent = noBrain ? "—" : money(target7);
+      document.getElementById("target30Main").textContent = noBrain ? "—" : money(target30);
+
+      document.getElementById("target7Badge").className = "status-badge " + (target7 > 0 ? "bad" : "ok");
+      document.getElementById("target7Badge").textContent = target7 > 0 ? "Urgence" : "Stable";
+
+      document.getElementById("target30Badge").className = "status-badge " + (target30 > 0 ? "orange" : "ok");
+      document.getElementById("target30Badge").textContent = target30 > 0 ? "Redressement" : "Tenue";
+
+      if(noBrain){
+        document.getElementById("targetReadMain").textContent = "Brain absent";
+        document.getElementById("targetReadSub").textContent = "Le plan de redressement précis a besoin du pilotage local.";
+        document.getElementById("targetCapMain").textContent = "Lecture partielle";
+        document.getElementById("targetCapSub").textContent = "Le cockpit voit le flux, pas tous les engagements sans le brain.";
+        return;
+      }
+
+      document.getElementById("targetReadMain").textContent =
+        target30 > 0 ? "Rentrer du concret" : "Garder la discipline";
+      document.getElementById("targetReadSub").textContent =
+        target30 > 0 ? "Le terrain demande des ventes utiles, pas du décor." : "Ne casse pas une bonne position par impatience.";
+
+      document.getElementById("targetCapMain").textContent =
+        target7 > 0 ? "Cash utile d'abord" : "Cap sous contrôle";
+      document.getElementById("targetCapSub").textContent =
+        target7 > 0 ? "Tout ce qui ne nourrit pas la base passe après." : "Tu peux choisir plus calmement le prochain mouvement.";
+    }
+
+    function renderSynth(calc, topProject, noBrain = false){
+      const breathBadge = document.getElementById("synthBreathBadge");
+      const monthBadge = document.getElementById("synthMonthBadge");
+      const projectBadge = document.getElementById("synthProjectBadge");
+      const priorityBadge = document.getElementById("synthPriorityBadge");
+
+      if(noBrain){
+        document.getElementById("synthTitle").textContent = "Lecture partielle";
+        document.getElementById("synthSub").textContent = "Le cockpit lit le flux PAY réel, mais pas encore les engagements posés localement.";
+        breathBadge.className = "synth-badge warn";
+        breathBadge.textContent = "Brain absent";
+        document.getElementById("synthBreathMain").textContent = "Ajoute le pilotage";
+        document.getElementById("synthBreathText").textContent = "Sans le brain, la respiration financière n'est pas lue complètement.";
+
+        monthBadge.className = "synth-badge warn";
+        monthBadge.textContent = "Partiel";
+        document.getElementById("synthMonthMain").textContent = money(calc.netPro);
+        document.getElementById("synthMonthText").textContent = "Le net flux existe, mais pas toute la pression déclarée.";
+
+        projectBadge.className = "synth-badge warn";
+        projectBadge.textContent = "Projet non lu";
+        document.getElementById("synthProjectMain").textContent = "—";
+        document.getElementById("synthProjectText").textContent = "Pose les projets dans le pilotage local.";
+
+        priorityBadge.className = "synth-badge warn";
+        priorityBadge.textContent = "Priorité";
+        document.getElementById("synthPriorityMain").textContent = "Stabiliser";
+        document.getElementById("synthPriorityText").textContent = "Commence par poser la base locale.";
+        return;
+      }
+
+      const breatheGood = calc.afterCommitments > calc.safetyReserve;
+      breathBadge.className = "synth-badge " + (breatheGood ? "ok" : "bad");
+      breathBadge.textContent = breatheGood ? "Respire" : "Sous pression";
+      document.getElementById("synthBreathMain").textContent = breatheGood ? "Base respirable" : "Marge comprimée";
+      document.getElementById("synthBreathText").textContent = breatheGood
+        ? "Après engagements, la caisse garde encore du souffle."
+        : "Les engagements mangent trop vite la marge actuelle.";
+
+      const monthGood = calc.netPro > 0;
+      monthBadge.className = "synth-badge " + (monthGood ? "ok" : "bad");
+      monthBadge.textContent = monthGood ? "Mois positif" : "Mois négatif";
+      document.getElementById("synthMonthMain").textContent = money(calc.netPro);
+      document.getElementById("synthMonthText").textContent = monthGood
+        ? "Le mois produit encore quelque chose de réel."
+        : "Le mois détruit de la marge si tu ne corriges pas.";
+
+      const projectOk = !!topProject && calc.afterCommitments >= num(topProject.target_xof);
+      projectBadge.className = "synth-badge " + (topProject ? (projectOk ? "ok" : "warn") : "bad");
+      projectBadge.textContent = topProject ? (projectOk ? "Projet finançable" : "Projet trop tôt") : "Aucun projet";
+      document.getElementById("synthProjectMain").textContent = topProject ? topProject.label : "—";
+      document.getElementById("synthProjectText").textContent = topProject
+        ? (projectOk ? "Le projet prioritaire peut passer sans casser la base." : "Le projet existe, mais la marge n'est pas encore à la hauteur.")
+        : "Aucun projet déclaré dans le pilotage local.";
+
+      const priority = !monthGood || !breatheGood ? "Réparer la base" : projectOk ? "Exécuter proprement" : "Consolider";
+      priorityBadge.className = "synth-badge " + (!monthGood || !breatheGood ? "bad" : projectOk ? "ok" : "warn");
+      priorityBadge.textContent = "Priorité";
+      document.getElementById("synthPriorityMain").textContent = priority;
+      document.getElementById("synthPriorityText").textContent =
+        priority === "Réparer la base"
+          ? "Couper la fuite, refaire du souffle, retarder tout décor."
+          : priority === "Exécuter proprement"
+            ? "Avancer sur le projet utile sans ouvrir dix fronts."
+            : "Tenir le mois et élargir la marge avant l'accélération.";
+    }
+
+    function renderProjectStatus(calc, topProject, noBrain = false){
+      const statusBadge = document.getElementById("projectStatusBadge");
+      const topBadge = document.getElementById("projectTopBadge");
+      const capBadge = document.getElementById("projectCapacityBadge");
+      const gapBadge = document.getElementById("projectGapBadge");
+
+      if(noBrain){
+        statusBadge.className = "status-badge warn";
+        statusBadge.textContent = "Brain absent";
+        document.getElementById("projectStatusMain").textContent = "Lecture partielle";
+        document.getElementById("projectStatusSub").textContent = "Pose le pilotage local pour lire le vrai statut projet.";
+
+        topBadge.className = "status-badge warn";
+        topBadge.textContent = "Non lu";
+        document.getElementById("projectTopMain").textContent = "—";
+        document.getElementById("projectTopSub").textContent = "Projet prioritaire introuvable sans brain.";
+
+        capBadge.className = "status-badge warn";
+        capBadge.textContent = "Partiel";
+        document.getElementById("projectCapacityMain").textContent = money(calc.afterCommitments);
+        document.getElementById("projectCapacitySub").textContent = "Capacité lue sans tous les engagements.";
+
+        gapBadge.className = "status-badge warn";
+        gapBadge.textContent = "Partiel";
+        document.getElementById("projectGapMain").textContent = "—";
+        document.getElementById("projectGapSub").textContent = "Écart projet non calculable sans brain.";
+        return;
+      }
+
+      if(!topProject){
+        statusBadge.className = "status-badge warn";
+        statusBadge.textContent = "Aucun projet";
+        document.getElementById("projectStatusMain").textContent = "Pas de cap déclaré";
+        document.getElementById("projectStatusSub").textContent = "Le cockpit peut protéger, mais il ne peut pas hiérarchiser un projet absent.";
+
+        topBadge.className = "status-badge warn";
+        topBadge.textContent = "Vide";
+        document.getElementById("projectTopMain").textContent = "—";
+        document.getElementById("projectTopSub").textContent = "Ajoute au moins un projet utile dans le pilotage local.";
+
+        capBadge.className = "status-badge ok";
+        capBadge.textContent = "Capacité";
+        document.getElementById("projectCapacityMain").textContent = money(calc.afterCommitments);
+        document.getElementById("projectCapacitySub").textContent = "Reste manœuvrable après engagements.";
+
+        gapBadge.className = "status-badge warn";
+        gapBadge.textContent = "Sans cible";
+        document.getElementById("projectGapMain").textContent = "—";
+        document.getElementById("projectGapSub").textContent = "Pas d'écart calculable sans projet.";
+        return;
+      }
+
+      const gap = Math.max(0, num(topProject.target_xof) - num(calc.afterCommitments));
+      const canPass = gap <= 0;
+
+      statusBadge.className = "status-badge " + (canPass ? "ok" : "warn");
+      statusBadge.textContent = canPass ? "Projet passable" : "Projet trop tôt";
+      document.getElementById("projectStatusMain").textContent = canPass ? "Projet finançable" : "Projet à préparer";
+      document.getElementById("projectStatusSub").textContent = canPass
+        ? "La marge actuelle couvre le projet prioritaire."
+        : "Le projet prioritaire existe, mais l'écart n'est pas encore comblé.";
+
+      topBadge.className = "status-badge " + (canPass ? "ok" : "warn");
+      topBadge.textContent = "Prioritaire";
+      document.getElementById("projectTopMain").textContent = topProject.label || "Projet";
+      document.getElementById("projectTopSub").textContent = `Cible ${money(topProject.target_xof)} · Horizon ${topProject.deadline_days || 0} jour(s).`;
+
+      capBadge.className = "status-badge " + (num(calc.afterCommitments) > 0 ? "ok" : "bad");
+      capBadge.textContent = num(calc.afterCommitments) > 0 ? "Capacité" : "Comprimée";
+      document.getElementById("projectCapacityMain").textContent = money(calc.afterCommitments);
+      document.getElementById("projectCapacitySub").textContent = "Reste manœuvrable après engagements.";
+
+      gapBadge.className = "status-badge " + (gap > 0 ? "orange" : "ok");
+      gapBadge.textContent = gap > 0 ? "Écart" : "Couvert";
+      document.getElementById("projectGapMain").textContent = gap > 0 ? money(gap) : "0 F CFA";
+      document.getElementById("projectGapSub").textContent = gap > 0
+        ? "Montant manquant avant de financer le projet sans se casser."
+        : "Le projet prioritaire tient dans la marge actuelle.";
+    }
+
+    function renderRescuePlan(calc, topProject, noBrain = false){
+      const el = document.getElementById("rescuePlanList");
+      const steps = [];
+
+      if(noBrain){
+        steps.push(
+          { title:"Poser le brain PAY", text:"Ajoute réserve, charges fixes, crédits, dettes et projets pour obtenir une vraie lecture patron." },
+          { title:"Relire la pression", text:"Une fois le brain posé, le cockpit calculera la vraie marge après engagements." },
+          { title:"Décider ensuite", text:"Ne relance pas un projet avant cette lecture complète." }
+        );
+      }else{
+        if(num(calc.afterCommitments) <= 0){
+          steps.push({ title:"Couper le bruit", text:"Bloque les sorties non vitales et tout achat de posture." });
+          steps.push({ title:"Ramener du cash utile", text:"Priorité aux ventes ou entrées qui rechargent la base, pas au décor." });
+          steps.push({ title:"Refaire la réserve", text:"Reviens d'abord au-dessus du seuil de sécurité." });
+        }else if(num(calc.afterCommitments) <= num(calc.safetyReserve)){
+          steps.push({ title:"Consolider", text:"Le mois tient, mais la réserve n'est pas largement protégée." });
+          steps.push({ title:"Éviter le prestige", text:"Tout ce qui flatte l'image sans nourrir la base passe après." });
+          steps.push({ title:"Lisser les échéances", text:"Réduis la pression visible avant toute accélération." });
+        }else{
+          steps.push({ title:"Base stable", text:"La marge après engagements reste au-dessus de la réserve." });
+          if(topProject){
+            steps.push({ title:"Servir le bon projet", text:`Avance seulement sur ${topProject.label}, pas sur plusieurs fronts en même temps.` });
+          }
+          steps.push({ title:"Garder la discipline", text:"Même en terrain favorable, évite l'euphorie de dépense." });
+        }
+      }
+
+      el.innerHTML = steps.map((item, i) => `
+        <div class="rescue-item">
+          <div class="rescue-num">${i + 1}</div>
+          <div class="rescue-body">
+            <div class="rescue-title">${esc(item.title)}</div>
+            <div class="rescue-text">${esc(item.text)}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function setEmptyEverywhere(message){
+      const ids = [
+        "resultList","modulesList","channelsList","creditsList","debtsList","projectsList","channelsBars","rescuePlanList"
+      ];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = `<div class="empty">${esc(message || "Aucune donnée.")}</div>`;
+      });
+    }
+
+    async function loadManualMovements(){
+      MANUAL_SUMMARY = {
+        inPro: 0,
+        outPro: 0,
+        outPerso: 0,
+        savings: 0,
+        todayPerso: 0
+      };
+
+      if(!SLUG) return;
+
+      const { data, error } = await sb
+        .from(PAY_MOVEMENTS_TABLE)
+        .select("direction,scope,kind,category,amount_xof,movement_date,status,phone,slug")
+        .eq("slug", SLUG)
+        .eq("status", "posted");
+
+      if(error){
+        console.warn("[PAY manual summary]", error);
+        return;
+      }
+
+      const today = todayLocalDate();
+      (data || []).forEach(row => {
+        const amount = num(row.amount_xof);
+        const direction = String(row.direction || "").toLowerCase();
+        const scope = String(row.scope || "").toLowerCase();
+        const kind = String(row.kind || "").toLowerCase();
+        const date = String(row.movement_date || "");
+
+        if(direction === "in" && scope === "pro"){
+          MANUAL_SUMMARY.inPro += amount;
+        }
+
+        if(direction === "out" && scope === "pro"){
+          MANUAL_SUMMARY.outPro += amount;
+        }
+
+        if(direction === "out" && scope === "perso"){
+          MANUAL_SUMMARY.outPerso += amount;
+          if(date === today) MANUAL_SUMMARY.todayPerso += amount;
+        }
+
+        if(kind === "saving" || kind === "savings" || scope === "savings" || scope === "epargne"){
+          MANUAL_SUMMARY.savings += amount;
+        }
+      });
+    }
+
+    function openEngagementsPanel(){
+      document.querySelectorAll(".tab").forEach(b => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
       });
 
-      document.getElementById("projectStatusBadge").className = "status-badge warn";
-      document.getElementById("projectStatusBadge").textContent = "Pilotage manquant";
-      document.getElementById("projectStatusMain").textContent = "Statut projet indisponible";
-      document.getElementById("projectStatusSub").textContent = "La lecture projet dépend du pilotage.";
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
 
-      document.getElementById("projectTopBadge").className = "status-badge warn";
-      document.getElementById("projectTopBadge").textContent = "Aucun calcul";
-      document.getElementById("projectTopMain").textContent = "Projet non lu";
-      document.getElementById("projectTopSub").textContent = "Ajoute le pilotage pour faire remonter le projet prioritaire.";
+      const tab = document.querySelector('.tab[data-tab="engagements"]');
+      const panel = document.getElementById("panel-engagements");
 
-      document.getElementById("projectCapacityMain").textContent = money(calc.disponiblePro);
-      document.getElementById("projectCapacitySub").textContent = "Lecture simple sans couche crédits/dettes/projets.";
+      if(tab){
+        tab.classList.add("active", "engagements");
+        tab.setAttribute("aria-selected", "true");
+      }
+      if(panel) panel.classList.add("active");
 
-      document.getElementById("projectGapBadge").className = "status-badge warn";
-      document.getElementById("projectGapBadge").textContent = "Sans calcul";
-      document.getElementById("projectGapMain").textContent = "—";
-      document.getElementById("projectGapSub").textContent = "Impossible de calculer l'écart sans projet déclaré.";
-
-      document.getElementById("cakeCreditsLeft").textContent = money(0);
-      document.getElementById("cakeCreditsMonthly").textContent = money(0);
-      document.getElementById("cakeDebtsSoon").textContent = money(0);
-      document.getElementById("cakeDebtsTotal").textContent = money(0);
-      document.getElementById("cakeProjectsTotal").textContent = money(0);
-
-      document.getElementById("recoveryZeroBadge").className = "status-badge warn";
-      document.getElementById("recoveryZeroBadge").textContent = "Pilotage manquant";
-      document.getElementById("recoveryZeroMain").textContent = "—";
-      document.getElementById("recoveryZeroSub").textContent = "Impossible de calculer la remontée sans la couche engagements.";
-
-      document.getElementById("recoveryReserveBadge").className = "status-badge warn";
-      document.getElementById("recoveryReserveBadge").textContent = "Pilotage manquant";
-      document.getElementById("recoveryReserveMain").textContent = "—";
-      document.getElementById("recoveryReserveSub").textContent = "Impossible de lire la réserve cible sans le pilotage.";
-
-      document.getElementById("recoveryReadBadge").className = "status-badge warn";
-      document.getElementById("recoveryReadBadge").textContent = "Sans calcul";
-      document.getElementById("recoveryReadMain").textContent = "Lecture indisponible";
-      document.getElementById("recoveryReadSub").textContent = "Le cockpit a besoin du pilotage pour produire cette lecture.";
-
-      document.getElementById("recoveryCapBadge").className = "status-badge warn";
-      document.getElementById("recoveryCapBadge").textContent = "Sans cap";
-      document.getElementById("recoveryCapMain").textContent = "Cap indisponible";
-      document.getElementById("recoveryCapSub").textContent = "Le cap de remontée dépend de la couche engagements.";
-
-      const afterEl = document.getElementById("kpiAfterCommitments");
-      afterEl.textContent = money(calc.disponiblePro);
-      afterEl.className = "kpi-val gold";
-
-      document.getElementById("kpiSafetyReserve").textContent = money(0);
-      document.getElementById("kpiFixedCosts").textContent = money(0);
-
-      document.getElementById("target7Badge").className = "status-badge warn";
-      document.getElementById("target7Badge").textContent = "Pilotage manquant";
-      document.getElementById("target7Main").textContent = "—";
-      document.getElementById("target7Sub").textContent = "Impossible de calculer l'objectif 7 jours.";
-
-      document.getElementById("target30Badge").className = "status-badge warn";
-      document.getElementById("target30Badge").textContent = "Pilotage manquant";
-      document.getElementById("target30Main").textContent = "—";
-      document.getElementById("target30Sub").textContent = "Impossible de calculer l'objectif 30 jours.";
-
-      document.getElementById("targetReadBadge").className = "status-badge warn";
-      document.getElementById("targetReadBadge").textContent = "Sans lecture";
-      document.getElementById("targetReadMain").textContent = "Lecture indisponible";
-      document.getElementById("targetReadSub").textContent = "Le cockpit a besoin du pilotage pour produire le plan de redressement.";
-
-      document.getElementById("targetCapBadge").className = "status-badge warn";
-      document.getElementById("targetCapBadge").textContent = "Sans cap";
-      document.getElementById("targetCapMain").textContent = "Cap indisponible";
-      document.getElementById("targetCapSub").textContent = "Le cap opérationnel dépend de la couche engagements.";
-
-      document.getElementById("decisionMain").textContent = "Pilotage non chargé";
-      document.getElementById("decisionSub").textContent = "Le cockpit fonctionne, mais la couche crédits / dettes / projets n'a pas trouvé le pilotage ni le fichier de secours.";
-      const chip = document.getElementById("decisionChip");
-      chip.textContent = "Pilotage manquant";
-      chip.className = "decision-chip warn";
+      panel?.scrollIntoView({ behavior:"smooth", block:"start" });
     }
 
     function renderCockpit(data){
-      COCKPIT = data || {};
+      const monthIn = num(data.month_in);
+      const todayIn = num(data.today_in);
+      const monthOut = num(data.month_out_pro ?? data.month_out ?? 0);
+      const todayOut = num(data.today_out_pro ?? data.today_out ?? 0);
+      const monthNet = num(data.month_net);
+      const todayNet = num(data.today_net ?? (todayIn - todayOut));
+      const monthSavings = num(data.month_savings ?? MANUAL_SUMMARY.savings);
+      const todaySavings = num(data.today_savings ?? 0);
+      const totalSavings = num(data.total_savings ?? MANUAL_SUMMARY.savings);
 
-      const monthIn = Number(data.month_in || 0);
-      const todayIn = Number(data.today_in || 0);
-      const monthOut = Number(data.month_out_pro || 0);
-      const todayOut = Number(data.today_out_pro || 0);
-      const monthNet = Number(data.month_net || 0);
-      const todayNet = Number(data.today_net || 0);
-      const monthSavings = Number(data.month_savings || 0);
-      const todaySavings = Number(data.today_savings || 0);
-      const totalSavings = Number(data.total_savings || 0);
-      const modules = normalizeArray(data.by_module);
-      const channels = normalizeArray(data.by_channel);
-
-      const now = new Date();
-      const personalOutVisible = computePersonalOutVisible(now);
-      const personalOutToday = computePersonalOutToday(now);
-      const disponiblePro = monthNet - monthSavings;
+      const modules = Array.isArray(data.by_module) ? data.by_module : [];
+      const channels = Array.isArray(data.by_channel) ? data.by_channel : [];
+      const personalOutVisible = num(data.month_out_perso ?? MANUAL_SUMMARY.outPerso);
+      const personalOutToday = num(data.today_out_perso ?? MANUAL_SUMMARY.todayPerso);
+      const disponiblePro = monthNet;
       const resteApresPerso = disponiblePro - personalOutVisible;
 
       document.getElementById("kpiMonthIn").textContent = money(monthIn);
@@ -3245,38 +2731,32 @@
       document.getElementById("kpiMonthOut").textContent = money(monthOut);
       document.getElementById("kpiTodayOut").textContent = "Aujourd'hui : " + money(todayOut);
 
-      const netEl = document.getElementById("kpiMonthNet");
-      netEl.textContent = money(monthNet);
-      netEl.className = "kpi-val " + (monthNet >= 0 ? "gold" : "danger");
+      document.getElementById("kpiMonthNet").textContent = money(monthNet);
       document.getElementById("kpiTodayNet").textContent = "Aujourd'hui : " + money(todayNet);
 
       document.getElementById("kpiMonthSavings").textContent = money(monthSavings);
       document.getElementById("kpiTodaySavings").textContent = "Aujourd'hui : " + money(todaySavings);
       document.getElementById("kpiTotalSavings").textContent = money(totalSavings);
-
-      const ratio = monthIn > 0 ? Math.round((monthSavings / monthIn) * 100) : 0;
-      document.getElementById("kpiSavingsRatio").textContent = ratio + "%";
+      document.getElementById("kpiSavingsRatio").textContent = percent(monthSavings, monthIn).toFixed(0) + "%";
 
       document.getElementById("iboxSavingsMonth").textContent = money(monthSavings);
       document.getElementById("iboxSavingsTotal").textContent = money(totalSavings);
 
-      document.getElementById("kpiModCount").textContent = String(modules.length);
-      document.getElementById("kpiChanCount").textContent = String(channels.length);
-      document.getElementById("kpiEcoTotal").textContent = money(monthIn);
-
-      document.getElementById("iboxBusiness").textContent = data.business_name || "DIGIY PAY";
-      document.getElementById("iboxPlan").textContent = data.plan || "—";
-      document.getElementById("iboxPhone").textContent = data.phone || PHONE || "—";
-      document.getElementById("iboxAccess").textContent = data.access_ok ? "ABONNEMENT OK" : "NON ACTIF";
-
       document.getElementById("cakeNetPro").textContent = money(monthNet);
+      document.getElementById("cakeProtectedMargin").textContent = money(resteApresPerso);
+      document.getElementById("cakePressure").textContent = money(personalOutVisible);
 
-      document.getElementById("topSlug").textContent = data.slug || SLUG;
-      document.getElementById("badgeSlug").textContent = data.slug || SLUG;
-      document.getElementById("slugBadge").style.display = "flex";
+      document.getElementById("iboxBusiness").textContent = "MON ARGENT by DIGIY";
+      document.getElementById("iboxPlan").textContent = String(data.plan || "—").toUpperCase();
+      document.getElementById("iboxPhone").textContent = data.phone || PHONE || "—";
+      document.getElementById("iboxAccess").textContent = data.access_ok ? "Actif" : "Non actif";
 
       const realSlug = data.slug || SLUG;
       const realPhone = data.phone || PHONE;
+
+      document.getElementById("topSlug").textContent = realSlug || "Cockpit PAY";
+      document.getElementById("badgeSlug").textContent = realSlug || "PAY";
+      document.getElementById("slugBadge").style.display = "flex";
 
       setContextLinks(realSlug, realPhone);
 
@@ -3346,16 +2826,6 @@
       }
     }
 
-    function normalizeRpcPayload(payload){
-      if(!payload) return null;
-      if(typeof payload === "object") return payload;
-      if(typeof payload === "string"){
-        const parsed = safeJsonParse(payload.trim());
-        return parsed && typeof parsed === "object" ? parsed : null;
-      }
-      return null;
-    }
-
     async function loadCockpit(){
       try{
         if(!SESSION){
@@ -3406,13 +2876,14 @@
       document.querySelectorAll(".tab").forEach(btn => {
         btn.addEventListener("click", () => {
           document.querySelectorAll(".tab").forEach(b => {
-            b.classList.remove("active");
+            b.classList.remove("active","pro","epargne","eco","engagements");
             b.setAttribute("aria-selected", "false");
           });
 
           document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
 
           btn.classList.add("active");
+          btn.classList.add(btn.dataset.tab);
           btn.setAttribute("aria-selected", "true");
 
           const panel = document.getElementById("panel-" + btn.dataset.tab);
