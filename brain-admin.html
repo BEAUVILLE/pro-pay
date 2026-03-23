@@ -526,7 +526,7 @@
         <div class="mini">
           <div class="mini-k">Étape 4</div>
           <div class="mini-v">Exporter</div>
-          <div class="mini-s">Télécharger le fichier pay-brain.json.</div>
+          <div class="mini-s">Télécharger le fichier de pilotage du slug actif.</div>
         </div>
       </div>
     </section>
@@ -734,7 +734,7 @@
 
             <div class="status warn" style="margin-top:12px">
               Le navigateur garde les données de pilotage dans le localStorage du slug courant.
-              Le cockpit lit d’abord la clé officielle par slug, puis garde la compatibilité avec l’ancien rail.
+              Le cockpit lit uniquement la clé officielle et le brouillon de ce slug.
             </div>
           </div>
         </article>
@@ -832,6 +832,10 @@
       try{ return JSON.parse(raw); }catch(_){ return null; }
     }
 
+    function safeJsonParse(raw){
+      try{ return JSON.parse(raw); }catch(_){ return null; }
+    }
+
     function isBrainLikeObject(obj){
       return !!(
         obj &&
@@ -849,13 +853,13 @@
       );
     }
 
-    function extractBrainObject(value, slug, phone, depth = 0){
+    function extractBrainObjectLegacy(value, slug, phone, depth = 0){
       if(depth > 6) return null;
       if(value == null) return null;
 
       if(typeof value === "string"){
         const parsed = safeParse(value.trim());
-        return parsed ? extractBrainObject(parsed, slug, phone, depth + 1) : null;
+        return parsed ? extractBrainObjectLegacy(parsed, slug, phone, depth + 1) : null;
       }
 
       if(typeof value !== "object" || Array.isArray(value)) return null;
@@ -867,7 +871,7 @@
       const directKeys = [slug, s, phone, p].filter(Boolean);
       for(const key of directKeys){
         if(Object.prototype.hasOwnProperty.call(value, key)){
-          const found = extractBrainObject(value[key], slug, phone, depth + 1);
+          const found = extractBrainObjectLegacy(value[key], slug, phone, depth + 1);
           if(found) return found;
         }
       }
@@ -875,7 +879,7 @@
       const nestedKeys = ["brain", "data", "payload", "value", "json", "state", "content"];
       for(const key of nestedKeys){
         if(Object.prototype.hasOwnProperty.call(value, key)){
-          const found = extractBrainObject(value[key], slug, phone, depth + 1);
+          const found = extractBrainObjectLegacy(value[key], slug, phone, depth + 1);
           if(found) return found;
         }
       }
@@ -883,7 +887,7 @@
       for(const [k, v] of Object.entries(value)){
         const lk = String(k || "").toLowerCase();
         if((s && lk.includes(s)) || (p && lk.includes(p))){
-          const found = extractBrainObject(v, slug, phone, depth + 1);
+          const found = extractBrainObjectLegacy(v, slug, phone, depth + 1);
           if(found) return found;
         }
       }
@@ -952,91 +956,71 @@
       return qs.length ? `${page}?${qs.join("&")}` : page;
     }
 
-    function resolveContext(){
-      const urlCtx = getUrlParams();
-      let slug = urlCtx.slug;
-      let phone = urlCtx.phone;
-      let source = slug ? "url" : "none";
+    function getCtx(){
+      const session = window.DIGIY_SESSION && typeof window.DIGIY_SESSION.read === "function"
+        ? window.DIGIY_SESSION.read()
+        : (
+            window.DIGIY_SESSION && typeof window.DIGIY_SESSION.get === "function"
+              ? window.DIGIY_SESSION.get()
+              : null
+          );
 
-      const SESSION = window.DIGIY_SESSION || null;
+      const url = new URL(window.location.href);
+      const slug =
+        normalizeSlug(url.searchParams.get("slug")) ||
+        normalizeSlug(session?.slug);
 
-      try{
-        if(SESSION && typeof SESSION.fromUrl === "function"){
-          const fromUrl = SESSION.fromUrl();
-          if(fromUrl && fromUrl.slug){
-            if(!slug) slug = normalizeSlug(fromUrl.slug);
-            if(!phone) phone = normalizePhone(fromUrl.phone);
-            if(source === "none" && slug) source = "session-url";
-          }
-        }
-      }catch(_){}
+      const phone =
+        normalizePhone(url.searchParams.get("phone")) ||
+        normalizePhone(session?.phone);
 
-      try{
-        if((!slug || !phone) && SESSION && typeof SESSION.get === "function"){
-          const sess = SESSION.get();
-          if(sess){
-            if(!slug) slug = normalizeSlug(sess.slug);
-            if(!phone) phone = normalizePhone(sess.phone);
-            if(source === "none" && slug) source = "session";
-          }
-        }
-      }catch(_){}
+      return { slug, phone };
+    }
 
-      if(SESSION && typeof SESSION.save === "function" && slug){
-        try{ SESSION.save(slug, phone); }catch(_){}
+    const CTX = getCtx();
+
+    function requireSlugOrRedirect(){
+      if(CTX.slug) return true;
+
+      const box = document.getElementById("statusBox");
+      if(box){
+        box.className = "status bad";
+        box.innerHTML = "Slug PAY manquant. Ce pilotage est réservé à un abonné identifié. Retourne au PIN ou au cockpit.";
       }
 
-      return {
-        slug: slug || "default",
-        phone: phone || "",
-        source
-      };
-    }
+      setTimeout(() => {
+        window.location.href = "./pin.html?redirect=brain-admin";
+      }, 900);
 
-    const CTX = resolveContext();
+      return false;
+    }
 
     function getOfficialBrainKey(slug){
-      return "digiy_pay_brain:" + normalizeSlug(slug || "default");
+      const s = normalizeSlug(slug);
+      return s ? `digiy_pay_brain:${s}` : "";
     }
 
-    function getLegacyBrainKey(slug){
-      return "digiy_pay_brain_draft_" + normalizeSlug(slug || "default");
+    function getDraftBrainKey(slug){
+      const s = normalizeSlug(slug);
+      return s ? `digiy_pay_brain_draft:${s}` : "";
     }
 
-    function getPhoneBrainKey(phone){
-      const p = normalizePhone(phone);
-      return p ? "digiy_pay_brain:" + p : "";
-    }
-
-    function getBrainKeysToRead(slug, phone){
-      const keys = [
+    function getBrainKeysToRead(slug){
+      return [
         getOfficialBrainKey(slug),
-        getLegacyBrainKey(slug)
-      ];
-
-      const phoneKey = getPhoneBrainKey(phone);
-      if(phoneKey) keys.push(phoneKey);
-
-      return [...new Set(keys.filter(Boolean))];
+        getDraftBrainKey(slug)
+      ].filter(Boolean);
     }
 
-    function getBrainKeysToWrite(slug, phone){
-      const keys = [
+    function getBrainKeysToWrite(slug){
+      return [
         getOfficialBrainKey(slug),
-        getLegacyBrainKey(slug)
-      ];
-
-      const phoneKey = getPhoneBrainKey(phone);
-      if(phoneKey) keys.push(phoneKey);
-
-      return [...new Set(keys.filter(Boolean))];
+        getDraftBrainKey(slug)
+      ].filter(Boolean);
     }
 
-    function getBrainKeysToClear(slug, phone){
-      return [...new Set([
-        ...getBrainKeysToWrite(slug, phone),
-        ...scanBrainKeysInStorage(slug, phone)
-      ])];
+    function getBrainKeysToClear(slug){
+      return getBrainKeysToWrite(slug);
     }
 
     const TEMPLATE = {
@@ -1053,68 +1037,89 @@
       }
     };
 
-    function normalizeCredit(item){
+    function normalizeCredit(item = {}){
       return {
-        label: String(item?.label || "").trim(),
-        amount_left_xof: num(item?.amount_left_xof),
-        monthly_payment_xof: num(item?.monthly_payment_xof),
-        priority: num(item?.priority || 1) || 1,
-        active: item?.active !== false,
-        notes: String(item?.notes || "").trim()
+        label: String(item.label || "").trim(),
+        amount_left_xof: num(item.amount_left_xof),
+        monthly_payment_xof: num(item.monthly_payment_xof),
+        priority: String(item.priority || "2"),
+        active: item.active !== false,
+        notes: String(item.notes || "").trim()
       };
     }
 
-    function normalizeDebt(item){
+    function normalizeDebt(item = {}){
       return {
-        label: String(item?.label || "").trim(),
-        amount_xof: num(item?.amount_xof),
-        due_in_days: num(item?.due_in_days),
-        priority: num(item?.priority || 1) || 1,
-        active: item?.active !== false,
-        notes: String(item?.notes || "").trim()
+        label: String(item.label || "").trim(),
+        amount_left_xof: num(item.amount_left_xof ?? item.amount_xof),
+        due_days: num(item.due_days ?? item.due_in_days),
+        priority: String(item.priority || "2"),
+        active: item.active !== false,
+        notes: String(item.notes || "").trim()
       };
     }
 
-    function normalizeProject(item){
+    function normalizeProject(item = {}){
       return {
-        label: String(item?.label || "").trim(),
-        target_xof: num(item?.target_xof),
-        deadline_days: num(item?.deadline_days),
-        priority: num(item?.priority || 1) || 1,
-        active: item?.active !== false,
-        notes: String(item?.notes || "").trim()
+        label: String(item.label || "").trim(),
+        target_xof: num(item.target_xof),
+        deadline_days: num(item.deadline_days),
+        priority: String(item.priority || "2"),
+        active: item.active !== false,
+        notes: String(item.notes || "").trim()
       };
     }
 
     function normalizeBrain(data){
-      const base = deepClone(TEMPLATE);
-      const out = Object.assign(base, data || {});
-      out.currency = String(out.currency || "XOF").trim() || "XOF";
-      out.safety_reserve_xof = num(out.safety_reserve_xof);
-      out.monthly_fixed_costs_xof = num(out.monthly_fixed_costs_xof);
-      out.credits = Array.isArray(out.credits) ? out.credits.map(normalizeCredit) : [];
-      out.debts = Array.isArray(out.debts) ? out.debts.map(normalizeDebt) : [];
-      out.projects = Array.isArray(out.projects) ? out.projects.map(normalizeProject) : [];
-      out.rules = Object.assign({}, TEMPLATE.rules, out.rules || {});
-      out.rules.danger_debt_ratio_pct = num(out.rules.danger_debt_ratio_pct);
-      out.rules.minimum_cash_after_commitments_xof = num(out.rules.minimum_cash_after_commitments_xof);
-      out.rules.recommended_savings_pct = num(out.rules.recommended_savings_pct);
-      return out;
+      const raw = (data && typeof data === "object") ? data : {};
+      return {
+        currency: String(raw.currency || "XOF").trim() || "XOF",
+        safety_reserve_xof: num(raw.safety_reserve_xof),
+        monthly_fixed_costs_xof: num(raw.monthly_fixed_costs_xof),
+        credits: Array.isArray(raw.credits) ? raw.credits.map(normalizeCredit) : [],
+        debts: Array.isArray(raw.debts) ? raw.debts.map(normalizeDebt) : [],
+        projects: Array.isArray(raw.projects) ? raw.projects.map(normalizeProject) : [],
+        rules: {
+          danger_debt_ratio_pct: num(raw.rules?.danger_debt_ratio_pct ?? 35),
+          minimum_cash_after_commitments_xof: num(raw.rules?.minimum_cash_after_commitments_xof ?? 50000),
+          recommended_savings_pct: num(raw.rules?.recommended_savings_pct ?? 15)
+        }
+      };
+    }
+
+    function extractBrainObject(raw, slug){
+      const parsed = typeof raw === "string" ? safeJsonParse(raw) : raw;
+      if(!parsed || typeof parsed !== "object") return null;
+
+      if(Array.isArray(parsed.credits) || Array.isArray(parsed.debts) || Array.isArray(parsed.projects)){
+        return parsed;
+      }
+
+      const s = normalizeSlug(slug);
+      if(s && parsed[s] && typeof parsed[s] === "object"){
+        return parsed[s];
+      }
+
+      if(parsed.brain && typeof parsed.brain === "object"){
+        return parsed.brain;
+      }
+
+      return null;
     }
 
     function loadDraft(){
-      const keys = getBrainKeysToRead(CTX.slug, CTX.phone);
+      const keys = getBrainKeysToRead(CTX.slug);
 
       for(const key of keys){
         try{
           const raw = localStorage.getItem(key);
           if(!raw) continue;
 
-          const extracted = extractBrainObject(raw, CTX.slug, CTX.phone);
+          const extracted = extractBrainObject(raw, CTX.slug);
           if(extracted){
             return normalizeBrain(extracted);
           }
-        }catch(_){}
+        }catch(_){ }
       }
 
       return deepClone(TEMPLATE);
@@ -1153,7 +1158,7 @@
 
     function saveDraft(showMessage = true){
       const payload = JSON.stringify(normalizeBrain(brain));
-      const keys = getBrainKeysToWrite(CTX.slug, CTX.phone);
+      const keys = getBrainKeysToWrite(CTX.slug);
 
       keys.forEach(key => {
         try{ localStorage.setItem(key, payload); }catch(_){}
@@ -1541,7 +1546,7 @@
       reader.onload = () => {
         try{
           const raw = String(reader.result || "");
-          const extracted = extractBrainObject(raw, CTX.slug, CTX.phone);
+          const extracted = extractBrainObject(raw, CTX.slug);
 
           if(!extracted || typeof extracted !== "object"){
             setStatus("bad", "Import refusé : JSON invalide ou données de pilotage introuvables.");
@@ -1568,8 +1573,9 @@
       document.getElementById("btnSaveTop").addEventListener("click", () => saveDraft(true));
 
       document.getElementById("btnExport").addEventListener("click", () => {
-        downloadJson("pay-brain.json", buildExportObject());
-        setStatus("ok", "Fichier pay-brain.json exporté.");
+        const filename = `pay-brain-${CTX.slug}.json`;
+        downloadJson(filename, buildExportObject());
+        setStatus("ok", `Fichier ${filename} exporté.`);
       });
 
       document.getElementById("btnImportTrigger").addEventListener("click", () => {
@@ -1590,7 +1596,7 @@
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
-        const keys = getBrainKeysToClear(CTX.slug, CTX.phone);
+        const keys = getBrainKeysToClear(CTX.slug);
         keys.forEach(key => {
           try{ localStorage.removeItem(key); }catch(_){}
         });
@@ -1601,19 +1607,14 @@
       });
     }
 
-    bindBaseFields();
-    bindActions();
-    renderAll();
+    if(requireSlugOrRedirect()){
+      bindBaseFields();
+      bindActions();
+      renderAll();
 
-    if(CTX.slug === "default"){
-      setStatus(
-        "warn",
-        "Aucun slug explicite détecté. Le pilotage reste utilisable, mais il sera rangé sous la clé par défaut jusqu’à ce qu’un slug PAY soit présent."
-      );
-    }else{
       setStatus(
         "ok",
-        `Slug actif détecté : <strong>${esc(CTX.slug)}</strong>. Le cockpit pourra relire ce pilotage via la clé officielle.`
+        `Slug actif détecté : <strong>${esc(CTX.slug)}</strong>. Pilotage local isolé par slug.`
       );
     }
 
