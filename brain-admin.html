@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT PRO — Pilotage PAY</title>
+  <title>DIGIY PAY — Brain Admin</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Moule vierge du pilotage PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale par slug et export JSON."
+    content="Pilotage PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale par slug, import/export JSON et export repo."
   />
 
   <script src="./session.js"></script>
@@ -483,7 +483,7 @@
       <div class="brand">
         <div class="mark">₣</div>
         <div>
-          <div class="brand-title">Pilotage PAY — Moule vierge</div>
+          <div class="brand-title">Brain PAY — Pilotage</div>
           <div class="brand-sub" id="brainMeta">Clé de pilotage locale par slug</div>
         </div>
       </div>
@@ -499,12 +499,12 @@
 
   <main class="wrap">
     <section class="hero">
-      <div class="eyebrow">🧭 PAY — base de pilotage locale</div>
-      <h1>Pose le pilotage une fois.<br>Le cockpit parlera plus vrai.</h1>
+      <div class="eyebrow">🧠 PAY — pilotage local par slug</div>
+      <h1>Pose le brain une fois.<br>Le cockpit parlera plus juste.</h1>
       <p>
-        Ce moule vierge sert à poser la base du pro : réserve, charges fixes, crédits,
-        dettes et projets. Tout reste d’abord dans le navigateur du pro, séparé par slug.
-        Ensuite tu peux exporter le JSON proprement.
+        Ici tu poses la base du pro : réserve, charges fixes, crédits, dettes et projets.
+        Tout reste d’abord local dans le navigateur, rangé par slug. Ensuite tu exportes
+        proprement ton JSON ou ta version prête pour le repo.
       </p>
 
       <div class="hero-grid">
@@ -516,17 +516,17 @@
         <div class="mini">
           <div class="mini-k">Étape 2</div>
           <div class="mini-v">Tenir</div>
-          <div class="mini-s">Crédits et dettes à pression rapide.</div>
+          <div class="mini-s">Crédits et dettes sous contrôle.</div>
         </div>
         <div class="mini">
           <div class="mini-k">Étape 3</div>
           <div class="mini-v">Choisir</div>
-          <div class="mini-s">Projets utiles avant projets d’image.</div>
+          <div class="mini-s">Les vrais projets avant les projets d’image.</div>
         </div>
         <div class="mini">
           <div class="mini-k">Étape 4</div>
           <div class="mini-v">Exporter</div>
-          <div class="mini-s">Télécharger le fichier de pilotage du slug actif.</div>
+          <div class="mini-s">JSON local ou version prête pour GitHub.</div>
         </div>
       </div>
     </section>
@@ -726,6 +726,7 @@
             <div class="toolbar" style="margin-top:12px">
               <button class="btn green" id="btnSave" type="button">💾 Sauvegarder localement</button>
               <button class="btn blue" id="btnExport" type="button">⬇️ Export JSON</button>
+              <button class="btn gold" id="btnExportRepo" type="button">🌍 Export pour repo</button>
               <button class="btn outline" id="btnImportTrigger" type="button">⬆️ Import JSON</button>
               <button class="btn red" id="btnClearLocal" type="button">🗑️ Effacer local</button>
             </div>
@@ -820,109 +821,12 @@
       return String(v || "").replace(/[^\d]/g, "");
     }
 
-    function getUrlParams(){
-      const u = new URL(window.location.href);
-      return {
-        slug: normalizeSlug(u.searchParams.get("slug") || ""),
-        phone: normalizePhone(u.searchParams.get("phone") || "")
-      };
-    }
-
     function safeParse(raw){
       try{ return JSON.parse(raw); }catch(_){ return null; }
     }
 
     function safeJsonParse(raw){
       try{ return JSON.parse(raw); }catch(_){ return null; }
-    }
-
-    function isBrainLikeObject(obj){
-      return !!(
-        obj &&
-        typeof obj === "object" &&
-        !Array.isArray(obj) &&
-        (
-          "currency" in obj ||
-          "safety_reserve_xof" in obj ||
-          "monthly_fixed_costs_xof" in obj ||
-          "credits" in obj ||
-          "debts" in obj ||
-          "projects" in obj ||
-          "rules" in obj
-        )
-      );
-    }
-
-    function extractBrainObjectLegacy(value, slug, phone, depth = 0){
-      if(depth > 6) return null;
-      if(value == null) return null;
-
-      if(typeof value === "string"){
-        const parsed = safeParse(value.trim());
-        return parsed ? extractBrainObjectLegacy(parsed, slug, phone, depth + 1) : null;
-      }
-
-      if(typeof value !== "object" || Array.isArray(value)) return null;
-      if(isBrainLikeObject(value)) return value;
-
-      const s = normalizeSlug(slug);
-      const p = normalizePhone(phone);
-
-      const directKeys = [slug, s, phone, p].filter(Boolean);
-      for(const key of directKeys){
-        if(Object.prototype.hasOwnProperty.call(value, key)){
-          const found = extractBrainObjectLegacy(value[key], slug, phone, depth + 1);
-          if(found) return found;
-        }
-      }
-
-      const nestedKeys = ["brain", "data", "payload", "value", "json", "state", "content"];
-      for(const key of nestedKeys){
-        if(Object.prototype.hasOwnProperty.call(value, key)){
-          const found = extractBrainObjectLegacy(value[key], slug, phone, depth + 1);
-          if(found) return found;
-        }
-      }
-
-      for(const [k, v] of Object.entries(value)){
-        const lk = String(k || "").toLowerCase();
-        if((s && lk.includes(s)) || (p && lk.includes(p))){
-          const found = extractBrainObjectLegacy(v, slug, phone, depth + 1);
-          if(found) return found;
-        }
-      }
-
-      return null;
-    }
-
-    function scanBrainKeysInStorage(slug, phone){
-      const out = [];
-      const s = normalizeSlug(slug);
-      const p = normalizePhone(phone);
-
-      try{
-        for(let i = 0; i < localStorage.length; i += 1){
-          const rawKey = localStorage.key(i);
-          const key = String(rawKey || "");
-          const low = key.toLowerCase();
-
-          const hasBrainWord =
-            low.includes("brain") ||
-            low.includes("pay_brain") ||
-            low.includes("pay-brain") ||
-            low.includes("digiy_pay_brain") ||
-            low.includes("digiy_pay_brain_draft");
-
-          const hasSlug = s && low.includes(s);
-          const hasPhone = p && low.includes(p);
-
-          if(hasBrainWord && (hasSlug || hasPhone)){
-            out.push(key);
-          }
-        }
-      }catch(_){}
-
-      return [...new Set(out)];
     }
 
     function deepClone(obj){
@@ -1025,7 +929,7 @@
 
     const TEMPLATE = {
       currency: "XOF",
-      safety_reserve_xof: 0,
+      safety_reserve_xof: 50000,
       monthly_fixed_costs_xof: 0,
       credits: [],
       debts: [],
@@ -1036,6 +940,95 @@
         recommended_savings_pct: 15
       }
     };
+
+    function isBrainLikeObject(obj){
+      return !!(
+        obj &&
+        typeof obj === "object" &&
+        !Array.isArray(obj) &&
+        (
+          "currency" in obj ||
+          "safety_reserve_xof" in obj ||
+          "monthly_fixed_costs_xof" in obj ||
+          "credits" in obj ||
+          "debts" in obj ||
+          "projects" in obj ||
+          "rules" in obj
+        )
+      );
+    }
+
+    function extractBrainObjectLegacy(value, slug, phone, depth = 0){
+      if(depth > 6) return null;
+      if(value == null) return null;
+
+      if(typeof value === "string"){
+        const parsed = safeParse(value.trim());
+        return parsed ? extractBrainObjectLegacy(parsed, slug, phone, depth + 1) : null;
+      }
+
+      if(typeof value !== "object" || Array.isArray(value)) return null;
+      if(isBrainLikeObject(value)) return value;
+
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+
+      const directKeys = [slug, s, phone, p].filter(Boolean);
+      for(const key of directKeys){
+        if(Object.prototype.hasOwnProperty.call(value, key)){
+          const found = extractBrainObjectLegacy(value[key], slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      const nestedKeys = ["brain", "data", "payload", "value", "json", "state", "content"];
+      for(const key of nestedKeys){
+        if(Object.prototype.hasOwnProperty.call(value, key)){
+          const found = extractBrainObjectLegacy(value[key], slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      for(const [k, v] of Object.entries(value)){
+        const lk = String(k || "").toLowerCase();
+        if((s && lk.includes(s)) || (p && lk.includes(p))){
+          const found = extractBrainObjectLegacy(v, slug, phone, depth + 1);
+          if(found) return found;
+        }
+      }
+
+      return null;
+    }
+
+    function scanBrainKeysInStorage(slug, phone){
+      const out = [];
+      const s = normalizeSlug(slug);
+      const p = normalizePhone(phone);
+
+      try{
+        for(let i = 0; i < localStorage.length; i += 1){
+          const rawKey = localStorage.key(i);
+          const key = String(rawKey || "");
+          const low = key.toLowerCase();
+
+          const hasBrainWord =
+            low.includes("brain") ||
+            low.includes("pay_brain") ||
+            low.includes("pay-brain") ||
+            low.includes("digiy_pay_brain") ||
+            low.includes("digiy_pay_brain_draft");
+
+          const hasSlug = s && low.includes(s);
+          const hasPhone = p && low.includes(p);
+
+          if(hasBrainWord && (hasSlug || hasPhone)){
+            out.push(key);
+          }
+        }
+      }catch(_){}
+
+      return [...new Set(out)];
+    }
 
     function normalizeCredit(item = {}){
       return {
@@ -1051,8 +1044,8 @@
     function normalizeDebt(item = {}){
       return {
         label: String(item.label || "").trim(),
-        amount_left_xof: num(item.amount_left_xof ?? item.amount_xof),
-        due_days: num(item.due_days ?? item.due_in_days),
+        amount_xof: num(item.amount_xof ?? item.amount_left_xof),
+        due_in_days: num(item.due_in_days ?? item.due_days),
         priority: String(item.priority || "2"),
         active: item.active !== false,
         notes: String(item.notes || "").trim()
@@ -1104,13 +1097,16 @@
         return parsed.brain;
       }
 
-      return null;
+      return extractBrainObjectLegacy(parsed, slug, CTX.phone);
     }
 
     function loadDraft(){
-      const keys = getBrainKeysToRead(CTX.slug);
+      const keys = [
+        ...getBrainKeysToRead(CTX.slug),
+        ...scanBrainKeysInStorage(CTX.slug, CTX.phone)
+      ];
 
-      for(const key of keys){
+      for(const key of [...new Set(keys)]){
         try{
           const raw = localStorage.getItem(key);
           if(!raw) continue;
@@ -1119,7 +1115,7 @@
           if(extracted){
             return normalizeBrain(extracted);
           }
-        }catch(_){ }
+        }catch(_){}
       }
 
       return deepClone(TEMPLATE);
@@ -1157,7 +1153,8 @@
     }
 
     function saveDraft(showMessage = true){
-      const payload = JSON.stringify(normalizeBrain(brain));
+      const normalized = normalizeBrain(brain);
+      const payload = JSON.stringify(normalized);
       const keys = getBrainKeysToWrite(CTX.slug);
 
       keys.forEach(key => {
@@ -1171,7 +1168,7 @@
       if(showMessage){
         setStatus(
           "ok",
-          `Pilotage PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}`
+          `Brain PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}`
         );
       }
 
@@ -1513,6 +1510,15 @@
       return normalizeBrain(deepClone(brain));
     }
 
+    function buildRepoExportObject(){
+      return {
+        slug: CTX.slug,
+        phone: CTX.phone || "",
+        updated_at: new Date().toISOString(),
+        brain: buildExportObject()
+      };
+    }
+
     function renderPreview(){
       const data = buildExportObject();
       document.getElementById("jsonPreview").textContent = JSON.stringify(data, null, 2);
@@ -1573,9 +1579,15 @@
       document.getElementById("btnSaveTop").addEventListener("click", () => saveDraft(true));
 
       document.getElementById("btnExport").addEventListener("click", () => {
-        const filename = `pay-brain-${CTX.slug}.json`;
+        const filename = `pay-brain-${CTX.slug || "local"}.json`;
         downloadJson(filename, buildExportObject());
         setStatus("ok", `Fichier ${filename} exporté.`);
+      });
+
+      document.getElementById("btnExportRepo").addEventListener("click", () => {
+        const filename = `pay-brain-${CTX.slug || "local"}-repo.json`;
+        downloadJson(filename, buildRepoExportObject());
+        setStatus("ok", `Export repo prêt : ${filename}`);
       });
 
       document.getElementById("btnImportTrigger").addEventListener("click", () => {
