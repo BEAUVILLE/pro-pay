@@ -176,7 +176,9 @@
 
     .hero-card,
     .scard,
-    .hud-focus{
+    .hud-focus,
+    .hud2s,
+    .module-strip{
       border:1px solid var(--line);
       border-radius:28px;
       background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.92));
@@ -268,6 +270,143 @@
       background:
         radial-gradient(circle at right top, rgba(34,197,94,.08), transparent 36%),
         linear-gradient(160deg, rgba(16,40,32,.94), rgba(8,24,18,.96));
+    }
+
+    .hud2s{
+      padding:18px;
+      display:grid;
+      gap:14px;
+      margin-bottom:16px;
+      background:
+        radial-gradient(circle at left top, rgba(250,204,21,.10), transparent 28%),
+        linear-gradient(160deg, rgba(16,40,32,.94), rgba(8,24,18,.96));
+    }
+
+    .hud2s-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .hud2s-kicker{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#fde68a;
+    }
+
+    .hud2s-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .hud2s-card{
+      padding:16px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:8px;
+      min-height:120px;
+    }
+
+    .hud2s-label{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .hud2s-value{
+      font-family:var(--ff-title);
+      font-size:28px;
+      line-height:1.02;
+      color:#fff8dc;
+      font-weight:700;
+      word-break:break-word;
+    }
+
+    .hud2s-value.green{color:var(--green)}
+    .hud2s-value.gold{color:var(--gold)}
+    .hud2s-value.red{color:var(--danger)}
+
+    .hud2s-text{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      line-height:1.5;
+    }
+
+    .module-strip{
+      padding:16px;
+      margin-bottom:16px;
+    }
+
+    .module-strip-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .module-strip-title{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#bbf7d0;
+    }
+
+    .module-strip-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .module-card{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:grid;
+      gap:6px;
+    }
+
+    .module-rank{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .module-name{
+      font-size:18px;
+      font-weight:900;
+      color:#fff;
+      line-height:1.15;
+    }
+
+    .module-amount{
+      font-family:var(--ff-title);
+      font-size:24px;
+      line-height:1.05;
+      color:#fde68a;
+      font-weight:700;
+    }
+
+    .module-note{
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
+      font-weight:800;
     }
 
     .slug-badge{
@@ -716,6 +855,7 @@
       height:100%;
       border-radius:999px;
       transition:width .6s ease;
+      background:linear-gradient(90deg, var(--green), var(--gold));
     }
 
     .bar-val{
@@ -879,7 +1019,8 @@
       color:var(--muted);
     }
 
-    .synth-badge{
+    .synth-badge,
+    .status-badge{
       display:inline-flex;
       align-items:center;
       gap:8px;
@@ -893,25 +1034,25 @@
       background:rgba(255,255,255,.04);
     }
 
-    .synth-badge.ok{
+    .synth-badge.ok,.status-badge.ok{
       color:#bbf7d0;
       border-color:rgba(34,197,94,.26);
       background:rgba(34,197,94,.09);
     }
 
-    .synth-badge.warn{
+    .synth-badge.warn,.status-badge.warn{
       color:#fde68a;
       border-color:rgba(250,204,21,.24);
       background:rgba(250,204,21,.08);
     }
 
-    .synth-badge.bad{
+    .synth-badge.bad,.status-badge.bad{
       color:#fecaca;
       border-color:rgba(248,113,113,.26);
       background:rgba(248,113,113,.09);
     }
 
-    .synth-badge.orange{
+    .synth-badge.orange,.status-badge.orange{
       color:#fed7aa;
       border-color:rgba(251,146,60,.26);
       background:rgba(251,146,60,.09);
@@ -961,42 +1102,6 @@
       text-transform:uppercase;
       letter-spacing:.08em;
       color:var(--muted);
-    }
-
-    .status-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 11px;
-      border-radius:999px;
-      font-size:11px;
-      font-weight:900;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-    }
-
-    .status-badge.ok{
-      color:#bbf7d0;
-      border-color:rgba(34,197,94,.26);
-      background:rgba(34,197,94,.09);
-    }
-
-    .status-badge.warn{
-      color:#fde68a;
-      border-color:rgba(250,204,21,.24);
-      background:rgba(250,204,21,.08);
-    }
-
-    .status-badge.bad{
-      color:#fecaca;
-      border-color:rgba(248,113,113,.26);
-      background:rgba(248,113,113,.09);
-    }
-
-    .status-badge.orange{
-      color:#fed7aa;
-      border-color:rgba(251,146,60,.26);
-      background:rgba(251,146,60,.09);
     }
 
     .status-main{
@@ -1098,6 +1203,7 @@
       .kpi-strip{grid-template-columns:1fr}
       .info-grid{grid-template-columns:1fr}
       .status-grid{grid-template-columns:1fr}
+      .hud2s-grid,.module-strip-grid{grid-template-columns:1fr}
     }
 
     @media (max-width:760px){
@@ -1129,6 +1235,8 @@
       .decision-main{font-size:24px}
       .status-main{font-size:17px}
       .synth-title{font-size:24px}
+      .hud2s-value{font-size:24px}
+      .module-amount{font-size:20px}
     }
   </style>
 </head>
@@ -1159,30 +1267,29 @@
       <div class="hero-grid">
         <div class="hero-card hero-main">
           <div class="eyebrow">💳 PAY — cockpit stratégique terrain</div>
-          <h1 class="hero-title">Le cockpit ne te montre pas seulement l'argent.<br>Il te protège de l'erreur.</h1>
+          <h1 class="hero-title">Le cockpit te dit ce qu'il faut faire.<br>Pas juste combien il y a.</h1>
           <p class="hero-text">
-            Ici, le but n'est pas de flatter la dépense.
-            Le but est de protéger la base, éviter le surcoût, ralentir ce qui menace la caisse
-            et n'accélérer que ce que le terrain peut absorber sans se casser.
+            On garde la base PAY réelle. On allège la lecture. On remonte les paiements par module.
+            Ici, le vrai but est simple : éviter l'erreur, protéger la caisse et voir ce qui nourrit vraiment le business.
           </p>
 
           <div class="hero-mini">
             <div class="mini">
               <div class="mini-k">En 2 secondes</div>
-              <div class="mini-v">Verdict du mois</div>
-              <div class="mini-s">Savoir si le rôle du moment est de protéger, tenir, consolider ou accélérer.</div>
+              <div class="mini-v">Cap du mois</div>
+              <div class="mini-s">Protéger, tenir, consolider ou accélérer selon la vraie pression visible.</div>
             </div>
 
             <div class="mini">
               <div class="mini-k">En 1 regard</div>
-              <div class="mini-v">Erreur à éviter</div>
-              <div class="mini-s">Repérer la dépense ou le projet qui peut tuer l'œuf dans la poule.</div>
+              <div class="mini-v">Top module</div>
+              <div class="mini-s">Voir quel module ramène vraiment les entrées PAY ce mois.</div>
             </div>
 
             <div class="mini">
               <div class="mini-k">En 1 décision</div>
-              <div class="mini-v">Cap réel</div>
-              <div class="mini-s">Dépenser juste, pas tôt. Avancer proprement, pas fièrement.</div>
+              <div class="mini-v">Erreur à éviter</div>
+              <div class="mini-s">Savoir quoi ne pas lancer trop tôt pour ne pas fatiguer la base.</div>
             </div>
           </div>
         </div>
@@ -1199,7 +1306,7 @@
           <div class="hud-big">Protéger d'abord.<br>Accélérer seulement si la base tient.</div>
           <div class="hud-sub">
             PAY ne garde pas les fonds. Il te donne une lecture anti-erreur :
-            ce qui protège, ce qui fatigue, ce qui est trop tôt, ce qui peut passer.
+            ce qui nourrit, ce qui fatigue, ce qui peut attendre et ce qui peut avancer.
           </div>
 
           <div class="hud-actions">
@@ -1229,6 +1336,43 @@
           </div>
         </aside>
       </div>
+
+      <section class="hud2s">
+        <div class="hud2s-head">
+          <div class="hud2s-kicker">HUD 2 secondes</div>
+          <div class="decision-chip" id="hudLastBadge">Dernière remontée : —</div>
+        </div>
+
+        <div class="hud2s-grid">
+          <div class="hud2s-card">
+            <div class="hud2s-label">Cap du mois</div>
+            <div class="hud2s-value gold" id="hudCap">—</div>
+            <div class="hud2s-text" id="hudCapText">Lecture stratégique du mois en cours.</div>
+          </div>
+
+          <div class="hud2s-card">
+            <div class="hud2s-label">Net réel</div>
+            <div class="hud2s-value green" id="hudNet">—</div>
+            <div class="hud2s-text" id="hudNetText">Entrées pro moins dépenses pro visibles.</div>
+          </div>
+
+          <div class="hud2s-card">
+            <div class="hud2s-label">Erreur à éviter</div>
+            <div class="hud2s-value red" id="hudWarning">—</div>
+            <div class="hud2s-text" id="hudWarningText">Le piège du mois à éviter.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="module-strip">
+        <div class="module-strip-head">
+          <div class="module-strip-title">📦 Paiements remontés par module</div>
+          <div class="decision-chip ok" id="topModuleBadge">Top module : —</div>
+        </div>
+        <div class="module-strip-grid" id="topModulesStrip">
+          <div class="empty">Chargement des meilleurs modules…</div>
+        </div>
+      </section>
 
       <div class="state" id="stateBox">
         <div class="state-title">Chargement</div>
@@ -1769,7 +1913,11 @@
     outPro: 0,
     outPerso: 0,
     savings: 0,
-    todayPerso: 0
+    todayPerso: 0,
+    lastMovement: null,
+    lastMovementLabel: "",
+    lastMovementModule: "",
+    lastMovementAmount: 0
   };
   let LAST_CALC = null;
 
@@ -1859,6 +2007,27 @@
     `;
   }
 
+  function setText(id, value){
+    const el = document.getElementById(id);
+    if(el) el.textContent = value == null ? "" : String(value);
+  }
+
+  function setHtml(id, value){
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = value == null ? "" : String(value);
+  }
+
+  function setBadge(id, text, tone){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.className = el.className
+      .replace(/\bok\b|\bwarn\b|\bbad\b|\borange\b/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if(tone) el.classList.add(tone);
+    el.textContent = text || "—";
+  }
+
   function setContextLinks(slug, phone){
     const s = normalizeSlug(slug);
     const p = normalizePhone(phone);
@@ -1876,6 +2045,32 @@
       const el = document.getElementById(id);
       if(el) el.href = "./admin.html" + suffix;
     });
+  }
+
+  function normalizeMovement(row){
+    const movementDate = row?.movement_date || row?.created_at || "";
+    return {
+      source_module: String(row?.source_module || row?.module || "PAY").trim().toUpperCase() || "PAY",
+      direction: String(row?.direction || "").trim().toLowerCase(),
+      scope: String(row?.scope || "").trim().toLowerCase(),
+      kind: String(row?.kind || "").trim().toLowerCase(),
+      category: String(row?.category || "").trim().toLowerCase(),
+      channel: String(row?.channel || "").trim().toLowerCase(),
+      label: String(row?.label || row?.note_text || row?.category || "Mouvement").trim(),
+      note_text: String(row?.note_text || "").trim(),
+      amount_xof: num(row?.amount_xof),
+      movement_date: movementDate,
+      created_at: row?.created_at || movementDate || "",
+      status: String(row?.status || "posted").trim().toLowerCase()
+    };
+  }
+
+  function sortByAmountDesc(list){
+    return [...(list || [])].sort((a,b) => num(b.amount_xof ?? b.amount ?? b.total_xof) - num(a.amount_xof ?? a.amount ?? a.total_xof));
+  }
+
+  function getQueryParam(name){
+    return new URLSearchParams(window.location.search).get(name) || "";
   }
 
   function deepClone(obj){
@@ -1967,7 +2162,7 @@
             data: found
           };
         }
-      }catch(_){}
+      }catch(_){ }
     }
 
     return null;
@@ -1985,23 +2180,17 @@
       return PAY_BRAIN;
     }
 
-    if(!PAY_BRAIN_FALLBACK_URL) return null;
-
     try{
       const res = await fetch(PAY_BRAIN_FALLBACK_URL + "?ts=" + Date.now(), { cache:"no-store" });
       if(!res.ok) throw new Error("repo_brain_not_found");
-
       const json = await res.json();
       const found = extractBrainObject(json, SLUG) || json;
-
       if(found && typeof found === "object"){
         PAY_BRAIN = normalizeBrain(found);
         PAY_BRAIN_SOURCE = "repo";
-
         try{
           localStorage.setItem(getOfficialBrainKey(SLUG), JSON.stringify(PAY_BRAIN));
-        }catch(_){}
-
+        }catch(_){ }
         return PAY_BRAIN;
       }
     }catch(err){
@@ -2012,21 +2201,15 @@
   }
 
   function sumCreditsLeft(brain){
-    return (brain?.credits || [])
-      .filter(x => x.active !== false)
-      .reduce((sum, x) => sum + num(x.amount_left_xof), 0);
+    return (brain?.credits || []).filter(x => x.active !== false).reduce((sum, x) => sum + num(x.amount_left_xof), 0);
   }
 
   function sumCreditsMonthly(brain){
-    return (brain?.credits || [])
-      .filter(x => x.active !== false)
-      .reduce((sum, x) => sum + num(x.monthly_payment_xof), 0);
+    return (brain?.credits || []).filter(x => x.active !== false).reduce((sum, x) => sum + num(x.monthly_payment_xof), 0);
   }
 
   function sumDebtsTotal(brain){
-    return (brain?.debts || [])
-      .filter(x => x.active !== false)
-      .reduce((sum, x) => sum + num(x.amount_left_xof), 0);
+    return (brain?.debts || []).filter(x => x.active !== false).reduce((sum, x) => sum + num(x.amount_left_xof), 0);
   }
 
   function sumDebtsSoon(brain){
@@ -2037,32 +2220,34 @@
   }
 
   function sumProjectsTotal(brain){
-    return (brain?.projects || [])
-      .filter(x => x.active !== false)
-      .reduce((sum, x) => sum + num(x.target_xof), 0);
+    return (brain?.projects || []).filter(x => x.active !== false).reduce((sum, x) => sum + num(x.target_xof), 0);
   }
 
   function getTopProject(brain){
-    const list = (brain?.projects || [])
+    return [...(brain?.projects || [])]
       .filter(x => x.active !== false)
-      .slice()
       .sort((a,b) => {
-        const pa = num(a.priority || 9);
-        const pb = num(b.priority || 9);
+        const pa = num(a.priority);
+        const pb = num(b.priority);
         if(pa !== pb) return pa - pb;
-        return num(a.deadline_days || 99999) - num(b.deadline_days || 99999);
-      });
-    return list[0] || null;
+        const da = num(a.deadline_days) || 999999;
+        const db = num(b.deadline_days) || 999999;
+        return da - db;
+      })[0] || null;
   }
 
-  function pickColorClass(value, positiveClass = "green", negativeClass = "danger"){
-    return num(value) >= 0 ? positiveClass : negativeClass;
-  }
+  function getStrategicLevel(data){
+    const net = num(data.netPro);
+    const after = num(data.afterCommitments);
+    const reserve = num(data.safetyReserve);
+    const pressure = num(data.pressure);
+    const monthIn = num(data.monthIn);
+    const debtRatio = monthIn > 0 ? (pressure / monthIn) * 100 : 0;
 
-  function brainSourceText(){
-    if(!PAY_BRAIN) return "Aucun pilotage local chargé.";
-    if(PAY_BRAIN_SOURCE === "repo") return "Pilotage chargé depuis le repo puis recopié localement.";
-    return `Pilotage chargé depuis ${PAY_BRAIN_SOURCE}.`;
+    if(net <= 0 || after < 0) return { label:"PROTÉGER", tone:"bad", msg:"Le mois est sous pression. On protège la base.", danger:"Ne lance rien de nouveau.", warning:"Stopper les dépenses non vitales." };
+    if(after < reserve) return { label:"TENIR", tone:"warn", msg:"Tu tiens encore, mais la marge est courte.", danger:"Ne te raconte pas d'histoire sur un faux confort.", warning:"Ralentir les projets et garder du cash." };
+    if(debtRatio >= num(PAY_BRAIN?.rules?.danger_debt_ratio_pct || 35)) return { label:"CONSOLIDER", tone:"orange", msg:"Le business tient, mais la pression reste forte.", danger:"Un projet trop tôt peut te fatiguer.", warning:"Consolider avant d'accélérer." };
+    return { label:"ACCÉLÉRER", tone:"ok", msg:"La base tient. Tu peux avancer proprement.", danger:"Accélère seulement sur ce qui nourrit vraiment.", warning:"Investir oui, mais avec cap." };
   }
 
   async function loadManualMovements(){
@@ -2071,834 +2256,383 @@
       outPro: 0,
       outPerso: 0,
       savings: 0,
-      todayPerso: 0
+      todayPerso: 0,
+      lastMovement: null,
+      lastMovementLabel: "",
+      lastMovementModule: "",
+      lastMovementAmount: 0
     };
 
-    if(!SLUG) return;
+    if(!PHONE) return MANUAL_SUMMARY;
 
-    try{
-      const { data, error } = await sb
-        .from(PAY_MOVEMENTS_TABLE)
-        .select("movement_date,direction,scope,kind,category,amount_xof,status")
-        .eq("slug", SLUG)
-        .eq("status", "posted");
+    const today = todayLocalDate();
+    const { data, error } = await sb
+      .from(PAY_MOVEMENTS_TABLE)
+      .select("source_module,direction,scope,kind,category,channel,label,note_text,amount_xof,movement_date,created_at,status")
+      .eq("phone", PHONE)
+      .eq("status", "posted")
+      .order("movement_date", { ascending:false })
+      .order("created_at", { ascending:false })
+      .limit(200);
 
-      if(error) throw error;
+    if(error){
+      console.warn("[PAY cockpit] loadManualMovements:", error);
+      return MANUAL_SUMMARY;
+    }
 
-      const today = todayLocalDate();
-      for(const row of (data || [])){
-        const amount = num(row.amount_xof);
-        const date = String(row.movement_date || "").slice(0,10);
-        const direction = String(row.direction || "").toLowerCase();
-        const scope = String(row.scope || "").toLowerCase();
-        const kind = String(row.kind || "").toLowerCase();
-        const category = String(row.category || "").toLowerCase();
+    const rows = (data || []).map(normalizeMovement);
+    const todayRows = rows.filter(x => String(x.movement_date || "").slice(0,10) === today);
 
-        if(direction === "in" && scope === "pro"){
-          MANUAL_SUMMARY.inPro += amount;
-        }
+    for(const row of rows){
+      const amount = num(row.amount_xof);
+      const direction = row.direction;
+      const scope = row.scope;
+      const category = row.category;
+      const kind = row.kind;
 
-        if(direction === "out" && scope === "pro"){
+      if(direction === "in"){
+        MANUAL_SUMMARY.inPro += amount;
+      }else if(direction === "out"){
+        if(scope === "perso" || category.includes("perso") || kind.includes("perso")){
+          MANUAL_SUMMARY.outPerso += amount;
+        }else if(scope === "savings" || category.includes("saving") || category.includes("epargne") || kind.includes("saving")){
+          MANUAL_SUMMARY.savings += amount;
+        }else{
           MANUAL_SUMMARY.outPro += amount;
         }
-
-        if(direction === "out" && (scope === "perso" || kind === "personal" || category.includes("perso"))){
-          MANUAL_SUMMARY.outPerso += amount;
-          if(date === today) MANUAL_SUMMARY.todayPerso += amount;
-        }
-
-        if(category.includes("saving") || category.includes("epargne") || kind === "saving"){
-          MANUAL_SUMMARY.savings += amount;
-        }
       }
-    }catch(err){
-      console.warn("[PAY cockpit] manual movements fallback:", err);
     }
+
+    for(const row of todayRows){
+      const amount = num(row.amount_xof);
+      const direction = row.direction;
+     const scope = row.scope;
+const sourceModule = String(row.source_module || "").toUpperCase();
+
+if(direction === "in" && scope === "pro"){
+  todayIn += amount;
+}
+
+if(direction === "out" && scope === "pro"){
+  todayOut += amount;
+}
+
+if(direction === "out" && scope === "perso"){
+  todayPerso += amount;
+}
+
+if(direction === "in" && sourceModule){
+  todayByModule.set(
+    sourceModule,
+    num(todayByModule.get(sourceModule)) + amount
+  );
+}
+}
+
+const topModuleToday = [...todayByModule.entries()]
+  .map(([source_module, amount_xof]) => ({ source_module, amount_xof }))
+  .sort((a,b) => num(b.amount_xof) - num(a.amount_xof))[0] || null;
+
+const lastPayment = (MANUAL_ROWS || []).find(row =>
+  String(row.direction || "").toLowerCase() === "in"
+) || null;
+
+const topCapEl = document.getElementById("hudCap");
+const topNetEl = document.getElementById("hudNet");
+const topWarnEl = document.getElementById("hudWarning");
+const topModuleEl = document.getElementById("hudTopModule");
+const lastPayEl = document.getElementById("hudLastPayment");
+
+if(topCapEl){
+  topCapEl.textContent = strategic.main || "Lecture indisponible";
+}
+
+if(topNetEl){
+  topNetEl.textContent = money(netAfterPressure);
+}
+
+if(topWarnEl){
+  topWarnEl.textContent = dangerLine || "Aucune alerte majeure visible";
+}
+
+if(topModuleEl){
+  if(topModuleToday){
+    topModuleEl.textContent = `${topModuleToday.source_module} · ${money(topModuleToday.amount_xof || 0)}`;
+  }else if(topModule){
+    topModuleEl.textContent = `${topModule.source_module || "MODULE"} · ${money(topModule.amount_xof || 0)}`;
+  }else{
+    topModuleEl.textContent = "Aucune remontée module";
   }
+}
 
-  function buildStrategicView(calc){
-    const afterCommitments = num(calc.afterCommitments);
-    const reserve = num(calc.safetyReserve);
-    const monthNet = num(calc.monthNet);
-    const pressure = num(calc.creditsMonthly) + num(calc.debtsSoon) + num(calc.personalOutVisible);
-
-    let level = "PROTÉGER";
-    let chip = { text:"Protection", cls:"bad" };
-    let msg = "Freine les sorties. Protège la caisse. Aucun projet nouveau tant que la base n’est pas stabilisée.";
-    let danger = "Le danger n’est pas d’avancer lentement. Le danger est d’avancer en cassant la base.";
-    let cap = "Cap du mois : couvrir l’urgence, calmer la pression, éviter le surcoût.";
-
-    if(afterCommitments > reserve * 1.3 && monthNet > 0 && pressure < monthNet * 0.45){
-      level = "ACCÉLÉRER";
-      chip = { text:"Cap ouvert", cls:"ok" };
-      msg = "La base respire. Tu peux accélérer proprement sur ce qui nourrit vraiment le terrain.";
-      danger = "N’accélère que ce qui rapporte ou protège. Pas les envies sans retour clair.";
-      cap = "Cap du mois : investir juste, sans casser la réserve.";
-    }else if(afterCommitments > reserve && monthNet > 0){
-      level = "CONSOLIDER";
-      chip = { text:"Consolidation", cls:"warn" };
-      msg = "La base tient. Tu peux renforcer, lisser, préparer le prochain cran.";
-      danger = "Ne transforme pas une respiration en fête prématurée.";
-      cap = "Cap du mois : renforcer la base, lisser les engagements, sécuriser l’épargne.";
-    }else if(afterCommitments > 0){
-      level = "TENIR";
-      chip = { text:"Tenue", cls:"orange" };
-      msg = "Le mois tient, mais la marge reste serrée. Pas de fierté inutile.";
-      danger = "Une seule mauvaise sortie peut remettre le mois dans le rouge.";
-      cap = "Cap du mois : tenir la ligne, calmer le perso, protéger le minimum.";
-    }
-
-    return { level, chip, msg, danger, cap };
+if(lastPayEl){
+  if(lastPayment){
+    const module = String(lastPayment.source_module || "PAY").toUpperCase();
+    lastPayEl.textContent = `${module} · ${money(lastPayment.amount_xof || 0)}`;
+  }else{
+    lastPayEl.textContent = "Aucune remontée récente";
   }
+}
 
-  function renderStrategicBlock(strategic){
-    document.getElementById("cakeStrategicLevel").textContent = strategic.level;
-    document.getElementById("strategicMain").textContent = strategic.level;
-    document.getElementById("strategicMsg").textContent = strategic.msg;
-    document.getElementById("dangerMsg").textContent = strategic.danger;
-    document.getElementById("monthlyCap").textContent = strategic.cap;
+const topModules = Array.isArray(modules)
+  ? modules.slice().sort((a,b) => num(b.amount_xof) - num(a.amount_xof)).slice(0,3)
+  : [];
 
-    const chip = document.getElementById("strategicChip");
-    chip.textContent = strategic.chip.text;
-    chip.className = "decision-chip " + strategic.chip.cls;
-  }
-
-  function rowHtml(iconClass, icon, title, meta, amount, amountClass){
-    return `
-      <div class="row">
-        <div class="row-ico ${iconClass}">${icon}</div>
-        <div class="row-body">
-          <div class="row-title">${esc(title)}</div>
-          <div class="row-meta">${esc(meta)}</div>
-        </div>
-        <div class="row-amount ${amountClass}">${esc(amount)}</div>
-      </div>
-    `;
-  }
-
-  function renderResultRows(calc, strategic){
-    const rows = [];
-
-    rows.push(rowHtml(
-      num(calc.monthNet) >= 0 ? "gold" : "red",
-      num(calc.monthNet) >= 0 ? "🧭" : "⚠️",
-      `Verdict : ${strategic.level}`,
-      strategic.msg,
-      money(calc.monthNet),
-      pickColorClass(calc.monthNet, "gold", "danger")
-    ));
-
-    rows.push(rowHtml(
-      "green",
-      "💼",
-      "Disponible business",
-      "Net pro du mois avant lecture perso visible",
-      money(calc.netPro),
-      pickColorClass(calc.netPro, "green", "danger")
-    ));
-
-    rows.push(rowHtml(
-      "orange",
-      "🧍",
-      "Sorties perso visibles",
-      "Ce qui fatigue la marge pro dans la lecture du mois",
-      money(calc.personalOutVisible),
-      "orange"
-    ));
-
-    rows.push(rowHtml(
-      "violet",
-      "🏦",
-      "Crédits mensuels",
-      "Charge mensuelle déclarée dans le pilotage",
-      money(calc.creditsMonthly),
-      "violet"
-    ));
-
-    rows.push(rowHtml(
-      "red",
-      "🧾",
-      "Dettes proches",
-      "Dettes à échéance courte ou urgente",
-      money(calc.debtsSoon),
-      "danger"
-    ));
-
-    rows.push(rowHtml(
-      num(calc.afterCommitments) >= 0 ? "blue" : "red",
-      num(calc.afterCommitments) >= 0 ? "🛟" : "🚨",
-      "Reste après engagements",
-      "Disponible après crédits mensuels et dettes proches",
-      money(calc.afterCommitments),
-      pickColorClass(calc.afterCommitments, "blue", "danger")
-    ));
-
-    document.getElementById("resultList").innerHTML = rows.join("");
-  }
-
-  function renderModules(modules){
-    const el = document.getElementById("modulesList");
-    if(!Array.isArray(modules) || !modules.length){
-      el.innerHTML = `<div class="empty">Aucun module visible pour l’instant.</div>`;
-      return;
-    }
-
-    el.innerHTML = modules.map(row => rowHtml(
-      "green",
-      "📦",
-      row.source_module || "Module",
-      "Module alimentant le cockpit PAY",
-      money(row.amount_xof || 0),
-      "green"
-    )).join("");
-
-    document.getElementById("kpiModCount").textContent = String(modules.length);
-  }
-
-  function renderChannels(channels){
-    const el = document.getElementById("channelsList");
-    if(!Array.isArray(channels) || !channels.length){
-      el.innerHTML = `<div class="empty">Aucun canal visible pour l’instant.</div>`;
-      return;
-    }
-
-    el.innerHTML = channels.map(row => rowHtml(
-      "gold",
-      "💳",
-      row.channel || "Canal",
-      "Canal de paiement ou d’encaissement remonté",
-      money(row.amount_xof || 0),
-      "gold"
-    )).join("");
-
-    document.getElementById("kpiChanCount").textContent = String(channels.length);
-  }
-
-  function renderChannelBars(channels){
-    const el = document.getElementById("channelsBars");
-    if(!Array.isArray(channels) || !channels.length){
-      el.innerHTML = `<div class="empty">Aucune répartition canal à afficher.</div>`;
-      return;
-    }
-
-    const total = channels.reduce((s, row) => s + num(row.amount_xof), 0);
-
-    const colors = ["#22c55e","#60a5fa","#facc15","#fb923c","#a78bfa","#f87171"];
-    el.innerHTML = channels.map((row, i) => {
-      const width = total > 0 ? percent(row.amount_xof, total).toFixed(1) : "0";
-      return `
-        <div class="bar-row">
-          <div class="bar-label">${esc(row.channel || "Canal")}</div>
-          <div class="bar-track">
-            <div class="bar-fill" style="width:${width}%;background:${colors[i % colors.length]}"></div>
-          </div>
-          <div class="bar-val">${esc(money(row.amount_xof || 0))}</div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  function badgeClassByValue(v){
-    if(v > 0) return "ok";
-    if(v === 0) return "warn";
-    return "bad";
-  }
-
-  function renderEngagements(calc, brain){
-    const creditsLeft = sumCreditsLeft(brain);
-    const creditsMonthly = sumCreditsMonthly(brain);
-    const debtsSoon = sumDebtsSoon(brain);
-    const debtsTotal = sumDebtsTotal(brain);
-    const projectsTotal = sumProjectsTotal(brain);
-    const topProject = getTopProject(brain);
-    const fixedCosts = num(brain.monthly_fixed_costs_xof);
-    const reserve = num(brain.safety_reserve_xof);
-    const afterCommitments = num(calc.afterCommitments);
-
-    document.getElementById("cakeCreditsLeft").textContent = money(creditsLeft);
-    document.getElementById("cakeCreditsMonthly").textContent = money(creditsMonthly);
-    document.getElementById("cakeDebtsSoon").textContent = money(debtsSoon);
-    document.getElementById("cakeDebtsTotal").textContent = money(debtsTotal);
-    document.getElementById("cakeProjectsTotal").textContent = money(projectsTotal);
-
-    document.getElementById("kpiAfterCommitments").textContent = money(afterCommitments);
-    document.getElementById("kpiAfterCommitments").className = "kpi-val " + pickColorClass(afterCommitments, "blue", "danger");
-    document.getElementById("kpiSafetyReserve").textContent = money(reserve);
-    document.getElementById("kpiFixedCosts").textContent = money(fixedCosts);
-
-    const recoveryZero = Math.max(0, -afterCommitments);
-    const recoveryReserve = Math.max(0, reserve - afterCommitments);
-    const target7 = Math.max(recoveryZero, Math.ceil((creditsMonthly + debtsSoon) * 0.5));
-    const target30 = Math.max(recoveryReserve, creditsMonthly + debtsSoon + fixedCosts);
-
-    document.getElementById("recoveryZeroMain").textContent = money(recoveryZero);
-    document.getElementById("recoveryReserveMain").textContent = money(recoveryReserve);
-    document.getElementById("target7Main").textContent = money(target7);
-    document.getElementById("target30Main").textContent = money(target30);
-
-    document.getElementById("recoveryZeroBadge").className = "status-badge " + (recoveryZero > 0 ? "bad" : "ok");
-    document.getElementById("recoveryZeroBadge").textContent = recoveryZero > 0 ? "Urgent" : "OK";
-
-    document.getElementById("recoveryReserveBadge").className = "status-badge " + (recoveryReserve > 0 ? "orange" : "ok");
-    document.getElementById("recoveryReserveBadge").textContent = recoveryReserve > 0 ? "À couvrir" : "Protégée";
-
-    document.getElementById("target7Badge").className = "status-badge " + (target7 > 0 ? "bad" : "ok");
-    document.getElementById("target7Badge").textContent = target7 > 0 ? "7 jours" : "Calme";
-
-    document.getElementById("target30Badge").className = "status-badge " + (target30 > 0 ? "orange" : "ok");
-    document.getElementById("target30Badge").textContent = target30 > 0 ? "30 jours" : "Souple";
-
-    let readMain = "Le mois tient.";
-    let readSub = "Les engagements visibles restent absorbables.";
-    let readBadge = "ok";
-
-    if(afterCommitments < 0){
-      readMain = "Le mois est sous pression.";
-      readSub = "Il faut d’abord reboucher le trou avant tout nouveau projet.";
-      readBadge = "bad";
-    }else if(afterCommitments < reserve){
-      readMain = "La base est fragile.";
-      readSub = "Tu tiens encore, mais la réserve n’est pas reconstituée.";
-      readBadge = "orange";
-    }
-
-    document.getElementById("recoveryReadMain").textContent = readMain;
-    document.getElementById("recoveryReadSub").textContent = readSub;
-    document.getElementById("recoveryReadBadge").className = "status-badge " + readBadge;
-    document.getElementById("recoveryReadBadge").textContent = readBadge === "bad" ? "Tension" : (readBadge === "orange" ? "Fragile" : "Respire");
-
-    document.getElementById("recoveryCapMain").textContent = afterCommitments < 0 ? "Freiner et couvrir" : "Protéger puis lisser";
-    document.getElementById("recoveryCapSub").textContent = afterCommitments < 0
-      ? "Pas d’initiative gourmande tant que la sortie de zone rouge n’est pas faite."
-      : "Garde un rythme sobre jusqu’au retour clair au-dessus de la réserve.";
-    document.getElementById("recoveryCapBadge").className = "status-badge " + (afterCommitments < 0 ? "bad" : "warn");
-    document.getElementById("recoveryCapBadge").textContent = afterCommitments < 0 ? "Frein" : "Sobriété";
-
-    document.getElementById("targetReadMain").textContent = target30 > 0 ? "Redressement nécessaire" : "Cap ouvert";
-    document.getElementById("targetReadSub").textContent = target30 > 0
-      ? "Recoller la réserve avant de pousser un gros projet."
-      : "La réserve est en place, tu peux arbitrer avec plus de calme.";
-    document.getElementById("targetReadBadge").className = "status-badge " + (target30 > 0 ? "orange" : "ok");
-    document.getElementById("targetReadBadge").textContent = target30 > 0 ? "À remonter" : "Disponible";
-
-    document.getElementById("targetCapMain").textContent = target7 > 0 ? "Court terme d’abord" : "Terrain stabilisé";
-    document.getElementById("targetCapSub").textContent = target7 > 0
-      ? "Les 7 premiers jours servent à calmer la pression, pas à briller."
-      : "Le terrain peut absorber un cran suivant si le besoin est réel.";
-    document.getElementById("targetCapBadge").className = "status-badge " + (target7 > 0 ? "bad" : "ok");
-    document.getElementById("targetCapBadge").textContent = target7 > 0 ? "Urgence" : "Stable";
-
-    const synthTitle = afterCommitments < 0
-      ? "Le cockpit dit : stop au superflu, couvre d’abord la fuite."
-      : (afterCommitments < reserve
-        ? "Le cockpit dit : ça tient, mais protège la base avant d’accélérer."
-        : "Le cockpit dit : la base respire, avance seulement sur l’utile.");
-    document.getElementById("synthTitle").textContent = synthTitle;
-    document.getElementById("synthSub").textContent = brainSourceText();
-
-    setSynthCard(
-      "Breath",
-      afterCommitments > reserve ? "ok" : (afterCommitments >= 0 ? "warn" : "bad"),
-      afterCommitments > reserve ? "Respiration" : (afterCommitments >= 0 ? "Fragile" : "Sous pression"),
-      money(afterCommitments),
-      afterCommitments > reserve
-        ? "Le reste après engagements dépasse la réserve."
-        : (afterCommitments >= 0
-          ? "Le mois reste debout, mais la marge est encore courte."
-          : "Le mois plonge sous 0 après engagements.")
-    );
-
-    setSynthCard(
-      "Month",
-      num(calc.monthNet) >= 0 ? "ok" : "bad",
-      num(calc.monthNet) >= 0 ? "Mois positif" : "Mois négatif",
-      money(calc.monthNet),
-      num(calc.monthNet) >= 0
-        ? "Le business paie le mois avant lecture des engagements."
-        : "Le business seul ne couvre pas encore le mois."
-    );
-
-    const projectGap = topProject ? Math.max(0, num(topProject.target_xof) - Math.max(0, afterCommitments - reserve)) : 0;
-    setSynthCard(
-      "Project",
-      topProject ? (projectGap <= 0 ? "ok" : "warn") : "warn",
-      topProject ? "Projet prioritaire" : "Aucun projet",
-      topProject ? topProject.label : "—",
-      topProject
-        ? (projectGap <= 0
-            ? "Le cockpit peut absorber ce projet sans casser la base."
-            : `Il manque encore ${money(projectGap)} pour l’absorber proprement.`)
-        : "Aucun projet actif déclaré dans le pilotage."
-    );
-
-    setSynthCard(
-      "Priority",
-      debtsSoon > 0 ? "bad" : (creditsMonthly > 0 ? "orange" : "ok"),
-      debtsSoon > 0 ? "Priorité : dettes proches" : (creditsMonthly > 0 ? "Priorité : crédits" : "Priorité : réserve"),
-      debtsSoon > 0 ? money(debtsSoon) : (creditsMonthly > 0 ? money(creditsMonthly) : money(reserve)),
-      debtsSoon > 0
-        ? "Ce qui est proche dans le temps passe avant la fierté."
-        : (creditsMonthly > 0
-          ? "Le mensuel fixe doit rester léger avant tout cran nouveau."
-          : "La priorité est de garder la réserve vivante.")
-    );
-
-    const decisionMain = afterCommitments < 0
-      ? "Freine. Répare. Puis repars."
-      : (afterCommitments < reserve
-        ? "Tiens la ligne. Ne te raconte pas d’histoire."
-        : "Base solide. Accélère seulement sur l’utile.");
-    const decisionSub = afterCommitments < 0
-      ? "La prochaine victoire n’est pas un nouveau projet. La prochaine victoire est de sortir proprement de la pression."
-      : (afterCommitments < reserve
-        ? "Tu n’es pas cassé, mais tu n’es pas libre non plus. Garde la ligne."
-        : "Tu peux bouger, mais seulement avec la discipline qui a créé cette marge.");
-    const decisionChip = document.getElementById("decisionChip");
-    decisionChip.textContent = afterCommitments < 0 ? "Stop superflu" : (afterCommitments < reserve ? "Tenue stricte" : "Cap utile");
-    decisionChip.className = "decision-chip " + (afterCommitments < 0 ? "bad" : (afterCommitments < reserve ? "warn" : "ok"));
-    document.getElementById("decisionMain").textContent = decisionMain;
-    document.getElementById("decisionSub").textContent = decisionSub;
-
-    const projectStatusBadge = document.getElementById("projectStatusBadge");
-    const projectStatusMain = document.getElementById("projectStatusMain");
-    const projectStatusSub = document.getElementById("projectStatusSub");
-
-    if(!topProject){
-      projectStatusBadge.className = "status-badge warn";
-      projectStatusBadge.textContent = "Aucun";
-      projectStatusMain.textContent = "Pas de projet déclaré";
-      projectStatusSub.textContent = "Le cockpit ne voit aucun projet à arbitrer.";
-    }else{
-      const gap = Math.max(0, num(topProject.target_xof) - Math.max(0, afterCommitments - reserve));
-      const ok = gap <= 0;
-      projectStatusBadge.className = "status-badge " + (ok ? "ok" : "warn");
-      projectStatusBadge.textContent = ok ? "Possible" : "Trop tôt";
-      projectStatusMain.textContent = ok ? "Projet absorbable" : "Projet à préparer";
-      projectStatusSub.textContent = ok
-        ? "Le projet prioritaire peut passer sans casser la base."
-        : `Il manque encore ${money(gap)} avant de le poser proprement.`;
-    }
-
-    const projectTopBadge = document.getElementById("projectTopBadge");
-    const projectTopMain = document.getElementById("projectTopMain");
-    const projectTopSub = document.getElementById("projectTopSub");
-
-    projectTopBadge.className = "status-badge " + (topProject ? "ok" : "warn");
-    projectTopBadge.textContent = topProject ? "Repéré" : "Absent";
-    projectTopMain.textContent = topProject ? topProject.label : "—";
-    projectTopSub.textContent = topProject
-      ? `Cible ${money(topProject.target_xof)} · horizon ${num(topProject.deadline_days)} jours`
-      : "Aucun projet prioritaire visible.";
-
-    document.getElementById("projectCapacityMain").textContent = money(Math.max(0, afterCommitments - reserve));
-    document.getElementById("projectCapacitySub").textContent =
-      "Marge théorique réellement mobilisable sans toucher à la réserve.";
-
-    const gap = topProject ? Math.max(0, num(topProject.target_xof) - Math.max(0, afterCommitments - reserve)) : 0;
-    document.getElementById("projectGapBadge").className = "status-badge " + (gap <= 0 ? "ok" : "warn");
-    document.getElementById("projectGapBadge").textContent = gap <= 0 ? "Couvert" : "Manquant";
-    document.getElementById("projectGapMain").textContent = money(gap);
-    document.getElementById("projectGapSub").textContent = topProject
-      ? "Écart restant sur le projet prioritaire."
-      : "Aucun projet actif à mesurer.";
-
-    renderCreditsList(brain.credits || []);
-    renderDebtsList(brain.debts || []);
-    renderProjectsList(brain.projects || []);
-    renderRescuePlan(calc, brain, topProject, recoveryZero, recoveryReserve);
-  }
-
-  function setSynthCard(prefix, badgeCls, badgeText, mainText, subText){
-    document.getElementById(`synth${prefix}Badge`).className = "synth-badge " + badgeCls;
-    document.getElementById(`synth${prefix}Badge`).textContent = badgeText;
-    document.getElementById(`synth${prefix}Main`).textContent = mainText;
-    document.getElementById(`synth${prefix}Text`).textContent = subText;
-  }
-
-  function renderCreditsList(list){
-    const el = document.getElementById("creditsList");
-    if(!Array.isArray(list) || !list.filter(x => x.active !== false).length){
-      el.innerHTML = `<div class="empty">Aucun crédit visible dans le pilotage.</div>`;
-      return;
-    }
-    el.innerHTML = list
-      .filter(x => x.active !== false)
-      .map(item => rowHtml(
-        "violet",
-        "🏦",
-        item.label || "Crédit",
-        `Mensuel ${money(item.monthly_payment_xof)} · priorité ${item.priority || "—"}`,
-        money(item.amount_left_xof),
-        "violet"
-      ))
-      .join("");
-  }
-
-  function renderDebtsList(list){
-    const el = document.getElementById("debtsList");
-    if(!Array.isArray(list) || !list.filter(x => x.active !== false).length){
-      el.innerHTML = `<div class="empty">Aucune dette visible dans le pilotage.</div>`;
-      return;
-    }
-    el.innerHTML = list
-      .filter(x => x.active !== false)
-      .map(item => rowHtml(
-        "red",
-        "🧾",
-        item.label || "Dette",
-        `Échéance ${num(item.due_days)} jour(s) · priorité ${item.priority || "—"}`,
-        money(item.amount_left_xof),
-        "danger"
-      ))
-      .join("");
-  }
-
-  function renderProjectsList(list){
-    const el = document.getElementById("projectsList");
-    if(!Array.isArray(list) || !list.filter(x => x.active !== false).length){
-      el.innerHTML = `<div class="empty">Aucun projet visible dans le pilotage.</div>`;
-      return;
-    }
-    el.innerHTML = list
-      .filter(x => x.active !== false)
-      .map(item => rowHtml(
-        "gold",
-        "🚀",
-        item.label || "Projet",
-        `Horizon ${num(item.deadline_days)} jour(s) · priorité ${item.priority || "—"}`,
-        money(item.target_xof),
-        "gold"
-      ))
-      .join("");
-  }
-
-  function renderRescuePlan(calc, brain, topProject, recoveryZero, recoveryReserve){
-    const el = document.getElementById("rescuePlanList");
-    const items = [];
-
-    if(num(calc.afterCommitments) < 0){
-      items.push({
-        t:"Stopper les sorties non vitales",
-        d:"Ce qui n’aide ni à couvrir l’urgence ni à protéger le business attend."
-      });
-      items.push({
-        t:`Recoller ${money(recoveryZero)} pour sortir du rouge`,
-        d:"Premier objectif : revenir à 0 après engagements visibles."
-      });
-    }else{
-      items.push({
-        t:"Garder la ligne du mois",
-        d:"La priorité n’est pas le spectacle. La priorité est de ne pas casser la base."
-      });
-    }
-
-    if(recoveryReserve > 0){
-      items.push({
-        t:`Reconstituer ${money(recoveryReserve)} pour retrouver la réserve`,
-        d:"Tant que la réserve n’est pas reconstituée, le cockpit reste en mode prudence."
-      });
-    }
-
-    if(num(brain?.monthly_fixed_costs_xof) > 0){
-      items.push({
-        t:`Prévoir les charges fixes : ${money(brain.monthly_fixed_costs_xof)}`,
-        d:"Les charges fixes doivent être servies avant de poser du confort."
-      });
-    }
-
-    if(topProject){
-      items.push({
-        t:`Ne lancer ${topProject.label} que si la base tient`,
-        d:"Un projet utile reste un danger s’il démarre trop tôt."
-      });
-    }
-
-    if(!items.length){
-      items.push({
-        t:"Base propre",
-        d:"Le cockpit ne détecte pas de plan d’urgence particulier sur ce mois."
-      });
-    }
-
-    el.innerHTML = items.map((item, i) => `
-      <div class="rescue-item">
-        <div class="rescue-num">${i+1}</div>
-        <div class="rescue-body">
-          <div class="rescue-title">${esc(item.t)}</div>
-          <div class="rescue-text">${esc(item.d)}</div>
-        </div>
+const hudModules = document.getElementById("hudModules");
+if(hudModules){
+  if(!topModules.length){
+    hudModules.innerHTML = `<div class="empty">Aucune remontée module visible.</div>`;
+  }else{
+    hudModules.innerHTML = topModules.map(row => `
+      <div class="hud-module-row">
+        <div class="hud-module-name">${esc(row.source_module || "MODULE")}</div>
+        <div class="hud-module-amount">${esc(money(row.amount_xof || 0))}</div>
       </div>
     `).join("");
   }
+}
+    function renderStrategicBlock(strategic){
+  document.getElementById("cakeStrategicLevel").textContent = strategic.level;
+  document.getElementById("strategicMain").textContent = strategic.level;
+  document.getElementById("strategicMsg").textContent = strategic.msg;
+  document.getElementById("dangerMsg").textContent = strategic.danger;
+  document.getElementById("monthlyCap").textContent = strategic.cap;
 
-  function renderEngagementsFallback(calc){
-    document.getElementById("cakeCreditsLeft").textContent = "—";
-    document.getElementById("cakeCreditsMonthly").textContent = "—";
-    document.getElementById("cakeDebtsSoon").textContent = "—";
-    document.getElementById("cakeDebtsTotal").textContent = "—";
-    document.getElementById("cakeProjectsTotal").textContent = "—";
-    document.getElementById("kpiAfterCommitments").textContent = money(calc.disponiblePro);
-    document.getElementById("kpiSafetyReserve").textContent = "—";
-    document.getElementById("kpiFixedCosts").textContent = "—";
-    document.getElementById("creditsList").innerHTML = `<div class="empty">Aucun pilotage chargé.</div>`;
-    document.getElementById("debtsList").innerHTML = `<div class="empty">Aucun pilotage chargé.</div>`;
-    document.getElementById("projectsList").innerHTML = `<div class="empty">Aucun pilotage chargé.</div>`;
-    document.getElementById("rescuePlanList").innerHTML = `
-      <div class="rescue-item">
-        <div class="rescue-num">1</div>
-        <div class="rescue-body">
-          <div class="rescue-title">Ouvre le pilotage PAY</div>
-          <div class="rescue-text">Ajoute réserve, charges, crédits, dettes et projets pour enrichir la lecture.</div>
-        </div>
+  const chip = document.getElementById("strategicChip");
+  chip.textContent = strategic.chip.text;
+  chip.className = "decision-chip " + strategic.chip.cls;
+}
+
+function rowHtml(iconClass, icon, title, meta, amount, amountClass){
+  return `
+    <div class="row">
+      <div class="row-ico ${iconClass}">${icon}</div>
+      <div class="row-body">
+        <div class="row-title">${esc(title || "—")}</div>
+        <div class="row-meta">${esc(meta || "")}</div>
       </div>
-    `;
-    document.getElementById("synthTitle").textContent = "Pilotage non chargé";
-    document.getElementById("synthSub").textContent = "Le cockpit PAY lit le backbone, mais le brain local n’est pas encore disponible.";
+      <div class="row-amount ${amountClass || ""}">${esc(amount || "—")}</div>
+    </div>
+  `;
+}
+
+function renderResultList(calc, strategic){
+  const list = document.getElementById("resultList");
+  if(!list) return;
+
+  const rows = [];
+
+  rows.push(rowHtml(
+    strategic.chip.cls === "ok" ? "green" : strategic.chip.cls === "warn" ? "gold" : strategic.chip.cls === "orange" ? "orange" : "red",
+    strategic.chip.cls === "ok" ? "🟢" : strategic.chip.cls === "warn" ? "🟡" : strategic.chip.cls === "orange" ? "🟠" : "🔴",
+    strategic.level,
+    strategic.msg,
+    money(calc.netAfterPressure),
+    strategic.chip.cls === "ok" ? "green" : strategic.chip.cls === "warn" ? "gold" : strategic.chip.cls === "orange" ? "orange" : "danger"
+  ));
+
+  rows.push(rowHtml(
+    "gold",
+    "💼",
+    "Net pro du mois",
+    "Entrées pro moins dépenses pro visibles",
+    money(calc.monthNet),
+    num(calc.monthNet) >= 0 ? "gold" : "danger"
+  ));
+
+  rows.push(rowHtml(
+    "red",
+    "⚠️",
+    "Pression du mois",
+    "Dépenses pro + perso visible + crédits mensuels + dettes proches",
+    money(calc.monthPressure),
+    "danger"
+  ));
+
+  rows.push(rowHtml(
+    "blue",
+    "🛟",
+    "Marge protégée",
+    "Ce qu'il reste après la pression visible",
+    money(calc.netAfterPressure),
+    num(calc.netAfterPressure) >= 0 ? "green" : "danger"
+  ));
+
+  list.innerHTML = rows.join("");
+}
+
+function renderModules(modules){
+  const list = document.getElementById("modulesList");
+  if(!list) return;
+
+  if(!Array.isArray(modules) || !modules.length){
+    list.innerHTML = `<div class="empty">Aucun module visible dans PAY pour le moment.</div>`;
+    return;
   }
 
-  function openEngagementsPanel(){
-    const tab = document.querySelector('.tab[data-tab="engagements"]');
-    const panel = document.getElementById("panel-engagements");
-    if(tab){
+  const sorted = modules
+    .slice()
+    .sort((a,b) => num(b.amount_xof) - num(a.amount_xof));
+
+  list.innerHTML = sorted.map((row, idx) => rowHtml(
+    idx === 0 ? "green" : "gold",
+    idx === 0 ? "🏆" : "📦",
+    String(row.source_module || "MODULE").toUpperCase(),
+    idx === 0 ? "Module leader du mois" : "Remontée visible dans PAY",
+    money(row.amount_xof || 0),
+    idx === 0 ? "green" : "gold"
+  )).join("");
+}
+
+function renderCockpitInfo(cockpit){
+  document.getElementById("iboxBusiness").textContent = cockpit?.label || "MON ARGENT PRO";
+  document.getElementById("iboxPlan").textContent = cockpit?.plan || "—";
+  document.getElementById("iboxPhone").textContent = PHONE ? `+${PHONE}` : "—";
+  document.getElementById("iboxAccess").textContent = cockpit?.access_ok ? "Actif" : "À vérifier";
+}
+
+function renderProKPIs(calc){
+  document.getElementById("cakeNetPro").textContent = money(calc.monthNet);
+  document.getElementById("cakeProtectedMargin").textContent = money(calc.netAfterPressure);
+  document.getElementById("cakePressure").textContent = money(calc.monthPressure);
+
+  document.getElementById("kpiMonthIn").textContent = money(calc.monthIn);
+  document.getElementById("kpiTodayIn").textContent = "Aujourd'hui : " + money(calc.todayIn);
+
+  document.getElementById("kpiMonthOut").textContent = money(calc.monthOutPro);
+  document.getElementById("kpiTodayOut").textContent = "Aujourd'hui : " + money(calc.todayOutPro);
+
+  document.getElementById("kpiMonthNet").textContent = money(calc.monthNet);
+  document.getElementById("kpiTodayNet").textContent = "Aujourd'hui : " + money(calc.todayNet);
+}
+      if(PAY_BRAIN){
+    calc.creditsLeft = sumCreditsLeft(PAY_BRAIN);
+    calc.creditsMonthly = sumCreditsMonthly(PAY_BRAIN);
+    calc.debtsTotal = sumDebtsTotal(PAY_BRAIN);
+    calc.debtsSoon = sumDebtsSoon(PAY_BRAIN);
+    calc.projectsTotal = sumProjectsTotal(PAY_BRAIN);
+    calc.fixedCosts = num(PAY_BRAIN.monthly_fixed_costs_xof);
+    calc.safetyReserve = num(PAY_BRAIN.safety_reserve_xof);
+    calc.afterCommitments = disponiblePro - calc.creditsMonthly - calc.debtsSoon;
+  }
+
+  const strategic = buildStrategicView(calc);
+  renderStrategicBlock(strategic);
+  renderResultRows(calc, strategic);
+
+  renderModules(modules);
+  renderChannels(channels);
+  renderChannelBars(channels);
+
+  document.getElementById("kpiEcoTotal").textContent = money(monthIn);
+  document.getElementById("cakeProtectedMargin").className = "cake-value " + pickColorClass(resteApresPerso, "green", "danger");
+
+  if(PAY_BRAIN){
+    renderEngagements(calc, PAY_BRAIN);
+  }else{
+    renderEngagementsFallback(calc);
+  }
+
+  LAST_CALC = calc;
+
+  if(data.access_ok){
+    setState("ok", "Cockpit PAY connecté", `Lecture réelle chargée depuis le backbone DIGIY PAY. ${brainSourceText()}`);
+  }else{
+    setState("bad", "Accès PAY non actif", `Le slug est lu mais l'abonnement PAY n'est pas actif ou est expiré. ${brainSourceText()}`);
+  }
+}
+  async function loadCockpit(){
+  try{
+    if(!SESSION){
+      throw new Error("session.js non chargé ou DIGIY_SESSION indisponible.");
+    }
+
+    const fromUrl = SESSION.fromUrl();
+    if(fromUrl && fromUrl.slug){
+      SESSION.save(fromUrl.slug, fromUrl.phone);
+    }
+
+    const session = SESSION.require("./pin.html?redirect=cockpit");
+    if(!session) return;
+
+    SLUG = normalizeSlug(session.slug);
+    PHONE = normalizePhone(session.phone);
+
+    document.getElementById("topSlug").textContent = SLUG || "Session";
+    document.getElementById("badgeSlug").textContent = SLUG || "Session";
+    document.getElementById("slugBadge").style.display = "flex";
+
+    setContextLinks(SLUG, PHONE);
+    setState("ok", "Chargement", "Connexion au cockpit PAY…");
+
+    await Promise.all([
+      loadManualMovements(),
+      loadPayBrain()
+    ]);
+
+    const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", {
+      p_slug: SLUG
+    });
+
+    if(error) throw error;
+
+    const payload = normalizeRpcPayload(data);
+    if(!payload) throw new Error("Réponse cockpit vide ou illisible.");
+    if(payload.ok !== true) throw new Error(payload.error || payload.message || "Cockpit PAY invalide.");
+
+    renderCockpit(payload);
+  }catch(err){
+    console.error("[PAY cockpit]", err);
+    setState("bad", "Erreur de chargement", err?.message || "Impossible de charger le cockpit PAY.");
+    setEmptyEverywhere("Aucune donnée chargée.");
+  }
+}
+
+function bindTabs(){
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => {
       document.querySelectorAll(".tab").forEach(b => {
         b.classList.remove("active","pro","epargne","eco","engagements");
         b.setAttribute("aria-selected", "false");
       });
+
       document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-      tab.classList.add("active","engagements");
-      tab.setAttribute("aria-selected","true");
-    }
-    if(panel){
-      panel.classList.add("active");
-      panel.scrollIntoView({ behavior:"smooth", block:"start" });
-    }
-  }
 
-  function setEmptyEverywhere(message){
-    document.getElementById("resultList").innerHTML = `<div class="empty">${esc(message)}</div>`;
-    document.getElementById("modulesList").innerHTML = `<div class="empty">${esc(message)}</div>`;
-    document.getElementById("channelsList").innerHTML = `<div class="empty">${esc(message)}</div>`;
-    document.getElementById("channelsBars").innerHTML = `<div class="empty">${esc(message)}</div>`;
-    document.getElementById("creditsList").innerHTML = `<div class="empty">${esc(message)}</div>`;
-    document.getElementById("debtsList").innerHTML = `<div class="empty">${esc(message)}</div>`;
-    document.getElementById("projectsList").innerHTML = `<div class="empty">${esc(message)}</div>`;
-    document.getElementById("rescuePlanList").innerHTML = `<div class="empty">${esc(message)}</div>`;
-  }
+      btn.classList.add("active");
+      btn.classList.add(btn.dataset.tab);
+      btn.setAttribute("aria-selected", "true");
 
-  function renderCockpit(data){
-    const monthIn = num(data.month_in);
-    const todayIn = num(data.today_in);
-    const monthOut = num(data.month_out_pro ?? data.month_out ?? 0);
-    const todayOut = num(data.today_out_pro ?? data.today_out ?? 0);
-    const monthNet = num(data.month_net);
-    const todayNet = num(data.today_net ?? (todayIn - todayOut));
-    const monthSavings = num(data.month_savings ?? MANUAL_SUMMARY.savings);
-    const todaySavings = num(data.today_savings ?? 0);
-    const totalSavings = num(data.total_savings ?? MANUAL_SUMMARY.savings);
-
-    const modules = Array.isArray(data.by_module) ? data.by_module : [];
-    const channels = Array.isArray(data.by_channel) ? data.by_channel : [];
-    const personalOutVisible = num(data.month_out_perso ?? MANUAL_SUMMARY.outPerso);
-    const personalOutToday = num(data.today_out_perso ?? MANUAL_SUMMARY.todayPerso);
-    const disponiblePro = monthNet;
-    const resteApresPerso = disponiblePro - personalOutVisible;
-
-    document.getElementById("kpiMonthIn").textContent = money(monthIn);
-    document.getElementById("kpiTodayIn").textContent = "Aujourd'hui : " + money(todayIn);
-
-    document.getElementById("kpiMonthOut").textContent = money(monthOut);
-    document.getElementById("kpiTodayOut").textContent = "Aujourd'hui : " + money(todayOut);
-
-    document.getElementById("kpiMonthNet").textContent = money(monthNet);
-    document.getElementById("kpiTodayNet").textContent = "Aujourd'hui : " + money(todayNet);
-
-    document.getElementById("kpiMonthSavings").textContent = money(monthSavings);
-    document.getElementById("kpiTodaySavings").textContent = "Aujourd'hui : " + money(todaySavings);
-    document.getElementById("kpiTotalSavings").textContent = money(totalSavings);
-    document.getElementById("kpiSavingsRatio").textContent = percent(monthSavings, monthIn).toFixed(0) + "%";
-
-    document.getElementById("iboxSavingsMonth").textContent = money(monthSavings);
-    document.getElementById("iboxSavingsTotal").textContent = money(totalSavings);
-
-    document.getElementById("cakeNetPro").textContent = money(monthNet);
-    document.getElementById("cakeProtectedMargin").textContent = money(resteApresPerso);
-    document.getElementById("cakePressure").textContent = money(personalOutVisible);
-
-    document.getElementById("iboxBusiness").textContent = "MON ARGENT by DIGIY";
-    document.getElementById("iboxPlan").textContent = String(data.plan || "—").toUpperCase();
-    document.getElementById("iboxPhone").textContent = data.phone || PHONE || "—";
-    document.getElementById("iboxAccess").textContent = data.access_ok ? "Actif" : "Non actif";
-
-    const realSlug = data.slug || SLUG;
-    const realPhone = data.phone || PHONE;
-
-    document.getElementById("topSlug").textContent = realSlug || "Cockpit PAY";
-    document.getElementById("badgeSlug").textContent = realSlug || "PAY";
-    document.getElementById("slugBadge").style.display = "flex";
-
-    setContextLinks(realSlug, realPhone);
-
-    if(SESSION){
-      SESSION.save(realSlug, realPhone);
-      if(typeof SESSION.applyUrl === "function"){
-        SESSION.applyUrl(realSlug, realPhone);
-      }
-    }
-
-    const calc = {
-      monthIn,
-      todayIn,
-      monthOut,
-      todayOut,
-      monthNet,
-      todayNet,
-      monthSavings,
-      todaySavings,
-      totalSavings,
-      personalOutVisible,
-      personalOutToday,
-      disponiblePro,
-      resteApresPerso,
-      creditsLeft: 0,
-      creditsMonthly: 0,
-      debtsTotal: 0,
-      debtsSoon: 0,
-      projectsTotal: 0,
-      fixedCosts: 0,
-      safetyReserve: 0,
-      afterCommitments: disponiblePro,
-      netPro: monthNet
-    };
-
-    if(PAY_BRAIN){
-      calc.creditsLeft = sumCreditsLeft(PAY_BRAIN);
-      calc.creditsMonthly = sumCreditsMonthly(PAY_BRAIN);
-      calc.debtsTotal = sumDebtsTotal(PAY_BRAIN);
-      calc.debtsSoon = sumDebtsSoon(PAY_BRAIN);
-      calc.projectsTotal = sumProjectsTotal(PAY_BRAIN);
-      calc.fixedCosts = num(PAY_BRAIN.monthly_fixed_costs_xof);
-      calc.safetyReserve = num(PAY_BRAIN.safety_reserve_xof);
-      calc.afterCommitments = disponiblePro - calc.creditsMonthly - calc.debtsSoon;
-    }
-
-    const strategic = buildStrategicView(calc);
-    renderStrategicBlock(strategic);
-    renderResultRows(calc, strategic);
-
-    renderModules(modules);
-    renderChannels(channels);
-    renderChannelBars(channels);
-
-    document.getElementById("kpiEcoTotal").textContent = money(monthIn);
-    document.getElementById("cakeProtectedMargin").className = "cake-value " + pickColorClass(resteApresPerso, "green", "danger");
-
-    if(PAY_BRAIN){
-      renderEngagements(calc, PAY_BRAIN);
-    }else{
-      renderEngagementsFallback(calc);
-    }
-
-    LAST_CALC = calc;
-
-    if(data.access_ok){
-      setState("ok", "Cockpit PAY connecté", `Lecture réelle chargée depuis le backbone DIGIY PAY. ${brainSourceText()}`);
-    }else{
-      setState("bad", "Accès PAY non actif", `Le slug est lu mais l'abonnement PAY n'est pas actif ou est expiré. ${brainSourceText()}`);
-    }
-  }
-
-  async function loadCockpit(){
-    try{
-      if(!SESSION){
-        throw new Error("session.js non chargé ou DIGIY_SESSION indisponible.");
-      }
-
-      const fromUrl = SESSION.fromUrl();
-      if(fromUrl && fromUrl.slug){
-        SESSION.save(fromUrl.slug, fromUrl.phone);
-      }
-
-      const session = SESSION.require("./pin.html?redirect=cockpit");
-      if(!session) return;
-
-      SLUG = normalizeSlug(session.slug);
-      PHONE = normalizePhone(session.phone);
-
-      document.getElementById("topSlug").textContent = SLUG || "Session";
-      document.getElementById("badgeSlug").textContent = SLUG || "Session";
-      document.getElementById("slugBadge").style.display = "flex";
-
-      setContextLinks(SLUG, PHONE);
-      setState("ok", "Chargement", "Connexion au cockpit PAY…");
-
-      await Promise.all([
-        loadManualMovements(),
-        loadPayBrain()
-      ]);
-
-      const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", {
-        p_slug: SLUG
-      });
-
-      if(error) throw error;
-
-      const payload = normalizeRpcPayload(data);
-      if(!payload) throw new Error("Réponse cockpit vide ou illisible.");
-      if(payload.ok !== true) throw new Error(payload.error || payload.message || "Cockpit PAY invalide.");
-
-      renderCockpit(payload);
-    }catch(err){
-      console.error("[PAY cockpit]", err);
-      setState("bad", "Erreur de chargement", err?.message || "Impossible de charger le cockpit PAY.");
-      setEmptyEverywhere("Aucune donnée chargée.");
-    }
-  }
-
-  function bindTabs(){
-    document.querySelectorAll(".tab").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(b => {
-          b.classList.remove("active","pro","epargne","eco","engagements");
-          b.setAttribute("aria-selected", "false");
-        });
-
-        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-
-        btn.classList.add("active");
-        btn.classList.add(btn.dataset.tab);
-        btn.setAttribute("aria-selected", "true");
-
-        const panel = document.getElementById("panel-" + btn.dataset.tab);
-        if(panel) panel.classList.add("active");
-      });
+      const panel = document.getElementById("panel-" + btn.dataset.tab);
+      if(panel) panel.classList.add("active");
     });
-  }
+  });
+}
 
-  function bindActions(){
-    document.getElementById("btnRefresh").addEventListener("click", async () => {
-      toast("🔄 Rechargement…");
-      await loadCockpit();
-    });
-
-    document.getElementById("btnLogout").addEventListener("click", () => {
-      if(SESSION) SESSION.clear();
-      window.location.href = "./pin.html";
-    });
-
-    const engagementLink = document.querySelector('.hud-link[href="#panel-engagements"]');
-    if(engagementLink){
-      engagementLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        openEngagementsPanel();
-      });
-    }
-  }
-
-  (async function boot(){
-    bindTabs();
-    bindActions();
+function bindActions(){
+  document.getElementById("btnRefresh").addEventListener("click", async () => {
+    toast("🔄 Rechargement…");
     await loadCockpit();
-  })();
+  });
+
+  document.getElementById("btnLogout").addEventListener("click", () => {
+    if(SESSION) SESSION.clear();
+    window.location.href = "./pin.html";
+  });
+
+  const engagementLink = document.querySelector('.hud-link[href="#panel-engagements"]');
+  if(engagementLink){
+    engagementLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openEngagementsPanel();
+    });
+  }
+}
+
+(async function boot(){
+  bindTabs();
+  bindActions();
+  await loadCockpit();
+})();
 })();
 </script>
 </body>
