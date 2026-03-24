@@ -444,7 +444,6 @@
   </main>
 
   <div id="toast"></div>
-
 <script>
 (function(){
   "use strict";
@@ -804,10 +803,28 @@
     return MANUAL_SUMMARY;
   }  // ← FIX : accolade de fermeture de loadManualMovements
 
+  async function loadRpcCockpit(){
+    if(!SLUG) return null;
+    try{
+      const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", { p_slug: SLUG });
+      if(error){
+        console.warn("[PAY cockpit] digiy_pay_get_cockpit_by_slug:", error);
+        return null;
+      }
+      const payload = normalizeRpcPayload(data);
+      return payload && typeof payload === "object" ? payload : null;
+    }catch(err){
+      console.warn("[PAY cockpit] loadRpcCockpit:", err);
+      return null;
+    }
+  }
+
+
   /* ═══════════════════════════════════════════════════
      ENTRÉE PRINCIPALE
      FIX: loadCockpit() créée — appelée dans boot() mais absente
   ═══════════════════════════════════════════════════ */
+
   async function loadCockpit(){
     setState("","Chargement","Connexion au cockpit PAY…");
 
@@ -827,29 +844,49 @@
     await loadPayBrain();
     await loadManualMovements();
 
-    const modules=getModuleAggregations();
-    const channels=getChannelAggregations();
-    const monthIn=MANUAL_SUMMARY.inPro;
-    const monthOutPro=MANUAL_SUMMARY.outPro;
-    const monthNet=monthIn-monthOutPro;
+    const rpcData = await loadRpcCockpit();
+
+    const mergedSlug = normalizeSlug(rpcData?.slug || SLUG);
+    const mergedPhone = normalizePhone(rpcData?.phone || PHONE);
+    const modules = Array.isArray(rpcData?.by_module) && rpcData.by_module.length
+      ? rpcData.by_module.map(row=>({ source_module:String(row?.source_module||row?.module||"PAY").toUpperCase(), amount_xof:num(row?.amount_xof) }))
+      : getModuleAggregations();
+    const channels = Array.isArray(rpcData?.by_channel) && rpcData.by_channel.length
+      ? rpcData.by_channel.map(row=>({ channel:String(row?.channel||"autre").toLowerCase(), amount_xof:num(row?.amount_xof) }))
+      : getChannelAggregations();
+
+    const monthIn = num(rpcData?.month_in ?? MANUAL_SUMMARY.inPro);
+    const todayIn = num(rpcData?.today_in ?? MANUAL_SUMMARY.todayIn);
+    const monthOutPro = num(rpcData?.month_out_pro ?? rpcData?.month_out ?? MANUAL_SUMMARY.outPro);
+    const todayOutPro = num(rpcData?.today_out_pro ?? rpcData?.today_out ?? MANUAL_SUMMARY.todayOut);
+    const monthNet = num(rpcData?.month_net ?? (monthIn - monthOutPro));
+    const todayNet = num(rpcData?.today_net ?? (todayIn - todayOutPro));
+    const monthSavings = num(rpcData?.month_savings ?? MANUAL_SUMMARY.savings);
+    const todaySavings = num(rpcData?.today_savings ?? 0);
+    const totalSavings = num(rpcData?.total_savings ?? MANUAL_SUMMARY.savings);
+    const monthOutPerso = num(rpcData?.month_out_perso ?? MANUAL_SUMMARY.outPerso);
+    const todayOutPerso = num(rpcData?.today_out_perso ?? MANUAL_SUMMARY.todayPerso);
+    const accessOk = typeof rpcData?.access_ok === "boolean" ? rpcData.access_ok : true;
+    const plan = String(rpcData?.plan || (PAY_BRAIN ? "pay pro" : "—"));
 
     renderCockpit({
-      slug:SLUG, phone:PHONE,
-      month_in:monthIn,
-      today_in:MANUAL_SUMMARY.todayIn,
-      month_out_pro:monthOutPro,
-      today_out_pro:MANUAL_SUMMARY.todayOut,
-      month_net:monthNet,
-      today_net:MANUAL_SUMMARY.todayIn-MANUAL_SUMMARY.todayOut,
-      month_savings:MANUAL_SUMMARY.savings,
-      today_savings:0,
-      total_savings:MANUAL_SUMMARY.savings,
-      month_out_perso:MANUAL_SUMMARY.outPerso,
-      today_out_perso:MANUAL_SUMMARY.todayPerso,
-      by_module:modules,
-      by_channel:channels,
-      plan:PAY_BRAIN?"PAY PRO":"—",
-      access_ok:true
+      slug: mergedSlug || SLUG,
+      phone: mergedPhone || PHONE,
+      month_in: monthIn,
+      today_in: todayIn,
+      month_out_pro: monthOutPro,
+      today_out_pro: todayOutPro,
+      month_net: monthNet,
+      today_net: todayNet,
+      month_savings: monthSavings,
+      today_savings: todaySavings,
+      total_savings: totalSavings,
+      month_out_perso: monthOutPerso,
+      today_out_perso: todayOutPerso,
+      by_module: modules,
+      by_channel: channels,
+      plan,
+      access_ok: accessOk
     });
   }
 
