@@ -2492,10 +2492,6 @@ function renderCockpitInfo(cockpit){
 }
 
 function renderProKPIs(calc){
-  document.getElementById("cakeNetPro").textContent = money(calc.monthNet);
-  document.getElementById("cakeProtectedMargin").textContent = money(calc.netAfterPressure);
-  document.getElementById("cakePressure").textContent = money(calc.monthPressure);
-
   document.getElementById("kpiMonthIn").textContent = money(calc.monthIn);
   document.getElementById("kpiTodayIn").textContent = "Aujourd'hui : " + money(calc.todayIn);
 
@@ -2505,7 +2501,95 @@ function renderProKPIs(calc){
   document.getElementById("kpiMonthNet").textContent = money(calc.monthNet);
   document.getElementById("kpiTodayNet").textContent = "Aujourd'hui : " + money(calc.todayNet);
 }
-      if(PAY_BRAIN){
+
+function renderCockpit(data){
+  const monthIn = num(data.month_in);
+  const todayIn = num(data.today_in);
+  const monthOut = num(data.month_out_pro ?? data.month_out ?? 0);
+  const todayOut = num(data.today_out_pro ?? data.today_out ?? 0);
+  const monthNet = num(data.month_net);
+  const todayNet = num(data.today_net ?? (todayIn - todayOut));
+  const monthSavings = num(data.month_savings ?? MANUAL_SUMMARY.savings);
+  const todaySavings = num(data.today_savings ?? 0);
+  const totalSavings = num(data.total_savings ?? MANUAL_SUMMARY.savings);
+
+  const modules = Array.isArray(data.by_module) ? data.by_module : [];
+  const channels = Array.isArray(data.by_channel) ? data.by_channel : [];
+  const personalOutVisible = num(data.month_out_perso ?? MANUAL_SUMMARY.outPerso);
+  const personalOutToday = num(data.today_out_perso ?? MANUAL_SUMMARY.todayPerso);
+  const disponiblePro = monthNet;
+  const resteApresPerso = disponiblePro - personalOutVisible;
+
+  document.getElementById("kpiMonthIn").textContent = money(monthIn);
+  document.getElementById("kpiTodayIn").textContent = "Aujourd'hui : " + money(todayIn);
+
+  document.getElementById("kpiMonthOut").textContent = money(monthOut);
+  document.getElementById("kpiTodayOut").textContent = "Aujourd'hui : " + money(todayOut);
+
+  document.getElementById("kpiMonthNet").textContent = money(monthNet);
+  document.getElementById("kpiTodayNet").textContent = "Aujourd'hui : " + money(todayNet);
+
+  document.getElementById("kpiMonthSavings").textContent = money(monthSavings);
+  document.getElementById("kpiTodaySavings").textContent = "Aujourd'hui : " + money(todaySavings);
+  document.getElementById("kpiTotalSavings").textContent = money(totalSavings);
+  document.getElementById("kpiSavingsRatio").textContent = percent(monthSavings, monthIn).toFixed(0) + "%";
+
+  document.getElementById("iboxSavingsMonth").textContent = money(monthSavings);
+  document.getElementById("iboxSavingsTotal").textContent = money(totalSavings);
+
+  document.getElementById("cakeNetPro").textContent = money(monthNet);
+  document.getElementById("cakeProtectedMargin").textContent = money(resteApresPerso);
+  document.getElementById("cakePressure").textContent = money(personalOutVisible);
+
+  document.getElementById("iboxBusiness").textContent = "MON ARGENT by DIGIY";
+  document.getElementById("iboxPlan").textContent = String(data.plan || "—").toUpperCase();
+  document.getElementById("iboxPhone").textContent = data.phone || PHONE || "—";
+  document.getElementById("iboxAccess").textContent = data.access_ok ? "Actif" : "Non actif";
+
+  const realSlug = data.slug || SLUG;
+  const realPhone = data.phone || PHONE;
+
+  SLUG = normalizeSlug(realSlug);
+  PHONE = normalizePhone(realPhone);
+
+  document.getElementById("topSlug").textContent = SLUG || "Session";
+  document.getElementById("badgeSlug").textContent = SLUG || "Session";
+
+  setContextLinks(realSlug, realPhone);
+
+  if(SESSION){
+    SESSION.save(realSlug, realPhone);
+    if(typeof SESSION.applyUrl === "function"){
+      SESSION.applyUrl(realSlug, realPhone);
+    }
+  }
+
+  const calc = {
+    monthIn,
+    todayIn,
+    monthOut,
+    todayOut,
+    monthNet,
+    todayNet,
+    monthSavings,
+    todaySavings,
+    totalSavings,
+    personalOutVisible,
+    personalOutToday,
+    disponiblePro,
+    resteApresPerso,
+    creditsLeft: 0,
+    creditsMonthly: 0,
+    debtsTotal: 0,
+    debtsSoon: 0,
+    projectsTotal: 0,
+    fixedCosts: 0,
+    safetyReserve: 0,
+    afterCommitments: disponiblePro,
+    netPro: monthNet
+  };
+
+  if(PAY_BRAIN){
     calc.creditsLeft = sumCreditsLeft(PAY_BRAIN);
     calc.creditsMonthly = sumCreditsMonthly(PAY_BRAIN);
     calc.debtsTotal = sumDebtsTotal(PAY_BRAIN);
@@ -2539,52 +2623,6 @@ function renderProKPIs(calc){
     setState("ok", "Cockpit PAY connecté", `Lecture réelle chargée depuis le backbone DIGIY PAY. ${brainSourceText()}`);
   }else{
     setState("bad", "Accès PAY non actif", `Le slug est lu mais l'abonnement PAY n'est pas actif ou est expiré. ${brainSourceText()}`);
-  }
-}
-  async function loadCockpit(){
-  try{
-    if(!SESSION){
-      throw new Error("session.js non chargé ou DIGIY_SESSION indisponible.");
-    }
-
-    const fromUrl = SESSION.fromUrl();
-    if(fromUrl && fromUrl.slug){
-      SESSION.save(fromUrl.slug, fromUrl.phone);
-    }
-
-    const session = SESSION.require("./pin.html?redirect=cockpit");
-    if(!session) return;
-
-    SLUG = normalizeSlug(session.slug);
-    PHONE = normalizePhone(session.phone);
-
-    document.getElementById("topSlug").textContent = SLUG || "Session";
-    document.getElementById("badgeSlug").textContent = SLUG || "Session";
-    document.getElementById("slugBadge").style.display = "flex";
-
-    setContextLinks(SLUG, PHONE);
-    setState("ok", "Chargement", "Connexion au cockpit PAY…");
-
-    await Promise.all([
-      loadManualMovements(),
-      loadPayBrain()
-    ]);
-
-    const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", {
-      p_slug: SLUG
-    });
-
-    if(error) throw error;
-
-    const payload = normalizeRpcPayload(data);
-    if(!payload) throw new Error("Réponse cockpit vide ou illisible.");
-    if(payload.ok !== true) throw new Error(payload.error || payload.message || "Cockpit PAY invalide.");
-
-    renderCockpit(payload);
-  }catch(err){
-    console.error("[PAY cockpit]", err);
-    setState("bad", "Erreur de chargement", err?.message || "Impossible de charger le cockpit PAY.");
-    setEmptyEverywhere("Aucune donnée chargée.");
   }
 }
 
