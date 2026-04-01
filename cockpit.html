@@ -62,7 +62,7 @@
     .mini-v{font-size:20px;line-height:1.05;font-weight:900;color:#fff8dc;}
     .mini-s{font-size:12px;line-height:1.45;color:var(--muted);font-weight:700;}
     .hud-focus{padding:18px;display:grid;gap:14px;align-content:start;background:radial-gradient(circle at right top,rgba(34,197,94,.08),transparent 36%),linear-gradient(160deg,rgba(16,40,32,.94),rgba(8,24,18,.96));}
-    .hud2s{padding:18px;display:grid;gap:14px;margin-bottom:16px;background:radial-gradient(circle at left top,rgba(250,204,21,.10),transparent 28%),linear-gradient(160deg,rgba(16,40,32,.94),rgba(8,24,18,.96));}
+    .hud2s{display:none;padding:18px;gap:14px;margin-bottom:16px;background:radial-gradient(circle at left top,rgba(250,204,21,.10),transparent 28%),linear-gradient(160deg,rgba(16,40,32,.94),rgba(8,24,18,.96));}
     .hud2s-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
     .hud2s-kicker{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#fde68a;}
     .hud2s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -71,7 +71,7 @@
     .hud2s-value{font-family:var(--ff-title);font-size:28px;line-height:1.02;color:#fff8dc;font-weight:700;word-break:break-word;}
     .hud2s-value.green{color:var(--green)}.hud2s-value.gold{color:var(--gold)}.hud2s-value.red{color:var(--danger)}
     .hud2s-text{font-size:12px;color:var(--muted);font-weight:800;line-height:1.5;}
-    .module-strip{padding:16px;margin-bottom:16px;}
+    .module-strip{display:none;padding:16px;margin-bottom:16px;}
     .module-strip-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
     .module-strip-title{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#bbf7d0;}
     .module-strip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -204,13 +204,13 @@
       <div class="brand">
         <div class="brand-mark">₣</div>
         <div>
-          <div class="brand-title">MON ARGENT PRO ♾️</div>
+          <div class="brand-title">MON ARGENT ♾️</div>
           <div class="brand-sub" id="topSlug">Chargement…</div>
         </div>
       </div>
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
-        <a class="pill" href="./pin.html">🔐 PIN</a>
+        <a class="pill" href="./pin.html">🔐 Mon code</a>
         <a class="pill" href="./brain-admin.html" id="topBrainLink">🧭 Pilote</a>
         <a class="pill primary" href="./admin.html" id="topAdminLink">➕ Ajouter</a>
         <button class="pill" id="btnRefresh" type="button">🔄 Recharger</button>
@@ -223,34 +223,20 @@
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-card hero-main">
-          <div class="eyebrow">💳 PAY — cockpit stratégique terrain</div>
-          <h1 class="hero-title">Le cockpit te dit ce qu'il faut faire.<br>Pas juste combien il y a.</h1>
-          <p class="hero-text">On garde la base PAY réelle. On allège la lecture. On remonte les paiements par module. Ici, le vrai but est simple : éviter l'erreur, protéger la caisse et voir ce qui nourrit vraiment le business.</p>
+          <div class="eyebrow">💳 Ma lecture utile</div>
+          <h1 class="hero-title">Ce que tu dois faire maintenant.</h1>
+          <p class="hero-text">Ici, tu lis vite le cap du moment puis tu poses l'action utile sans te noyer dans les détails.</p>
           <div class="hero-mini">
-            <div class="mini"><div class="mini-k">En 2 secondes</div><div class="mini-v">Cap du mois</div><div class="mini-s">Protéger, tenir, consolider ou accélérer selon la vraie pression visible.</div></div>
-            <div class="mini"><div class="mini-k">En 1 regard</div><div class="mini-v">Top module</div><div class="mini-s">Voir quel module ramène vraiment les entrées PAY ce mois.</div></div>
-            <div class="mini"><div class="mini-k">En 1 décision</div><div class="mini-v">Erreur à éviter</div><div class="mini-s">Savoir quoi ne pas lancer trop tôt pour ne pas fatiguer la base.</div></div>
+            <div class="mini"><div class="mini-k">Lecture utile</div><div class="mini-v">Cap du mois</div><div class="mini-s">Protéger, tenir, consolider ou accélérer selon la vraie pression visible.</div></div>
           </div>
         </div>
         <aside class="hud-focus">
-          <div class="slug-badge" id="slugBadge">
-            <div class="dot"></div>
-            <div class="info">Session active — <span id="badgeSlug"></span> · <span>Module PAY</span></div>
-          </div>
-          <div class="hud-title">Lecture patron</div>
-          <div class="hud-big">Protéger d'abord.<br>Accélérer seulement si la base tient.</div>
-          <div class="hud-sub">PAY ne garde pas les fonds. Il te donne une lecture anti-erreur : ce qui nourrit, ce qui fatigue, ce qui peut attendre et ce qui peut avancer.</div>
+          <div class="hud-title">Action maître</div>
+          <div class="hud-big">Ajouter un mouvement.</div>
+          <div class="hud-sub">Commence par noter l'entrée ou la dépense du moment. Le reste vient ensuite.</div>
           <div class="hud-actions">
             <a class="hud-link" id="hudAdminLink" href="./admin.html">
-              <div class="left"><div class="k">Ajouter un mouvement</div><div class="s">Entrée, dépense pro, dépense perso visible ou épargne.</div></div>
-              <div class="arrow">→</div>
-            </a>
-            <a class="hud-link" id="hudBrainLink" href="./brain-admin.html">
-              <div class="left"><div class="k">Ouvrir le pilotage</div><div class="s">Réserve, charges fixes, crédits, dettes, projets et cap du mois.</div></div>
-              <div class="arrow">→</div>
-            </a>
-            <a class="hud-link" href="#panel-engagements">
-              <div class="left"><div class="k">Voir la pression réelle</div><div class="s">Crédits, dettes, projets, cap du mois et risque de surcoût.</div></div>
+              <div class="left"><div class="k">Ajouter un mouvement</div><div class="s">Entrée, dépense ou réserve visible.</div></div>
               <div class="arrow">→</div>
             </a>
           </div>
@@ -259,7 +245,7 @@
 
       <section class="hud2s">
         <div class="hud2s-head">
-          <div class="hud2s-kicker">HUD 2 secondes</div>
+          <div class="hud2s-kicker">Lecture flash</div>
           <div class="decision-chip" id="hudLastBadge">Dernière remontée : —</div>
         </div>
         <div class="hud2s-grid">
@@ -272,22 +258,22 @@
       <section class="module-strip">
         <div class="module-strip-head">
           <div class="module-strip-title">📦 Paiements remontés par module</div>
-          <div class="decision-chip ok" id="topModuleBadge">Top module : —</div>
+          <div class="decision-chip ok" id="topModuleBadge">Activité forte : —</div>
         </div>
         <div class="module-strip-grid" id="topModulesStrip"><div class="empty">Chargement des meilleurs modules…</div></div>
       </section>
 
       <div class="state" id="stateBox">
         <div class="state-title">Chargement</div>
-        <div class="state-txt">Connexion au cockpit PAY…</div>
+        <div class="state-txt">Préparation de ta lecture utile…</div>
       </div>
     </section>
 
-    <nav class="tabs" role="tablist" aria-label="Sections du cockpit PAY">
-      <button class="tab active pro" data-tab="pro" role="tab" type="button" aria-selected="true"><span class="ico">💼</span> PRO</button>
-      <button class="tab epargne" data-tab="epargne" role="tab" type="button" aria-selected="false"><span class="ico">🛟</span> ÉPARGNE</button>
-      <button class="tab eco" data-tab="eco" role="tab" type="button" aria-selected="false"><span class="ico">📊</span> ÉCOSYSTÈME</button>
-      <button class="tab engagements" data-tab="engagements" role="tab" type="button" aria-selected="false"><span class="ico">📌</span> ENGAGEMENTS</button>
+    <nav class="tabs" role="tablist" aria-label="Sections de mon argent">
+      <button class="tab active pro" data-tab="pro" role="tab" type="button" aria-selected="true"><span class="ico">💼</span> Activité</button>
+      <button class="tab epargne" data-tab="epargne" role="tab" type="button" aria-selected="false"><span class="ico">🛟</span> Réserve</button>
+      <button class="tab eco" data-tab="eco" role="tab" type="button" aria-selected="false"><span class="ico">📊</span> Vue globale</button>
+      <button class="tab engagements" data-tab="engagements" role="tab" type="button" aria-selected="false"><span class="ico">📌</span> Pressions</button>
     </nav>
 
     <section class="panel active" id="panel-pro">
@@ -316,18 +302,18 @@
       </div>
       <div class="scard">
         <div class="scard-head">
-          <div class="scard-title green">📦 Modules qui nourrissent le business</div>
+          <div class="scard-title green">📦 Ce qui fait rentrer l'argent</div>
           <a class="btn-mini" id="btnGoAdmin" href="./admin.html">➕ Ajouter un mouvement</a>
         </div>
         <div class="list" id="modulesList"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
       </div>
       <div class="scard">
-        <div class="scard-head"><div class="scard-title gold">🧭 État du cockpit</div></div>
+        <div class="scard-head"><div class="scard-title gold">🧭 État de ton espace</div></div>
         <div class="info-grid">
-          <div class="ibox"><div class="ibox-t">Entreprise</div><div class="ibox-v" id="iboxBusiness">—</div><div class="ibox-s">Nom visible du cockpit PAY.</div></div>
-          <div class="ibox"><div class="ibox-t">Plan</div><div class="ibox-v" id="iboxPlan">—</div><div class="ibox-s">Plan PAY actif associé au slug.</div></div>
-          <div class="ibox"><div class="ibox-t">Téléphone</div><div class="ibox-v" id="iboxPhone">—</div><div class="ibox-s">Rail principal du pro pour la session active.</div></div>
-          <div class="ibox"><div class="ibox-t">Accès</div><div class="ibox-v" id="iboxAccess">—</div><div class="ibox-s">Lecture réelle de l'état d'abonnement.</div></div>
+          <div class="ibox"><div class="ibox-t">Nom</div><div class="ibox-v" id="iboxBusiness">—</div><div class="ibox-s">Nom visible de ton espace argent.</div></div>
+          <div class="ibox"><div class="ibox-t">Plan</div><div class="ibox-v" id="iboxPlan">—</div><div class="ibox-s">Formule active pour cet accès.</div></div>
+          <div class="ibox"><div class="ibox-t">Téléphone</div><div class="ibox-v" id="iboxPhone">—</div><div class="ibox-s">Numéro utilisé pour l'accès en cours.</div></div>
+          <div class="ibox"><div class="ibox-t">Accès</div><div class="ibox-v" id="iboxAccess">—</div><div class="ibox-s">État réel de l'ouverture actuelle.</div></div>
         </div>
       </div>
     </section>
@@ -344,23 +330,23 @@
           <div class="ibox"><div class="ibox-t">Mission</div><div class="ibox-v">Protéger la base</div><div class="ibox-s">L'épargne sert à empêcher une mauvaise période de casser la marche suivante.</div></div>
           <div class="ibox"><div class="ibox-t">Doctrine PAY</div><div class="ibox-v">PAY éclaire</div><div class="ibox-s">PAY pilote les décisions. Il ne garde pas les fonds.</div></div>
           <div class="ibox"><div class="ibox-t">Mois courant</div><div class="ibox-v" id="iboxSavingsMonth">—</div><div class="ibox-s">Montant mis de côté sur la période en cours.</div></div>
-          <div class="ibox"><div class="ibox-t">Total cumulé</div><div class="ibox-v" id="iboxSavingsTotal">—</div><div class="ibox-s">Couche de réserve visible dans le cockpit global.</div></div>
+          <div class="ibox"><div class="ibox-t">Total cumulé</div><div class="ibox-v" id="iboxSavingsTotal">—</div><div class="ibox-s">Réserve visible dans l'ensemble de ton espace argent.</div></div>
         </div>
       </div>
     </section>
 
     <section class="panel" id="panel-eco">
       <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Modules visibles</div><div class="kpi-val gold" id="kpiModCount">—</div><div class="kpi-sub">Nombre de modules remontant du flux</div></div>
+        <div class="kpi"><div class="kpi-label">Activités visibles</div><div class="kpi-val gold" id="kpiModCount">—</div><div class="kpi-sub">Nombre d'activités qui remontent du flux</div></div>
         <div class="kpi"><div class="kpi-label">Canaux visibles</div><div class="kpi-val blue" id="kpiChanCount">—</div><div class="kpi-sub">Wave, cash, autres canaux remontés</div></div>
         <div class="kpi"><div class="kpi-label">Vue consolidée</div><div class="kpi-val gold" id="kpiEcoTotal">—</div><div class="kpi-sub">Entrées du mois toutes sources visibles</div></div>
       </div>
       <div class="scard" id="panel-eco-anchor">
-        <div class="scard-head"><div class="scard-title gold">📊 Répartition par canal</div></div>
+        <div class="scard-head"><div class="scard-title gold">📊 Répartition par source</div></div>
         <div class="bars" id="channelsBars"><div class="loader"><div class="spinner"></div> Calcul…</div></div>
       </div>
       <div class="scard">
-        <div class="scard-head"><div class="scard-title gold">💳 Canaux remontés</div></div>
+        <div class="scard-head"><div class="scard-title gold">💳 Sources remontées</div></div>
         <div class="list" id="channelsList"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
       </div>
     </section>
@@ -826,18 +812,18 @@
   ═══════════════════════════════════════════════════ */
 
   async function loadCockpit(){
-    setState("","Chargement","Connexion au cockpit PAY…");
+    setState("","Chargement","Connexion à ton espace argent…");
 
     SLUG=normalizeSlug(getQueryParam("slug")||(SESSION&&SESSION.slug)||"");
     PHONE=normalizePhone(getQueryParam("phone")||(SESSION&&SESSION.phone)||"");
 
     if(!SLUG){
-      setState("bad","Session invalide","Aucun slug détecté. Accès via le PIN requis.");
+      setState("bad","Session invalide","Aucun accès reconnu. Entre avec ton code.");
       setTimeout(()=>{ window.location.href="./pin.html"; },1400);
       return;
     }
 
-    setText("topSlug",SLUG);
+    setText("topSlug","Lecture utile prête");
     setText("badgeSlug",SLUG);
     setContextLinks(SLUG,PHONE);
 
@@ -935,9 +921,9 @@
 
   function renderModules(modules){
     const list=document.getElementById("modulesList"); if(!list) return;
-    if(!Array.isArray(modules)||!modules.length){ list.innerHTML=`<div class="empty">Aucun module visible dans PAY pour le moment.</div>`; return; }
+    if(!Array.isArray(modules)||!modules.length){ list.innerHTML=`<div class="empty">Aucune activité visible pour le moment.</div>`; return; }
     list.innerHTML=modules.sort((a,b)=>num(b.amount_xof)-num(a.amount_xof))
-      .map((row,idx)=>rowHtml(idx===0?"green":"gold",idx===0?"🏆":"📦",String(row.source_module||"MODULE").toUpperCase(),idx===0?"Module leader du mois":"Remontée visible dans PAY",money(row.amount_xof||0),idx===0?"green":"gold"))
+      .map((row,idx)=>rowHtml(idx===0?"green":"gold",idx===0?"🏆":"📦",String(row.source_module||"ACTIVITÉ").toUpperCase(),idx===0?"Activité la plus forte du mois":"Remontée visible ce mois",money(row.amount_xof||0),idx===0?"green":"gold"))
       .join("");
   }
 
@@ -946,14 +932,14 @@
     const strip=document.getElementById("topModulesStrip"); if(!strip) return;
     const top3=(Array.isArray(modules)?modules:[]).slice(0,3);
     const badge=document.getElementById("topModuleBadge");
-    if(badge&&top3.length) badge.textContent="Top module : "+String(top3[0].source_module||"—").toUpperCase();
-    if(!top3.length){ strip.innerHTML=`<div class="empty">Aucune remontée module visible.</div>`; return; }
+    if(badge&&top3.length) badge.textContent="Activité forte : "+String(top3[0].source_module||"—").toUpperCase();
+    if(!top3.length){ strip.innerHTML=`<div class="empty">Aucune remontée visible.</div>`; return; }
     strip.innerHTML=top3.map((row,idx)=>`
       <div class="module-card">
-        <div class="module-rank">${idx===0?"🏆 N°1 MODULE":"📦 Module"}</div>
-        <div class="module-name">${esc(String(row.source_module||"MODULE").toUpperCase())}</div>
+        <div class="module-rank">${idx===0?"🏆 Activité forte":"📦 Activité"}</div>
+        <div class="module-name">${esc(String(row.source_module||"ACTIVITÉ").toUpperCase())}</div>
         <div class="module-amount">${esc(money(row.amount_xof||0))}</div>
-        <div class="module-note">${idx===0?"Leader des entrées PAY ce mois":"Remontée visible dans PAY"}</div>
+        <div class="module-note">${idx===0?"En tête des entrées ce mois":"Activité visible ce mois"}</div>
       </div>`).join("");
   }
 
@@ -1255,7 +1241,7 @@
     if(cakeProt) cakeProt.className="cake-value "+pickColorClass(resteApresPerso,"green","danger");
 
     // Info cockpit
-    setText("iboxBusiness","MON ARGENT by DIGIY");
+    setText("iboxBusiness","MON ARGENT");
     setText("iboxPlan",String(data.plan||"—").toUpperCase());
     setText("iboxPhone",data.phone||PHONE||"—");
     setText("iboxAccess",data.access_ok?"Actif":"Non actif");
@@ -1264,7 +1250,7 @@
     const realPhone=data.phone||PHONE;
     SLUG=normalizeSlug(realSlug);
     PHONE=normalizePhone(realPhone);
-    setText("topSlug",SLUG||"Session");
+    setText("topSlug",data.access_ok ? "Lecture utile prête" : "Accès à ouvrir");
     setText("badgeSlug",SLUG||"Session");
     setContextLinks(realSlug,realPhone);
 
@@ -1318,9 +1304,9 @@
     }
 
     if(data.access_ok){
-      setState("ok","Cockpit PAY connecté","Lecture réelle chargée depuis le backbone DIGIY PAY. "+brainSourceText());
+      setState("ok","Espace argent prêt","Lecture réelle chargée. "+brainSourceText());
     } else {
-      setState("bad","Accès PAY non actif","L'abonnement PAY n'est pas actif ou est expiré. "+brainSourceText());
+      setState("bad","Accès à ouvrir","Ton accès PAY n'est pas actif ou est expiré. "+brainSourceText());
     }
   }
 
