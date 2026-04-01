@@ -257,7 +257,7 @@
 
       <section class="module-strip">
         <div class="module-strip-head">
-          <div class="module-strip-title">📦 Paiements remontés par module</div>
+          <div class="module-strip-title">📦 Paiements par activité</div>
           <div class="decision-chip ok" id="topModuleBadge">Activité forte : —</div>
         </div>
         <div class="module-strip-grid" id="topModulesStrip"><div class="empty">Chargement des meilleurs modules…</div></div>
@@ -541,10 +541,10 @@
 
   // FIX: brainSourceText — utilisée dans renderCockpit mais jamais définie
   function brainSourceText(){
-    if(PAY_BRAIN_SOURCE==="none") return "Aucun brain PAY configuré.";
-    if(PAY_BRAIN_SOURCE==="repo") return "Brain chargé depuis le dépôt JSON.";
-    if(String(PAY_BRAIN_SOURCE).startsWith("local")) return "Brain chargé depuis le stockage local.";
-    return "Brain source : "+PAY_BRAIN_SOURCE;
+    if(PAY_BRAIN_SOURCE==="none") return "Aucun repère argent n'est encore prêt.";
+    if(PAY_BRAIN_SOURCE==="repo") return "Tes repères argent ont été retrouvés dans ta version partagée.";
+    if(String(PAY_BRAIN_SOURCE).startsWith("local")) return "Tes repères argent ont été retrouvés sur cet appareil.";
+    return "Tes repères argent sont reliés à cette source : "+PAY_BRAIN_SOURCE;
   }
 
   function setContextLinks(slug,phone){
