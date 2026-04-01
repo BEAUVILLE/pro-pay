@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>DIGIY PAY — Réglages avancés</title>
+  <title>DIGIY PAY — Base argent</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Pilotage PAY : réserve, charges fixes, crédits, dettes, projets. Sauvegarde locale par identifiant, import/export JSON et export repo."
+    content="Pose ici ta base argent : réserve, charges fixes, remboursements, dettes et projets. Tout reste sur cet appareil, avec téléchargement simple et version prête pour GitHub."
   />
 
   <script src="./session.js"></script>
@@ -483,28 +483,28 @@
       <div class="brand">
         <div class="mark">₣</div>
         <div>
-          <div class="brand-title">Brain PAY — Pilotage</div>
-          <div class="brand-sub" id="brainMeta">Clé de pilotage locale par slug</div>
+          <div class="brand-title">Base argent PAY</div>
+          <div class="brand-sub" id="brainMeta">Repère actif et éléments gardés sur cet appareil</div>
         </div>
       </div>
 
       <nav class="nav">
         <a class="pill" id="navHomeLink" href="./index.html">← Accueil</a>
-        <a class="pill" id="navCockpitLink" href="./cockpit.html">📊 Cockpit</a>
+        <a class="pill" id="navCockpitLink" href="./cockpit.html">📊 Vue argent</a>
         <a class="pill" id="navAdminLink" href="./admin.html">➕ Mouvements</a>
-        <button class="pill primary" id="btnSaveTop" type="button">💾 Sauvegarder</button>
+        <button class="pill primary" id="btnSaveTop" type="button">💾 Enregistrer</button>
       </nav>
     </div>
   </header>
 
   <main class="wrap">
     <section class="hero">
-      <div class="eyebrow">🧠 PAY — pilotage local par slug</div>
-      <h1>Pose le brain une fois.<br>Le cockpit parlera plus juste.</h1>
+      <div class="eyebrow">💼 PAY — base argent gardée ici</div>
+      <h1>Pose ta base argent une fois.<br>Ta vue suivra plus juste.</h1>
       <p>
-        Ici tu poses la base du pro : réserve, charges fixes, crédits, dettes et projets.
-        Tout reste d’abord local dans le navigateur, rangé par slug. Ensuite tu exportes
-        proprement ton JSON ou ta version prête pour GitHub.
+        Ici tu poses tes repères d’argent : réserve, charges fixes, remboursements, dettes et projets.
+        Tout reste d’abord sur cet appareil. Ensuite tu peux télécharger ton fichier
+        ou une version prête pour GitHub.
       </p>
 
       <div class="hero-grid">
@@ -525,8 +525,8 @@
         </div>
         <div class="mini">
           <div class="mini-k">Étape 4</div>
-          <div class="mini-v">Exporter</div>
-          <div class="mini-s">JSON local ou version prête pour GitHub.</div>
+          <div class="mini-v">Partager</div>
+          <div class="mini-s">Fichier à garder ici ou version prête pour GitHub.</div>
         </div>
       </div>
     </section>
@@ -535,9 +535,9 @@
       <section class="stack">
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Base commune</div>
+            <div class="card-title">Repères de base</div>
             <div class="toolbar">
-              <button class="btn outline" id="btnResetTemplate" type="button">Moule vierge</button>
+              <button class="btn outline" id="btnResetTemplate" type="button">Base vide</button>
             </div>
           </div>
 
@@ -562,25 +562,25 @@
               <div class="field">
                 <label class="label" for="monthlyFixedCosts">Charges fixes mensuelles</label>
                 <input class="input" id="monthlyFixedCosts" type="number" min="0" step="1000" placeholder="Charges fixes du mois" />
-                <div class="hint">Loyer, internet, structure, etc.</div>
+                <div class="hint">Loyer, internet, équipe, abonnement, etc.</div>
               </div>
 
               <div class="field">
-                <label class="label" for="dangerDebtRatio">Seuil dette dangereuse (%)</label>
+                <label class="label" for="dangerDebtRatio">Alerte dette lourde (%)</label>
                 <input class="input" id="dangerDebtRatio" type="number" min="0" step="1" placeholder="35" />
-                <div class="hint">Seuil où la dette devient trop lourde.</div>
+                <div class="hint">Le niveau à partir duquel la dette devient trop lourde.</div>
               </div>
 
               <div class="field">
-                <label class="label" for="minimumCash">Cash mini après engagements</label>
-                <input class="input" id="minimumCash" type="number" min="0" step="1000" placeholder="Plancher de sécurité" />
-                <div class="hint">Plancher de sécurité après pression du mois.</div>
+                <label class="label" for="minimumCash">Minimum à garder après le mois</label>
+                <input class="input" id="minimumCash" type="number" min="0" step="1000" placeholder="Montant à garder" />
+                <div class="hint">Le minimum qui doit rester après les dépenses du mois.</div>
               </div>
 
               <div class="field">
-                <label class="label" for="recommendedSavings">Épargne recommandée (%)</label>
+                <label class="label" for="recommendedSavings">Épargne visée (%)</label>
                 <input class="input" id="recommendedSavings" type="number" min="0" step="1" placeholder="15" />
-                <div class="hint">Objectif d’épargne visible du mois.</div>
+                <div class="hint">La part que tu veux réussir à mettre de côté ce mois-ci.</div>
               </div>
             </div>
           </div>
@@ -588,19 +588,19 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Ajouter un crédit</div>
-            <button class="btn green" id="btnAddCredit" type="button">+ Ajouter</button>
+            <div class="card-title">Ajouter un crédit à rembourser</div>
+            <button class="btn green" id="btnAddCredit" type="button">+ L’ajouter</button>
           </div>
 
           <div class="card-body">
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="creditLabel">Nom du crédit</label>
-                <input class="input" id="creditLabel" type="text" placeholder="Nom du crédit" />
+                <input class="input" id="creditLabel" type="text" placeholder="Ex. prêt boutique" />
               </div>
 
               <div class="field">
-                <label class="label" for="creditAmountLeft">Montant restant</label>
+                <label class="label" for="creditAmountLeft">Reste à rembourser</label>
                 <input class="input" id="creditAmountLeft" type="number" min="0" step="1000" placeholder="Montant restant" />
               </div>
 
@@ -620,7 +620,7 @@
 
               <div class="field full">
                 <label class="label" for="creditNotes">Notes</label>
-                <textarea class="textarea" id="creditNotes" placeholder="Notes utiles sur ce crédit"></textarea>
+                <textarea class="textarea" id="creditNotes" placeholder="Ce qu’il faut retenir sur ce crédit"></textarea>
               </div>
             </div>
 
@@ -630,15 +630,15 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Ajouter une dette</div>
-            <button class="btn green" id="btnAddDebt" type="button">+ Ajouter</button>
+            <div class="card-title">Ajouter une dette à payer</div>
+            <button class="btn green" id="btnAddDebt" type="button">+ L’ajouter</button>
           </div>
 
           <div class="card-body">
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="debtLabel">Nom de la dette</label>
-                <input class="input" id="debtLabel" type="text" placeholder="Nom de la dette" />
+                <input class="input" id="debtLabel" type="text" placeholder="Ex. avance fournisseur" />
               </div>
 
               <div class="field">
@@ -662,7 +662,7 @@
 
               <div class="field full">
                 <label class="label" for="debtNotes">Notes</label>
-                <textarea class="textarea" id="debtNotes" placeholder="Notes utiles sur cette dette"></textarea>
+                <textarea class="textarea" id="debtNotes" placeholder="Ce qu’il faut retenir sur cette dette"></textarea>
               </div>
             </div>
 
@@ -672,15 +672,15 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Ajouter un projet</div>
-            <button class="btn green" id="btnAddProject" type="button">+ Ajouter</button>
+            <div class="card-title">Ajouter un projet à financer</div>
+            <button class="btn green" id="btnAddProject" type="button">+ L’ajouter</button>
           </div>
 
           <div class="card-body">
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="projectLabel">Nom du projet</label>
-                <input class="input" id="projectLabel" type="text" placeholder="Nom du projet" />
+                <input class="input" id="projectLabel" type="text" placeholder="Ex. nouveau frigo" />
               </div>
 
               <div class="field">
@@ -704,7 +704,7 @@
 
               <div class="field full">
                 <label class="label" for="projectNotes">Notes</label>
-                <textarea class="textarea" id="projectNotes" placeholder="Notes utiles sur ce projet"></textarea>
+                <textarea class="textarea" id="projectNotes" placeholder="Ce qu’il faut retenir sur ce projet"></textarea>
               </div>
             </div>
 
@@ -716,35 +716,35 @@
       <aside class="stack">
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Pilotage local</div>
+            <div class="card-title">Gardé sur cet appareil</div>
           </div>
           <div class="card-body">
             <div class="status ok" id="statusBox">
-              Pilotage local prêt. Rien n’est envoyé au serveur.
+              Tes repères d’argent sont prêts. Rien ne part ailleurs.
             </div>
 
             <div class="toolbar" style="margin-top:12px">
-              <button class="btn green" id="btnSave" type="button">💾 Sauvegarder localement</button>
-              <button class="btn blue" id="btnExport" type="button">⬇️ Export JSON</button>
-              <button class="btn gold" id="btnExportRepo" type="button">🌍 Export pour repo</button>
-              <button class="btn outline" id="btnCopyRepoJson" type="button">📋 Copier JSON repo</button>
-              <button class="btn outline" id="btnSyncCockpit" type="button">🔄 Sync cockpit</button>
-              <button class="btn outline" id="btnImportTrigger" type="button">⬆️ Import JSON</button>
-              <button class="btn red" id="btnClearLocal" type="button">🗑️ Effacer local</button>
+              <button class="btn green" id="btnSave" type="button">💾 Enregistrer ici</button>
+              <button class="btn blue" id="btnExport" type="button">⬇️ Télécharger mes données</button>
+              <button class="btn gold" id="btnExportRepo" type="button">🌍 Télécharger version GitHub</button>
+              <button class="btn outline" id="btnCopyRepoJson" type="button">📋 Copier la version GitHub</button>
+              <button class="btn outline" id="btnSyncCockpit" type="button">🔄 Mettre à jour la vue argent</button>
+              <button class="btn outline" id="btnImportTrigger" type="button">⬆️ Charger un fichier</button>
+              <button class="btn red" id="btnClearLocal" type="button">🗑️ Tout effacer ici</button>
             </div>
 
             <input class="file-input" id="fileImport" type="file" accept="application/json,.json" />
 
             <div class="status warn" style="margin-top:12px">
-              Le navigateur garde les données de pilotage dans le localStorage du slug courant.
-              Le cockpit lit d’abord la clé officielle, puis le brouillon du slug.
+              Cet appareil garde tes repères d’argent pour ce repère PAY.
+              La vue argent lit d’abord ta version enregistrée, puis le brouillon gardé ici.
             </div>
           </div>
         </article>
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Lecture rapide</div>
+            <div class="card-title">Vue rapide</div>
           </div>
           <div class="card-body">
             <div class="items">
@@ -772,7 +772,7 @@
                 </div>
                 <div class="item-grid">
                   <div class="item-box">
-                    <div class="item-k">Crédits actifs</div>
+                    <div class="item-k">Remboursements actifs</div>
                     <div class="item-v" id="sumCreditsMonthly">0 F CFA / mois</div>
                   </div>
                   <div class="item-box">
@@ -804,7 +804,7 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">JSON généré</div>
+            <div class="card-title">Aperçu du fichier</div>
           </div>
           <div class="card-body">
             <div class="preview" id="jsonPreview">{}</div>
@@ -893,7 +893,7 @@
       const box = document.getElementById("statusBox");
       if(box){
         box.className = "status bad";
-        box.innerHTML = "Slug PAY manquant. Ce pilotage est réservé à un abonné identifié. Retourne au PIN ou au cockpit.";
+        box.innerHTML = "Repère PAY manquant. Ouvre d’abord ton code d’accès ou ta vue argent pour revenir ici.";
       }
 
       setTimeout(() => {
@@ -1146,14 +1146,12 @@
         brain.projects.length
       ].reduce((a,b)=>a+b,0);
 
-      const official = getOfficialBrainKey(CTX.slug);
       const ctxParts = [];
-      ctxParts.push("Clé officielle · " + official);
-      if(CTX.slug) ctxParts.push("slug · " + CTX.slug);
-      if(CTX.phone) ctxParts.push("phone · " + CTX.phone);
+      if(CTX.slug) ctxParts.push("Repère actif · " + CTX.slug);
+      if(CTX.phone) ctxParts.push("Numéro lié · " + CTX.phone);
 
       document.getElementById("brainMeta").textContent =
-        `${ctxParts.join(" · ")} · ${count} élément(s)`;
+        `${ctxParts.join(" · ")}${ctxParts.length ? " · " : ""}${count} élément(s) gardé(s) ici`;
     }
 
     function buildExportObject(){
@@ -1194,7 +1192,7 @@
       if(showMessage){
         setStatus(
           "ok",
-          `Brain PAY sauvegardé localement pour ce slug.<br><strong>Clé officielle :</strong> ${esc(getOfficialBrainKey(CTX.slug))}<br><strong>Source :</strong> ${esc(sourceLabel)}`
+          `Ta base argent est bien enregistrée sur cet appareil.<br><strong>Repère :</strong> ${esc(CTX.slug || "local")}`
         );
       }
 
@@ -1275,7 +1273,7 @@
       });
 
       if(!item.label){
-        setStatus("warn", "Donne un nom au crédit avant de l’ajouter.");
+        setStatus("warn", "Donne un nom à ce crédit avant de l’ajouter.");
         return;
       }
 
@@ -1296,7 +1294,7 @@
       });
 
       if(!item.label){
-        setStatus("warn", "Donne un nom à la dette avant de l’ajouter.");
+        setStatus("warn", "Donne un nom à cette dette avant de l’ajouter.");
         return;
       }
 
@@ -1317,7 +1315,7 @@
       });
 
       if(!item.label){
-        setStatus("warn", "Donne un nom au projet avant de l’ajouter.");
+        setStatus("warn", "Donne un nom à ce projet avant de l’ajouter.");
         return;
       }
 
@@ -1376,7 +1374,7 @@
     function renderCredits(){
       const el = document.getElementById("creditsList");
       if(!brain.credits.length){
-        el.innerHTML = `<div class="status warn">Aucun crédit posé pour l’instant.</div>`;
+        el.innerHTML = `<div class="status warn">Aucun crédit ajouté pour le moment.</div>`;
         return;
       }
 
@@ -1393,7 +1391,7 @@
               <div class="item-v">${money(item.amount_left_xof)}</div>
             </div>
             <div class="item-box">
-              <div class="item-k">Mensuel</div>
+              <div class="item-k">Par mois</div>
               <div class="item-v">${money(item.monthly_payment_xof)}</div>
             </div>
             <div class="item-box">
@@ -1417,7 +1415,7 @@
     function renderDebts(){
       const el = document.getElementById("debtsList");
       if(!brain.debts.length){
-        el.innerHTML = `<div class="status warn">Aucune dette posée pour l’instant.</div>`;
+        el.innerHTML = `<div class="status warn">Aucune dette ajoutée pour le moment.</div>`;
         return;
       }
 
@@ -1434,7 +1432,7 @@
               <div class="item-v">${money(item.amount_xof)}</div>
             </div>
             <div class="item-box">
-              <div class="item-k">Échéance</div>
+              <div class="item-k">À payer dans</div>
               <div class="item-v">${esc(String(item.due_in_days))} jour(s)</div>
             </div>
             <div class="item-box">
@@ -1458,7 +1456,7 @@
     function renderProjects(){
       const el = document.getElementById("projectsList");
       if(!brain.projects.length){
-        el.innerHTML = `<div class="status warn">Aucun projet posé pour l’instant.</div>`;
+        el.innerHTML = `<div class="status warn">Aucun projet ajouté pour le moment.</div>`;
         return;
       }
 
@@ -1471,11 +1469,11 @@
 
           <div class="item-grid">
             <div class="item-box">
-              <div class="item-k">Cible</div>
+              <div class="item-k">Objectif</div>
               <div class="item-v">${money(item.target_xof)}</div>
             </div>
             <div class="item-box">
-              <div class="item-k">Horizon</div>
+              <div class="item-k">Prévu dans</div>
               <div class="item-v">${esc(String(item.deadline_days))} jour(s)</div>
             </div>
             <div class="item-box">
@@ -1573,7 +1571,7 @@
         await navigator.clipboard.writeText(String(text || ""));
         setStatus("ok", okMessage);
       }catch(_){
-        setStatus("warn", "Copie impossible sur ce navigateur.");
+        setStatus("warn", "Impossible de copier ici pour le moment.");
       }
     }
 
@@ -1585,14 +1583,14 @@
           const extracted = extractBrainObject(raw, CTX.slug);
 
           if(!extracted || typeof extracted !== "object"){
-            setStatus("bad", "Import refusé : JSON invalide ou données de pilotage introuvables.");
+            setStatus("bad", "Import refusé : fichier invalide ou repères d’argent introuvables.");
             return;
           }
 
           brain = normalizeBrain(extracted);
           renderAll();
           saveDraft(false, "import_json");
-          setStatus("ok", "JSON importé dans le pilotage local de ce slug.");
+          setStatus("ok", "Le fichier a bien été chargé sur cet appareil pour ce repère.");
         }catch(_){
           setStatus("bad", "Import refusé : fichier illisible.");
         }
@@ -1604,7 +1602,7 @@
       saveDraft(false, "sync_cockpit");
       setStatus(
         "ok",
-        `Brain synchronisé pour le cockpit.<br><strong>Clé :</strong> ${esc(getOfficialBrainKey(CTX.slug))}<br><a href="${esc(getCockpitHref())}" style="color:#bbf7d0;text-decoration:underline">Ouvrir le cockpit</a>`
+        `Ta vue argent a bien été mise à jour.<br><strong>Repère :</strong> ${esc(CTX.slug || "local")}<br><a href="${esc(getCockpitHref())}" style="color:#bbf7d0;text-decoration:underline">Ouvrir ma vue argent</a>`
       );
     }
 
@@ -1619,19 +1617,19 @@
       document.getElementById("btnExport").addEventListener("click", () => {
         const filename = `pay-brain-${CTX.slug || "local"}.json`;
         downloadJson(filename, buildExportObject());
-        setStatus("ok", `Fichier ${filename} exporté.`);
+        setStatus("ok", `Ton fichier ${filename} est prêt.`);
       });
 
       document.getElementById("btnExportRepo").addEventListener("click", () => {
         const filename = `pay-brain-${CTX.slug || "local"}-repo.json`;
         downloadJson(filename, buildRepoExportObject());
-        setStatus("ok", `Export repo prêt : ${filename}`);
+        setStatus("ok", `La version GitHub est prête : ${filename}`);
       });
 
       document.getElementById("btnCopyRepoJson").addEventListener("click", () => {
         copyText(
           JSON.stringify(buildRepoExportObject(), null, 2),
-          "JSON repo copié dans le presse-papiers."
+          "La version GitHub a été copiée dans le presse-papiers."
         );
       });
 
@@ -1650,8 +1648,8 @@
       document.getElementById("btnResetTemplate").addEventListener("click", () => {
         brain = deepClone(TEMPLATE);
         renderAll();
-        saveDraft(false, "moule_vierge");
-        setStatus("ok", "Moule vierge chargé dans le pilotage local de ce slug.");
+        saveDraft(false, "base_vide");
+        setStatus("ok", "La base vide est chargée sur cet appareil pour ce repère.");
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
@@ -1662,7 +1660,7 @@
 
         brain = deepClone(TEMPLATE);
         renderAll();
-        setStatus("warn", "Toutes les clés de pilotage locales de ce slug ont été effacées. Moule vierge rechargé.");
+        setStatus("warn", "Tout ce qui était gardé ici pour ce repère a été effacé. La base vide a été rechargée.");
       });
 
       [
@@ -1686,7 +1684,7 @@
 
       setStatus(
         "ok",
-        `Slug actif détecté : <strong>${esc(CTX.slug)}</strong>. Pilotage local isolé par slug.`
+        `Repère actif : <strong>${esc(CTX.slug)}</strong>. Cette base reste séparée pour ce repère.`
       );
     }
 
