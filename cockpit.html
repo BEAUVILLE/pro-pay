@@ -364,7 +364,7 @@
                 <button class="real-signal-btn" id="btnRealMic" type="button">🎙️ Parler</button>
                 <button class="real-signal-btn" id="btnRealClear" type="button">Effacer</button>
                 <button class="real-signal-btn primary" id="btnRealPrepare" type="button">Préparer</button>
-                <button class="real-signal-btn confirm" id="btnRealConfirm" type="button" style="display:none">✅ Confirmer</button>
+                <button class="real-signal-btn confirm" id="btnRealConfirm" type="button" style="display:none">✅ Confirmer et remplir la saisie</button>
               </div>
 
               <div class="real-signal-draft" id="realSignalDraft"></div>
@@ -717,6 +717,98 @@
       return false;
     }
   }
+
+
+  function adminScopeFromDraft(draft){
+    const scope=String(draft?.scope||"").toLowerCase();
+    if(scope==="perso"||scope==="personal") return "personal";
+    if(scope==="savings"||draft?.intent_code==="saving") return "savings";
+    return "pro";
+  }
+
+  function adminKindFromDraft(draft){
+    const intent=String(draft?.intent_code||"").toLowerCase();
+    const kind=String(draft?.kind||"").toLowerCase();
+    if(intent==="income") return "sale";
+    if(intent==="saving"||kind==="saving") return "saving";
+    if(intent==="expense"||intent==="debt_repayment"||intent==="emergency"||intent==="bill_due") return "expense";
+    if(kind==="sale"||kind==="expense"||kind==="saving"||kind==="transfer") return kind;
+    return "other";
+  }
+
+  function adminChannelFromDraft(draft){
+    const c=String(draft?.channel||"").toLowerCase();
+    if(c==="cash") return "cash";
+    if(c==="wave") return "wave";
+    if(c==="orange_money") return "orange_money";
+    if(c==="bank_transfer"||c==="bank") return "bank";
+    if(c==="card") return "other";
+    return "manual";
+  }
+
+  function adminCategoryFromDraft(draft){
+    const cat=String(draft?.category||"").trim();
+    if(cat) return cat;
+
+    const intent=String(draft?.intent_code||"").toLowerCase();
+    const comp=String(draft?.complement||"").toLowerCase();
+
+    if(intent==="income"&&comp.includes("course")) return "ride_income";
+    if(intent==="debt_repayment") return "debt_repayment";
+    if(intent==="saving") return "project_saving";
+    if(intent==="emergency"&&comp.includes("médicament")) return "medicine";
+    if(intent==="emergency"&&comp.includes("medicament")) return "medicine";
+    if(comp.includes("carburant")) return "fuel";
+    if(intent==="bill_due") return "bill_due";
+
+    return "";
+  }
+
+  function adminSourceModuleFromDraft(draft){
+    const mod=String(draft?.module_source||"").toUpperCase();
+    if(["PAY","DRIVER","COMMERCE","LOC","MARKET","BUILD","RESA","OTHER"].includes(mod)) return mod;
+    const comp=String(draft?.complement||"").toLowerCase();
+    if(comp.includes("course")||String(draft?.category||"").toLowerCase()==="ride_income") return "DRIVER";
+    return "PAY";
+  }
+
+  function adminLabelFromDraft(draft){
+    const intent=String(draft?.intent_code||"").toLowerCase();
+    const comp=String(draft?.complement||"").trim();
+
+    if(intent==="income"&&comp) return comp==="course" ? "Course chauffeur" : comp;
+    if(intent==="expense"&&comp) return comp.charAt(0).toUpperCase()+comp.slice(1);
+    if(intent==="debt_repayment"&&comp) return "Remboursement "+comp;
+    if(intent==="saving") return comp ? "Épargne "+comp : "Épargne";
+    if(intent==="bill_due"&&comp) return "Facture "+comp;
+    if(intent==="emergency"&&comp) return comp.charAt(0).toUpperCase()+comp.slice(1);
+
+    return draft?.intent_label || "Mouvement PAY";
+  }
+
+  function buildAdminPrefillUrl(draft){
+    const qs=new URLSearchParams();
+
+    if(SLUG) qs.set("slug",SLUG);
+    if(PHONE) qs.set("phone",PHONE);
+
+    qs.set("fromDraft","1");
+    qs.set("direction",String(draft?.direction||"out"));
+    qs.set("scope",adminScopeFromDraft(draft));
+    qs.set("amount",String(Math.round(num(draft?.amount_xof))));
+    qs.set("kind",adminKindFromDraft(draft));
+    qs.set("channel",adminChannelFromDraft(draft));
+    qs.set("category",adminCategoryFromDraft(draft));
+    qs.set("source_module",adminSourceModuleFromDraft(draft));
+    qs.set("label",adminLabelFromDraft(draft));
+    qs.set("note",String(draft?.sentence||"").trim());
+
+    if(draft?.complement) qs.set("complement",String(draft.complement||"").trim());
+    if(draft?.intent_code) qs.set("intent",String(draft.intent_code||"").trim());
+
+    return "./admin.html?"+qs.toString();
+  }
+
 
   function guessRealSignalIntent(text){
     const t=String(text||"").toLowerCase();
@@ -1881,6 +1973,8 @@
           return;
         }
 
+        const adminUrl=buildAdminPrefillUrl(draft);
+
         btnRealConfirm.style.display="none";
         const box=document.getElementById("realSignalDraft");
         if(box){
@@ -1893,11 +1987,14 @@
             Nature : ${esc(draft.scope==="pro"?"pro":"perso")}<br>
             ${draft.complement ? `Complément : ${esc(draft.complement)}<br>` : ``}
             <br>
-            <span style="color:rgba(243,255,247,.72)">Étape suivante plus tard : valider en vraie ligne dans Mon argent.</span>
+            <a class="real-signal-btn confirm" href="${esc(adminUrl)}" style="display:inline-flex;margin-top:8px">➕ Ouvrir la saisie PAY</a>
+            <br>
+            <span style="color:rgba(243,255,247,.72)">Le formulaire de saisie va être préparé. Tu gardes le dernier bouton Enregistrer.</span>
           `;
         }
 
-        toast("Brouillon confirmé.");
+        toast("Brouillon confirmé. Ouverture de la saisie…");
+        setTimeout(()=>{ window.location.href=adminUrl; }, 650);
       });
     }
   }
