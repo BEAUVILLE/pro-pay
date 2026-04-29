@@ -724,6 +724,51 @@
     return "perso";
   }
 
+
+  function extractRealSignalComplement(text,intentCode){
+    const sentence=String(text||"").trim();
+
+    const knownWords=[
+      "j’ai","jai","j","ai","je","a","cash","wave","orange","money","om","fcfa","xof","f",
+      "encaissé","encaisse","reçu","recu","dépensé","depense","dépense","depensé","depens",
+      "payé","paye","acheté","achete","sorti","remboursé","rembourse","dette",
+      "mets","met","mis","côté","cote","épargne","epargne","facture","régler","regler",
+      "payer","imprévu","imprevu","urgence","pro","perso","personnel"
+    ];
+
+    if(/\b(médicament|médicaments|medicament|medicaments|pharmacie)\b/i.test(sentence)) return "médicament";
+    if(/\b(hospitalisation|hôpital|hopital|clinique)\b/i.test(sentence)) return "hospitalisation";
+    if(/\b(carburant|essence|gasoil)\b/i.test(sentence)) return "carburant";
+    if(/\b(course|trajet|chauffeur)\b/i.test(sentence)) return "course";
+    if(/\b(fournisseur)\b/i.test(sentence)) return "fournisseur";
+    if(/\b(loyer)\b/i.test(sentence)) return "loyer";
+    if(/\b(stock|marchandise)\b/i.test(sentence)) return "stock";
+    if(/\b(tontine)\b/i.test(sentence)) return "tontine";
+
+    if(intentCode==="debt_repayment"){
+      const tokens=sentence
+        .replace(/[.,;:!?]/g," ")
+        .split(/\s+/)
+        .map(x=>x.trim())
+        .filter(Boolean);
+
+      const candidates=tokens.filter(tok=>{
+        const clean=tok.toLowerCase().replace(/[^\p{L}\p{N}-]/gu,"");
+        if(!clean) return false;
+        if(/^\d+$/.test(clean)) return false;
+        if(knownWords.includes(clean)) return false;
+        return clean.length>=2;
+      });
+
+      if(candidates.length){
+        const raw=candidates[candidates.length-1].replace(/[^\p{L}\p{N}-]/gu,"");
+        return raw ? raw.charAt(0).toUpperCase()+raw.slice(1) : "";
+      }
+    }
+
+    return "";
+  }
+
   function buildRealSignalDraft(text){
     const sentence=String(text||"").trim();
     const isRide=/\b(course|chauffeur|trajet|aibd|saly|dakar|mbour)\b/i.test(sentence);
@@ -810,6 +855,8 @@
       }
     }
 
+    draft.complement=extractRealSignalComplement(sentence,intentCode);
+
     return draft;
   }
 
@@ -834,6 +881,7 @@
       Montant : ${esc(amountText)}<br>
       Canal : ${esc(channelText)}<br>
       Nature : ${esc(scopeText)}<br>
+      ${draft.complement ? `Complément : ${esc(draft.complement)}<br>` : ``}
       <br>
       <span style="color:rgba(243,255,247,.72)">Brouillon seulement. Rien n’est inscrit sans validation.</span>
     `;
