@@ -739,6 +739,24 @@
 
     @keyframes spin{to{transform:rotate(360deg)}}
 
+
+    .draft-prefill{
+      display:none;
+      margin-bottom:14px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(250,204,21,.22);
+      background:rgba(250,204,21,.07);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      font-weight:800;
+    }
+
+    .draft-prefill strong{
+      color:#fde68a;
+    }
+
     #toast{
       position:fixed;
       bottom:24px;
@@ -902,6 +920,12 @@
             <div class="focus-sub">
               Commence par l’essentiel, puis affine avec le canal, la catégorie, l’activité source et une note utile.
             </div>
+          </div>
+
+
+          <div class="draft-prefill" id="draftPrefillBox">
+            <strong>✅ Brouillon reçu depuis Mon espace.</strong><br>
+            Vérifie les champs puis clique sur <strong>💾 Enregistrer</strong>.
           </div>
 
           <form class="form" id="payForm">
@@ -1088,6 +1112,102 @@
       const m = String(d.getMonth() + 1).padStart(2, "0");
       const day = String(d.getDate()).padStart(2, "0");
       return y + "-" + m + "-" + day;
+    }
+
+
+    function getParam(name){
+      return new URLSearchParams(window.location.search).get(name) || "";
+    }
+
+    function setFieldValue(id, value){
+      const el = $(id);
+      if(!el || value == null || value === "") return;
+
+      const val = String(value);
+
+      if(el.tagName === "SELECT"){
+        const exists = Array.from(el.options).some(opt => opt.value === val);
+        if(exists){
+          el.value = val;
+        }
+        return;
+      }
+
+      el.value = val;
+    }
+
+    function normalizePrefillScope(value){
+      const v = String(value || "").toLowerCase();
+      if(v === "perso" || v === "personal") return "personal";
+      if(v === "saving" || v === "savings" || v === "epargne" || v === "épargne") return "savings";
+      return "pro";
+    }
+
+    function normalizePrefillKind(value, scope){
+      const v = String(value || "").toLowerCase();
+      if(scope === "savings") return "saving";
+      if(["sale","expense","saving","transfer","other"].includes(v)) return v;
+      if(v === "debt_repayment" || v === "emergency" || v === "bill_due") return "expense";
+      return "other";
+    }
+
+    function normalizePrefillChannel(value){
+      const v = String(value || "").toLowerCase();
+      if(["wave","cash","orange_money","bank","manual","other"].includes(v)) return v;
+      if(v === "bank_transfer") return "bank";
+      if(v === "unknown") return "manual";
+      return "manual";
+    }
+
+    function normalizePrefillSourceModule(value){
+      const v = String(value || "PAY").toUpperCase();
+      if(["PAY","DRIVER","COMMERCE","LOC","MARKET","BUILD","RESA","OTHER"].includes(v)) return v;
+      return "PAY";
+    }
+
+    function applyDraftPrefillFromUrl(){
+      const params = new URLSearchParams(window.location.search);
+      if(params.get("fromDraft") !== "1") return;
+
+      const direction = params.get("direction") || "";
+      const scope = normalizePrefillScope(params.get("scope") || "");
+      const amount = params.get("amount") || "";
+      const kind = normalizePrefillKind(params.get("kind") || "", scope);
+      const channel = normalizePrefillChannel(params.get("channel") || "");
+      const category = params.get("category") || "";
+      const movementDate = params.get("movement_date") || todayStr();
+      const sourceModule = normalizePrefillSourceModule(params.get("source_module") || "PAY");
+      const sourceId = params.get("source_id") || "";
+      const label = params.get("label") || "";
+      const note = params.get("note") || "";
+      const complement = params.get("complement") || "";
+
+      setFieldValue("direction", direction || (kind === "sale" ? "in" : "out"));
+      setFieldValue("scope", scope);
+      setFieldValue("amount", amount);
+      setFieldValue("kind", kind);
+      setFieldValue("channel", channel);
+      setFieldValue("category", category);
+      setFieldValue("movementDate", movementDate);
+      setFieldValue("sourceModule", sourceModule);
+      setFieldValue("sourceId", sourceId);
+      setFieldValue("labelText", label || complement || "Mouvement PAY");
+      setFieldValue("noteText", note);
+
+      syncKindByScope();
+
+      const box = $("draftPrefillBox");
+      if(box){
+        box.style.display = "block";
+        box.innerHTML = `
+          <strong>✅ Brouillon reçu depuis Mon espace.</strong><br>
+          ${amount ? "Montant : <strong>" + esc(money(amount)) + "</strong><br>" : ""}
+          ${label ? "Libellé : <strong>" + esc(label) + "</strong><br>" : ""}
+          Vérifie les champs puis clique sur <strong>💾 Enregistrer</strong>.
+        `;
+      }
+
+      toast("✅ Brouillon reçu. Vérifie puis enregistre.", 3200);
     }
 
     function fmtDate(v){
@@ -1420,6 +1540,7 @@
         $("badgeSlug").textContent = SLUG;
         $("slugBadge").style.display = "flex";
         $("movementDate").value = todayStr();
+        applyDraftPrefillFromUrl();
 
         const cockpitHref = `./cockpit.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
         $("topCockpitLink").href = cockpitHref;
