@@ -1284,6 +1284,7 @@
 
     function syncKindByScope(){
       const scope = $("scope").value;
+      const dbScope = dbScopeFromUi(scope);
       const kind = $("kind");
 
       if(scope === "savings"){
@@ -1294,6 +1295,16 @@
       }else if(scope === "personal" && kind.value === "saving"){
         kind.value = "other";
       }
+    }
+
+
+    function dbScopeFromUi(scope){
+      const v = String(scope || "").toLowerCase();
+      if(v === "personal") return "perso";
+      if(v === "perso") return "perso";
+      if(v === "savings") return "savings";
+      if(v === "saving") return "savings";
+      return "pro";
     }
 
     function iconFor(item){
@@ -1420,6 +1431,7 @@
 
       const direction = $("direction").value;
       const scope = $("scope").value;
+      const dbScope = dbScopeFromUi(scope);
       const amount = Number($("amount").value || 0);
       const kind = $("kind").value;
       const channel = $("channel").value;
@@ -1465,7 +1477,7 @@
           slug: cleanSlug,
           phone: cleanPhone || null,
           direction,
-          scope,
+          scope: dbScope,
           kind,
           category: category || null,
           amount_xof: Math.round(amount),
