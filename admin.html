@@ -1231,6 +1231,7 @@
         code: err?.code,
         raw: err
       });
+      console.error(label + " raw", err);
     }
 
     function toast(msg, duration = 2200){
@@ -1448,14 +1449,19 @@
       try{
         setSaving(true);
 
+        const params = new URLSearchParams(window.location.search);
+        const cleanPhone = String(PHONE || params.get("phone") || "").replace(/[^\d]/g, "");
+        const cleanSlug = String(SLUG || params.get("slug") || "").trim().toLowerCase();
+
         const payload = {
-          slug: SLUG,
-          phone: String(PHONE || new URLSearchParams(window.location.search).get("phone") || "").replace(/[^\d]/g, "") || null,
+          slug: cleanSlug,
+          phone: cleanPhone || null,
           direction,
           scope,
           kind,
           category: category || null,
           amount_xof: Math.round(amount),
+          currency_code: "XOF",
           channel,
           label,
           note_text: note || null,
@@ -1463,8 +1469,21 @@
           source_id: sourceId || null,
           origin: "manual",
           movement_date: movementDate,
-          status: "posted"
+          status: "posted",
+          meta: {
+            from_draft: params.get("fromDraft") === "1",
+            intent: params.get("intent") || null,
+            complement: params.get("complement") || null
+          }
         };
+
+        if(!payload.phone){
+          toast("❌ Téléphone manquant dans l'URL");
+          setState("bad", "Téléphone manquant", "Ajoute phone=221771342889 dans l'URL ou repasse par le code.");
+          return;
+        }
+
+        console.log("[PAY admin save payload]", payload);
 
         const { error } = await sb
           .from(PAY_MOVEMENTS_TABLE)
