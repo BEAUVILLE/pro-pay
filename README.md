@@ -300,3 +300,34 @@ Formule courte à retenir
 
 L’argent reste chez le pro.
 PAY apporte la vue.
+## Canal réel — voix, cash, dettes et imprévus
+
+PAY ne doit pas seulement lire les mouvements déjà visibles.
+PAY doit aussi permettre au professionnel de signaler rapidement les gestes du réel qui ne laissent pas toujours de trace numérique.
+
+Exemples :
+- course encaissée en espèces
+- dépense carburant cash
+- remboursement de dette
+- facture à régler plus tard
+- argent mis de côté
+- médicament, hospitalisation ou urgence famille
+
+Doctrine :
+Le téléphone capte le réel.
+PAY garde la mémoire.
+DIGIY éclaire.
+L’humain décide.
+
+Intentions vocales prioritaires :
+1. J’ai encaissé
+2. J’ai dépensé
+3. J’ai remboursé
+4. Je mets de côté
+5. Facture à régler
+6. Imprévu / urgence
+
+Règle de sécurité :
+La voix ne valide jamais seule.
+Elle prépare un brouillon.
+Le professionnel confirme avant inscription.
