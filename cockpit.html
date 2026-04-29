@@ -680,14 +680,15 @@
   function guessRealSignalIntent(text){
     const t=String(text||"").toLowerCase();
 
+    // Les intentions spécifiques passent avant les mots généraux comme "dépensé".
     if(/\b(facture|à régler|a regler|à payer|a payer|échéance|echeance|loyer)\b/.test(t)) return "bill_due";
-    if(/\b(urgence|imprévu|imprevu|médicament|medicament|hospitalisation|consultation|maladie)\b/.test(t)) return "emergency";
+    if(/\b(urgence|imprévu|imprevu|médicament|médicaments|medicament|medicaments|pharmacie|hospitalisation|consultation|maladie|clinique|hôpital|hopital)\b/.test(t)) return "emergency";
     if(/\b(rembours|dette|crédit|credit|tontine|avance)\b/.test(t)) return "debt_repayment";
-    if(/\b(mets de côté|mis de côté|met de côté|épargne|epargne|réserve|reserve|objectif)\b/.test(t)) return "saving";
-    if(/\b(dépens|depens|payé|paye|acheté|achete|sorti|carburant|stock|fournisseur)\b/.test(t)) return "expense";
-    if(/\b(encaiss|reçu|recu|vente|course|client a payé|client a paye)\b/.test(t)) return "income";
+    if(/\b(mets de côté|met de côté|mis de côté|mettre de côté|de côté|cote|épargne|epargne|réserve|reserve|objectif)\b/.test(t)) return "saving";
+    if(/\b(dépens|depens|payé|paye|acheté|achete|sorti|carburant|stock|fournisseur|réparation|reparation)\b/.test(t)) return "expense";
+    if(/\b(encaiss|reçu|recu|vente|course|client a payé|client a paye|réglé|regle)\b/.test(t)) return "income";
 
-    return "";
+    return "unknown";
   }
 
   function extractAmountXof(text){
@@ -710,6 +711,13 @@
 
   function guessScope(text,intentCode){
     const t=String(text||"").toLowerCase();
+
+    // Santé / urgence : par défaut perso, sauf si le pro écrit clairement "pro".
+    if(/\b(médicament|médicaments|medicament|medicaments|pharmacie|hospitalisation|consultation|maladie|clinique|hôpital|hopital)\b/.test(t)){
+      if(/\b(pro|activité|activite|business|boutique|chauffeur|client|fournisseur)\b/.test(t)) return "pro";
+      return "perso";
+    }
+
     if(/\b(perso|personnel|maison|famille|enfant)\b/.test(t)) return "perso";
     if(/\b(pro|activité|activite|business|boutique|chauffeur|client|fournisseur)\b/.test(t)) return "pro";
     if(intentCode==="income"||intentCode==="expense"||intentCode==="bill_due") return "pro";
@@ -779,13 +787,27 @@
       draft.category="fuel";
       draft.label="Carburant";
     }
-    if(/\b(médicament|medicament|pharmacie)\b/i.test(sentence)){
+    if(/\b(médicament|médicaments|medicament|medicaments|pharmacie)\b/i.test(sentence)){
       draft.category="medicine";
       draft.label="Médicaments";
+      draft.intent_code="emergency";
+      draft.intent_label="Imprévu / urgence";
+      draft.direction="out";
+      draft.kind="emergency";
+      if(!/\b(pro|activité|activite|business|boutique|chauffeur|client|fournisseur)\b/i.test(sentence)){
+        draft.scope="perso";
+      }
     }
     if(/\b(hospitalisation|hôpital|hopital|clinique)\b/i.test(sentence)){
       draft.category="hospital";
       draft.label="Hospitalisation";
+      draft.intent_code="emergency";
+      draft.intent_label="Imprévu / urgence";
+      draft.direction="out";
+      draft.kind="emergency";
+      if(!/\b(pro|activité|activite|business|boutique|chauffeur|client|fournisseur)\b/i.test(sentence)){
+        draft.scope="perso";
+      }
     }
 
     return draft;
