@@ -860,6 +860,10 @@
 
   function extractRealSignalComplement(text,intentCode){
     const sentence=String(text||"").trim();
+    const lowerTerrain=sentence.toLowerCase();
+
+    // FORCE_TERRAIN_SAVING_V7 — épargne terrain : "je mets de côté 22000", "épargne 10000"
+    const forcedSaving=/\b(mets?\s+de\s+c[ôo]t[ée]|mis\s+de\s+c[ôo]t[ée]|mettre\s+de\s+c[ôo]t[ée]|de\s+c[ôo]t[ée]|epargne|épargne|reserve|réserve|objectif)\b/i.test(lowerTerrain);
 
     const knownWords=[
       "j’ai","jai","j","ai","je","a","cash","wave","orange","money","om","fcfa","xof","f",
@@ -904,9 +908,13 @@
 
   function buildRealSignalDraft(text){
     const sentence=String(text||"").trim();
+    const lowerTerrain=sentence.toLowerCase();
+
+    // FORCE_TERRAIN_SAVING_V7 — épargne terrain : "je mets de côté 22000", "épargne 10000"
+    const forcedSaving=/\b(mets?\s+de\s+c[ôo]t[ée]|mis\s+de\s+c[ôo]t[ée]|mettre\s+de\s+c[ôo]t[ée]|de\s+c[ôo]t[ée]|epargne|épargne|reserve|réserve|objectif)\b/i.test(lowerTerrain);
     const isRide=/\b(course|chauffeur|trajet|aibd|saly|dakar|mbour)\b/i.test(sentence);
 
-    let intentCode=guessRealSignalIntent(sentence);
+    let intentCode=forcedSaving ? "saving" : guessRealSignalIntent(sentence);
 
     // Renfort terrain : si la phrase parle d'une course, c'est souvent une entrée chauffeur.
     // Exemple : "J’ai encaissé 15000 course" ou "15000 course cash".
