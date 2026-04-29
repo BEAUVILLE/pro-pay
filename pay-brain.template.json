@@ -13,5 +13,226 @@
     "danger_debt_ratio_pct": 35,
     "minimum_cash_after_commitments_xof": 50000,
     "recommended_savings_pct": 15
+  },
+
+  "real_signal": {
+    "enabled": true,
+    "public_label": "Dire ce qui se passe",
+    "public_helper": "Je parle ou j’écris. DIGIY range. Je valide.",
+    "doctrine": "Le téléphone capte le réel. PAY garde la mémoire. DIGIY éclaire. L’humain décide.",
+    "default_status": "draft",
+    "requires_human_confirmation": true,
+    "never_auto_post": true,
+    "input_modes": [
+      "voice",
+      "text"
+    ],
+    "fallback_if_voice_unavailable": "text"
+  },
+
+  "intentions": [
+    {
+      "code": "income",
+      "label": "J’ai encaissé",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "examples": [
+        "J’ai encaissé 28000 cash course chauffeur",
+        "J’ai reçu 15000 Wave pour une vente",
+        "Course Saly AIBD 28000 en espèces",
+        "Client a payé 30000 pour la location"
+      ],
+      "required_fields": [
+        "amount_xof",
+        "channel"
+      ],
+      "optional_fields": [
+        "module_source",
+        "category",
+        "label",
+        "note",
+        "person_name",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : entrée de {amount_xof} FCFA, canal {channel}. Valider ?"
+    },
+    {
+      "code": "expense",
+      "label": "J’ai dépensé",
+      "direction": "out",
+      "default_scope": "pro",
+      "default_kind": "expense",
+      "examples": [
+        "J’ai dépensé 5000 carburant en espèces",
+        "J’ai payé 12000 fournisseur par Wave",
+        "Achat stock 35000 cash",
+        "Réparation véhicule 18000 espèces"
+      ],
+      "required_fields": [
+        "amount_xof",
+        "channel"
+      ],
+      "optional_fields": [
+        "scope",
+        "category",
+        "label",
+        "note",
+        "person_name",
+        "supplier_name",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : sortie de {amount_xof} FCFA, canal {channel}. Valider ?"
+    },
+    {
+      "code": "debt_repayment",
+      "label": "J’ai remboursé",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "debt_repayment",
+      "examples": [
+        "J’ai remboursé 20000 à Moussa en espèces",
+        "Dette fournisseur 50000 payée par Wave",
+        "J’ai donné 10000 pour rembourser la tontine",
+        "Moussa m’a remboursé 15000 cash"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "optional_fields": [
+        "channel",
+        "scope",
+        "person_name",
+        "debt_total_xof",
+        "debt_remaining_xof",
+        "note",
+        "event_date"
+      ],
+      "needs_clarification_if_missing": [
+        "scope",
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : remboursement de dette de {amount_xof} FCFA. C’est pro ou perso ?"
+    },
+    {
+      "code": "saving",
+      "label": "Je mets de côté",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "saving",
+      "examples": [
+        "Je mets 10000 de côté pour mon projet",
+        "Objectif épargne 800000 dans trois mois",
+        "Je réserve 25000 pour la sécurité",
+        "Je mets 50000 de côté pour acheter du stock"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "optional_fields": [
+        "project_name",
+        "target_amount_xof",
+        "target_date",
+        "channel",
+        "note",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : {amount_xof} FCFA mis de côté. Valider ?"
+    },
+    {
+      "code": "bill_due",
+      "label": "Facture à régler",
+      "direction": "out",
+      "default_scope": "pro",
+      "default_kind": "bill_due",
+      "default_status": "pending",
+      "examples": [
+        "Facture fournisseur 75000 à payer le 5 mai pro",
+        "Électricité 18000 à régler vendredi perso",
+        "Loyer boutique 120000 à payer le 30 pro",
+        "Internet 15000 à payer demain"
+      ],
+      "required_fields": [
+        "amount_xof",
+        "due_date"
+      ],
+      "optional_fields": [
+        "scope",
+        "channel",
+        "beneficiary_name",
+        "category",
+        "note"
+      ],
+      "needs_clarification_if_missing": [
+        "scope",
+        "due_date"
+      ],
+      "confirmation_template": "J’ai compris : facture de {amount_xof} FCFA à régler le {due_date}. Valider ?"
+    },
+    {
+      "code": "emergency",
+      "label": "Imprévu / urgence",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "emergency",
+      "examples": [
+        "J’ai dépensé 18000 pour médicaments perso",
+        "Hospitalisation 75000 à payer demain",
+        "J’ai donné 25000 pour urgence famille",
+        "Consultation enfant 12000 en espèces"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "optional_fields": [
+        "scope",
+        "channel",
+        "category",
+        "due_date",
+        "person_name",
+        "note",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : imprévu de {amount_xof} FCFA. Valider ?"
+    }
+  ],
+
+  "channels": [
+    "cash",
+    "wave",
+    "orange_money",
+    "card",
+    "bank_transfer",
+    "other",
+    "unknown"
+  ],
+
+  "scopes": [
+    "pro",
+    "perso"
+  ],
+
+  "analysis_rules": {
+    "objective_tracking": {
+      "enabled": true,
+      "message_if_late": "Tu es en dessous du rythme prévu. On peut compenser doucement ou ajuster l’objectif.",
+      "message_if_on_track": "Tu avances dans le bon sens. Garde le rythme.",
+      "message_if_ahead": "Tu es en avance. Protège une partie avant de dépenser."
+    },
+    "cash_visibility": {
+      "enabled": true,
+      "principle": "Le cash ne doit pas disparaître de la journée.",
+      "message": "Les espèces notées rendent le net plus juste."
+    },
+    "future_commitments": {
+      "enabled": true,
+      "include_bill_due": true,
+      "include_debts": true,
+      "message": "Ton solde visible doit être lu avec les factures et dettes à venir."
+    },
+    "emergency_adjustment": {
+      "enabled": true,
+      "message": "Cette urgence peut modifier ton rythme. DIGIY l’intègre sans jugement."
+    }
   }
 }
