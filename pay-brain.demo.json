@@ -56,5 +56,375 @@
     "danger_debt_ratio_pct": 35,
     "minimum_cash_after_commitments_xof": 50000,
     "recommended_savings_pct": 15
+  },
+
+  "real_signal": {
+    "enabled": true,
+    "public_label": "Dire ce qui se passe",
+    "public_helper": "Je parle ou j’écris. DIGIY range. Je valide.",
+    "doctrine": "Le téléphone capte le réel. PAY garde la mémoire. DIGIY éclaire. L’humain décide.",
+    "default_status": "draft",
+    "requires_human_confirmation": true,
+    "never_auto_post": true,
+    "input_modes": [
+      "voice",
+      "text"
+    ],
+    "fallback_if_voice_unavailable": "text"
+  },
+
+  "intentions": [
+    {
+      "code": "income",
+      "label": "J’ai encaissé",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "examples": [
+        "J’ai encaissé 28000 cash course chauffeur",
+        "J’ai reçu 15000 Wave pour une vente",
+        "Course Saly AIBD 28000 en espèces",
+        "Client a payé 30000 pour la location"
+      ],
+      "demo_event": {
+        "amount_xof": 28000,
+        "channel": "cash",
+        "scope": "pro",
+        "category": "ride_income",
+        "label": "Course chauffeur réglée en espèces",
+        "module_source": "DRIVER",
+        "status": "draft"
+      },
+      "required_fields": [
+        "amount_xof",
+        "channel"
+      ],
+      "optional_fields": [
+        "module_source",
+        "category",
+        "label",
+        "note",
+        "person_name",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : entrée de {amount_xof} FCFA, canal {channel}. Valider ?"
+    },
+    {
+      "code": "expense",
+      "label": "J’ai dépensé",
+      "direction": "out",
+      "default_scope": "pro",
+      "default_kind": "expense",
+      "examples": [
+        "J’ai dépensé 5000 carburant en espèces",
+        "J’ai payé 12000 fournisseur par Wave",
+        "Achat stock 35000 cash",
+        "Réparation véhicule 18000 espèces"
+      ],
+      "demo_event": {
+        "amount_xof": 5000,
+        "channel": "cash",
+        "scope": "pro",
+        "category": "fuel",
+        "label": "Carburant payé en espèces",
+        "status": "draft"
+      },
+      "required_fields": [
+        "amount_xof",
+        "channel"
+      ],
+      "optional_fields": [
+        "scope",
+        "category",
+        "label",
+        "note",
+        "person_name",
+        "supplier_name",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : sortie de {amount_xof} FCFA, canal {channel}. Valider ?"
+    },
+    {
+      "code": "debt_repayment",
+      "label": "J’ai remboursé",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "debt_repayment",
+      "examples": [
+        "J’ai remboursé 20000 à Moussa en espèces",
+        "Dette fournisseur 50000 payée par Wave",
+        "J’ai donné 10000 pour rembourser la tontine",
+        "Moussa m’a remboursé 15000 cash"
+      ],
+      "demo_event": {
+        "amount_xof": 20000,
+        "channel": "cash",
+        "scope": "perso",
+        "category": "friend_debt",
+        "person_name": "Moussa",
+        "label": "Remboursement de dette en espèces",
+        "status": "draft"
+      },
+      "required_fields": [
+        "amount_xof"
+      ],
+      "optional_fields": [
+        "channel",
+        "scope",
+        "person_name",
+        "debt_total_xof",
+        "debt_remaining_xof",
+        "note",
+        "event_date"
+      ],
+      "needs_clarification_if_missing": [
+        "scope",
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : remboursement de dette de {amount_xof} FCFA. C’est pro ou perso ?"
+    },
+    {
+      "code": "saving",
+      "label": "Je mets de côté",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "saving",
+      "examples": [
+        "Je mets 10000 de côté pour mon projet",
+        "Objectif épargne 800000 dans trois mois",
+        "Je réserve 25000 pour la sécurité",
+        "Je mets 50000 de côté pour acheter du stock"
+      ],
+      "demo_event": {
+        "amount_xof": 10000,
+        "channel": "cash",
+        "scope": "perso",
+        "category": "project_saving",
+        "project_name": "Projet 800000 en trois mois",
+        "target_amount_xof": 800000,
+        "deadline_days": 90,
+        "label": "Épargne projet",
+        "status": "draft"
+      },
+      "required_fields": [
+        "amount_xof"
+      ],
+      "optional_fields": [
+        "project_name",
+        "target_amount_xof",
+        "deadline_days",
+        "target_date",
+        "channel",
+        "note",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : {amount_xof} FCFA mis de côté. Valider ?"
+    },
+    {
+      "code": "bill_due",
+      "label": "Facture à régler",
+      "direction": "out",
+      "default_scope": "pro",
+      "default_kind": "bill_due",
+      "default_status": "pending",
+      "examples": [
+        "Facture fournisseur 75000 à payer le 5 mai pro",
+        "Électricité 18000 à régler vendredi perso",
+        "Loyer boutique 120000 à payer le 30 pro",
+        "Internet 15000 à payer demain"
+      ],
+      "demo_event": {
+        "amount_xof": 75000,
+        "channel": "unknown",
+        "scope": "pro",
+        "category": "supplier_bill",
+        "beneficiary_name": "Fournisseur",
+        "due_in_days": 7,
+        "label": "Facture fournisseur à régler",
+        "status": "pending"
+      },
+      "required_fields": [
+        "amount_xof",
+        "due_date"
+      ],
+      "optional_fields": [
+        "scope",
+        "channel",
+        "beneficiary_name",
+        "category",
+        "note"
+      ],
+      "needs_clarification_if_missing": [
+        "scope",
+        "due_date"
+      ],
+      "confirmation_template": "J’ai compris : facture de {amount_xof} FCFA à régler le {due_date}. Valider ?"
+    },
+    {
+      "code": "emergency",
+      "label": "Imprévu / urgence",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "emergency",
+      "examples": [
+        "J’ai dépensé 18000 pour médicaments perso",
+        "Hospitalisation 75000 à payer demain",
+        "J’ai donné 25000 pour urgence famille",
+        "Consultation enfant 12000 en espèces"
+      ],
+      "demo_event": {
+        "amount_xof": 18000,
+        "channel": "cash",
+        "scope": "perso",
+        "category": "medicine",
+        "label": "Médicaments payés en espèces",
+        "status": "draft"
+      },
+      "required_fields": [
+        "amount_xof"
+      ],
+      "optional_fields": [
+        "scope",
+        "channel",
+        "category",
+        "due_date",
+        "person_name",
+        "note",
+        "event_date"
+      ],
+      "confirmation_template": "J’ai compris : imprévu de {amount_xof} FCFA. Valider ?"
+    }
+  ],
+
+  "channels": [
+    "cash",
+    "wave",
+    "orange_money",
+    "card",
+    "bank_transfer",
+    "other",
+    "unknown"
+  ],
+
+  "scopes": [
+    "pro",
+    "perso"
+  ],
+
+  "demo_real_events": [
+    {
+      "intent_code": "income",
+      "sentence": "J’ai fait une course de 28000 FCFA réglée en espèces",
+      "parsed": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "category": "ride_income",
+        "module_source": "DRIVER",
+        "amount_xof": 28000,
+        "channel": "cash",
+        "status": "draft"
+      }
+    },
+    {
+      "intent_code": "expense",
+      "sentence": "J’ai payé 5000 carburant en espèces",
+      "parsed": {
+        "direction": "out",
+        "scope": "pro",
+        "kind": "expense",
+        "category": "fuel",
+        "amount_xof": 5000,
+        "channel": "cash",
+        "status": "draft"
+      }
+    },
+    {
+      "intent_code": "debt_repayment",
+      "sentence": "J’ai remboursé 20000 à Moussa en espèces",
+      "parsed": {
+        "direction": "out",
+        "scope": "perso",
+        "kind": "debt_repayment",
+        "category": "friend_debt",
+        "amount_xof": 20000,
+        "channel": "cash",
+        "person_name": "Moussa",
+        "status": "draft"
+      }
+    },
+    {
+      "intent_code": "saving",
+      "sentence": "Je veux épargner 800000 FCFA dans trois mois",
+      "parsed": {
+        "direction": "out",
+        "scope": "perso",
+        "kind": "saving_goal",
+        "category": "project_saving",
+        "target_amount_xof": 800000,
+        "deadline_days": 90,
+        "recommended_daily_saving_xof": 8900,
+        "recommended_weekly_saving_xof": 67000,
+        "recommended_monthly_saving_xof": 267000,
+        "status": "draft"
+      }
+    },
+    {
+      "intent_code": "bill_due",
+      "sentence": "Facture fournisseur 75000 à payer dans 7 jours pro",
+      "parsed": {
+        "direction": "out",
+        "scope": "pro",
+        "kind": "bill_due",
+        "category": "supplier_bill",
+        "amount_xof": 75000,
+        "channel": "unknown",
+        "due_in_days": 7,
+        "status": "pending"
+      }
+    },
+    {
+      "intent_code": "emergency",
+      "sentence": "J’ai dépensé 18000 pour médicaments perso",
+      "parsed": {
+        "direction": "out",
+        "scope": "perso",
+        "kind": "emergency",
+        "category": "medicine",
+        "amount_xof": 18000,
+        "channel": "cash",
+        "status": "draft"
+      }
+    }
+  ],
+
+  "analysis_rules": {
+    "objective_tracking": {
+      "enabled": true,
+      "message_if_late": "Tu es en dessous du rythme prévu. On peut compenser doucement ou ajuster l’objectif.",
+      "message_if_on_track": "Tu avances dans le bon sens. Garde le rythme.",
+      "message_if_ahead": "Tu es en avance. Protège une partie avant de dépenser."
+    },
+    "cash_visibility": {
+      "enabled": true,
+      "principle": "Le cash ne doit pas disparaître de la journée.",
+      "message": "Les espèces notées rendent le net plus juste."
+    },
+    "future_commitments": {
+      "enabled": true,
+      "include_bill_due": true,
+      "include_debts": true,
+      "message": "Ton solde visible doit être lu avec les factures et dettes à venir."
+    },
+    "emergency_adjustment": {
+      "enabled": true,
+      "message": "Cette urgence peut modifier ton rythme. DIGIY l’intègre sans jugement."
+    }
+  },
+
+  "demo_summary": {
+    "message": "Cette démo montre comment PAY peut lire les mouvements visibles, les gestes cash, les dettes, les factures futures, les imprévus et les objectifs d’épargne.",
+    "human_formula": "Je dis ce qui se passe. DIGIY range. Je valide.",
+    "decision_formula": "PAY calcule. DIGIY éclaire. L’humain décide."
   }
 }
