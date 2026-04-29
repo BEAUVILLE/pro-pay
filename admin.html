@@ -1450,7 +1450,7 @@
 
         const payload = {
           slug: SLUG,
-          phone: PHONE || null,
+          phone: String(PHONE || new URLSearchParams(window.location.search).get("phone") || "").replace(/[^\d]/g, "") || null,
           direction,
           scope,
           kind,
@@ -1531,8 +1531,13 @@
         const session = window.DIGIY_SESSION.require("./pin.html?redirect=admin");
         if(!session) return;
 
-        SLUG = session.slug;
-        PHONE = session.phone;
+        const params = new URLSearchParams(window.location.search);
+
+        SLUG = session.slug || params.get("slug") || "";
+        PHONE = session.phone || params.get("phone") || "";
+
+        SLUG = String(SLUG || "").trim().toLowerCase();
+        PHONE = String(PHONE || "").replace(/[^\d]/g, "");
 
         window.DIGIY_SESSION.applyUrl(SLUG, PHONE);
 
