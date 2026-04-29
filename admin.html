@@ -1224,14 +1224,22 @@
     }
 
     function logErr(label, err){
-      console.error(label, {
-        message: err?.message,
-        details: err?.details,
-        hint: err?.hint,
-        code: err?.code,
+      const clean = {
+        message: err?.message || "",
+        details: err?.details || "",
+        hint: err?.hint || "",
+        code: err?.code || "",
         raw: err
-      });
-      console.error(label + " raw", err);
+      };
+
+      console.error(label, clean);
+      console.error(label + " message:", clean.message);
+      console.error(label + " details:", clean.details);
+      console.error(label + " hint:", clean.hint);
+      console.error(label + " code:", clean.code);
+      console.error(label + " raw:", err);
+
+      return clean;
     }
 
     function toast(msg, duration = 2200){
@@ -1496,8 +1504,14 @@
         await loadHistory();
         setState("ok", "Saisie PAY prête", "Mouvement enregistré sur le slug PAY actif.");
       }catch(err){
-        logErr("[PAY admin save]", err);
-        const msg = errText(err);
+        const clean = logErr("[PAY admin save]", err);
+        const msg = [
+          clean.message,
+          clean.details,
+          clean.hint,
+          clean.code ? "code: " + clean.code : ""
+        ].filter(Boolean).join(" · ") || "Erreur inconnue.";
+
         toast("❌ Erreur d’enregistrement");
         setState("bad", "Écriture bloquée", msg);
       }finally{
