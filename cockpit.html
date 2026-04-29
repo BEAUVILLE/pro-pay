@@ -813,7 +813,26 @@
   function guessRealSignalIntent(text){
     const t=String(text||"").toLowerCase();
 
-    // Les intentions spécifiques passent avant les mots généraux comme "dépensé".
+    
+    // V8 — détection directe épargne terrain
+    if(
+      t.includes("mets de côté") ||
+      t.includes("met de côté") ||
+      t.includes("mis de côté") ||
+      t.includes("mettre de côté") ||
+      t.includes("de côté") ||
+      t.includes("mets de cote") ||
+      t.includes("met de cote") ||
+      t.includes("mis de cote") ||
+      t.includes("mettre de cote") ||
+      t.includes("de cote") ||
+      t.includes("épargne") ||
+      t.includes("epargne") ||
+      t.includes("réserve") ||
+      t.includes("reserve") ||
+      t.includes("objectif")
+    ) return "saving";
+// Les intentions spécifiques passent avant les mots généraux comme "dépensé".
     if(/\b(facture|à régler|a regler|à payer|a payer|échéance|echeance|loyer)\b/.test(t)) return "bill_due";
     if(/\b(urgence|imprévu|imprevu|médicament|médicaments|medicament|medicaments|pharmacie|hospitalisation|consultation|maladie|clinique|hôpital|hopital)\b/.test(t)) return "emergency";
     if(/\b(rembours|dette|crédit|credit|tontine|avance)\b/.test(t)) return "debt_repayment";
@@ -908,13 +927,30 @@
 
   function buildRealSignalDraft(text){
     const sentence=String(text||"").trim();
+    const lowerSentence=sentence.toLowerCase();
+    const isSavingSentence =
+      lowerSentence.includes("mets de côté") ||
+      lowerSentence.includes("met de côté") ||
+      lowerSentence.includes("mis de côté") ||
+      lowerSentence.includes("mettre de côté") ||
+      lowerSentence.includes("de côté") ||
+      lowerSentence.includes("mets de cote") ||
+      lowerSentence.includes("met de cote") ||
+      lowerSentence.includes("mis de cote") ||
+      lowerSentence.includes("mettre de cote") ||
+      lowerSentence.includes("de cote") ||
+      lowerSentence.includes("épargne") ||
+      lowerSentence.includes("epargne") ||
+      lowerSentence.includes("réserve") ||
+      lowerSentence.includes("reserve") ||
+      lowerSentence.includes("objectif");
     const lowerTerrain=sentence.toLowerCase();
 
     // FORCE_TERRAIN_SAVING_V7 — épargne terrain : "je mets de côté 22000", "épargne 10000"
     const forcedSaving=/\b(mets?\s+de\s+c[ôo]t[ée]|mis\s+de\s+c[ôo]t[ée]|mettre\s+de\s+c[ôo]t[ée]|de\s+c[ôo]t[ée]|epargne|épargne|reserve|réserve|objectif)\b/i.test(lowerTerrain);
     const isRide=/\b(course|chauffeur|trajet|aibd|saly|dakar|mbour)\b/i.test(sentence);
 
-    let intentCode=forcedSaving ? "saving" : guessRealSignalIntent(sentence);
+    let intentCode=isSavingSentence ? "saving" : guessRealSignalIntent(sentence);
 
     // Renfort terrain : si la phrase parle d'une course, c'est souvent une entrée chauffeur.
     // Exemple : "J’ai encaissé 15000 course" ou "15000 course cash".
@@ -998,6 +1034,18 @@
 
     draft.complement=extractRealSignalComplement(sentence,intentCode);
 
+    // V8_SAVING_DRAFT_LOCK
+    if(intentCode==="saving"){
+      draft.intent_code="saving";
+      draft.intent_label="Je mets de côté";
+      draft.direction="in";
+      draft.scope="savings";
+      draft.kind="saving";
+      draft.category="project_saving";
+      draft.label="Épargne";
+      if(!draft.channel || draft.channel==="unknown") draft.channel="manual";
+    }
+
     return draft;
   }
 
@@ -1017,7 +1065,7 @@
 
     const amountText=draft.amount_xof?money(draft.amount_xof):"montant à préciser";
     const channelText=draft.channel&&draft.channel!=="unknown"?draft.channel:"canal à préciser";
-    const scopeText=draft.scope==="pro"?"pro":"perso";
+    const scopeText=draft.scope==="savings"?"épargne":(draft.scope==="pro"?"pro":"perso");
 
     box.style.display="block";
     box.innerHTML=`
