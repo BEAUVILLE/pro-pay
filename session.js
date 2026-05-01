@@ -2,6 +2,15 @@
   "use strict";
 
   const SESSION_KEY = "digiy_pay_session";
+
+  const SESSION_KEYS = [
+    "digiy_pay_session",
+    "DIGIY_PAY_PIN_SESSION",
+    "DIGIY_PIN_SESSION",
+    "DIGIY_ACCESS",
+    "DIGIY_SESSION_PAY"
+  ];
+
   const MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8h
   const MODULE_NAME = "PAY";
 
@@ -37,6 +46,7 @@
       access_ok: true,
       ok: true,
       verified: true,
+      has_access: true,
 
       verified_at: nowMs,
       validated_at: new Date(nowMs).toISOString(),
@@ -46,29 +56,80 @@
     };
   }
 
-  function save(slug, phone){
-    const payload = buildPayload(slug, phone);
+  function writePayload(payload){
     if(!payload) return null;
 
+    SESSION_KEYS.forEach((key) => {
+      try{
+        localStorage.setItem(key, JSON.stringify(payload));
+      }catch(_){}
+
+      try{
+        sessionStorage.setItem(key, JSON.stringify(payload));
+      }catch(_){}
+    });
+
     try{
-      localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
+      localStorage.setItem("digiy_pay_slug", payload.slug || "");
+      localStorage.setItem("digiy_pay_phone", payload.phone || "");
+      localStorage.setItem("digiy_pay_last_slug", payload.slug || "");
+
+      sessionStorage.setItem("digiy_pay_slug", payload.slug || "");
+      sessionStorage.setItem("digiy_pay_phone", payload.phone || "");
+      sessionStorage.setItem("digiy_pay_last_slug", payload.slug || "");
+    }catch(_){}
+
+    try{
+      window.DIGIY_ACCESS = Object.assign({}, window.DIGIY_ACCESS || {}, payload);
     }catch(_){}
 
     return payload;
   }
 
+  function save(slug, phone){
+    const payload = buildPayload(slug, phone);
+    return writePayload(payload);
+  }
+
   function clear(){
+    SESSION_KEYS.forEach((key) => {
+      try{
+        localStorage.removeItem(key);
+      }catch(_){}
+
+      try{
+        sessionStorage.removeItem(key);
+      }catch(_){}
+    });
+
     try{
-      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem("digiy_pay_slug");
+      localStorage.removeItem("digiy_pay_phone");
+      localStorage.removeItem("digiy_pay_last_slug");
+
+      sessionStorage.removeItem("digiy_pay_slug");
+      sessionStorage.removeItem("digiy_pay_phone");
+      sessionStorage.removeItem("digiy_pay_last_slug");
     }catch(_){}
+  }
+
+  function readOne(key){
+    try{
+      return safeJsonParse(localStorage.getItem(key)) || safeJsonParse(sessionStorage.getItem(key));
+    }catch(_){
+      return null;
+    }
   }
 
   function get(){
     try{
-      const raw = localStorage.getItem(SESSION_KEY);
-      if(!raw) return null;
+      let parsed = null;
 
-      const parsed = safeJsonParse(raw);
+      for(const key of SESSION_KEYS){
+        parsed = readOne(key);
+        if(parsed && typeof parsed === "object") break;
+      }
+
       if(!parsed || typeof parsed !== "object"){
         clear();
         return null;
@@ -156,6 +217,7 @@
 
   function boot(){
     const urlCtx = fromUrl();
+
     if(urlCtx && urlCtx.slug){
       const saved = save(urlCtx.slug, urlCtx.phone);
       applyUrl(saved?.slug || urlCtx.slug, saved?.phone || urlCtx.phone);
@@ -163,6 +225,7 @@
     }
 
     const session = get();
+
     if(session){
       applyUrl(session.slug, session.phone);
       return session;
@@ -177,12 +240,15 @@
       const url = new URL(target, window.location.href);
 
       const current = new URL(window.location.href);
-      const redirect =
-        current.pathname.split("/").pop() || "cockpit.html";
+      const redirect = current.pathname.split("/").pop() || "cockpit.html";
 
       if(!url.searchParams.get("redirect")){
         url.searchParams.set("redirect", redirect);
       }
+
+      const currentSession = get();
+      if(currentSession?.slug) url.searchParams.set("slug", currentSession.slug);
+      if(currentSession?.phone) url.searchParams.set("phone", currentSession.phone);
 
       return url.toString();
     }catch(_){
@@ -192,10 +258,12 @@
 
   function requireSession(pinUrl){
     const s = get();
+
     if(!s){
       window.location.href = buildPinUrl(pinUrl);
       return null;
     }
+
     applyUrl(s.slug, s.phone);
     return s;
   }
