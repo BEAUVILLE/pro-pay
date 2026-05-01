@@ -3,23 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Entrée sécurisée DIGIY ♾️</title>
+  <title>MON ARGENT — Accès</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Entrée sécurisée MON ARGENT by DIGIY pour ouvrir l’espace PAY avec une lecture rapide et une session terrain."
-  />
-
-  <!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT PRO — Entrée PIN DIGIY ♾️</title>
-  <meta name="theme-color" content="#04110d" />
-  <meta
-    name="description"
-    content="Entrée PIN sécurisée MON ARGENT by DIGIY pour ouvrir le cockpit PAY avec une lecture rapide et une session terrain."
+    content="Mon argent — Accès sécurisé pour ouvrir Accueil, Ajouter, Brouillons et Plus."
   />
 
   <script>
@@ -71,6 +59,7 @@
         linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
+      padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));
     }
 
     a{text-decoration:none;color:inherit}
@@ -613,6 +602,79 @@
       transform:translateX(-50%) translateY(0);
     }
 
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(4,17,13,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(243,255,247,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+    .bottomNav .icoBottom{font-size:18px;line-height:1}
+    .bottomNav a.active{
+      color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--gold));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+    .mobileFastRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:950;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+    }
+    .mobileFastRow a.primary{
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#032215;
+      border:none;
+    }
+    @media(max-width:700px){
+      .mobileFastRow{grid-template-columns:1fr 1fr}
+      .nav{display:none}
+      #toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+    }
+
+
     @media (max-width:920px){
       .grid{grid-template-columns:1fr}
     }
@@ -649,15 +711,15 @@
       <div class="brand">
         <div class="brand-mark">₣</div>
         <div>
-          <div class="brand-title">MON ARGENT PRO ♾️</div>
-          <div class="brand-sub">Entrée protégée PAY • session terrain • accès rapide</div>
+          <div class="brand-title">MON ARGENT</div>
+          <div class="brand-sub">Accès protégé • session terrain • lecture rapide</div>
         </div>
       </div>
 
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
-        <a class="pill" id="navCockpitLink" href="./cockpit.html">📊 Cockpit</a>
-        <a class="pill" id="navAdminLink" href="./admin.html">➕ Saisie</a>
+        <a class="pill" id="navCockpitLink" href="./cockpit.html">🏠 Accueil</a>
+        <a class="pill" id="navAdminLink" href="./admin.html">➕ Ajouter</a>
       </nav>
     </div>
   </header>
@@ -665,23 +727,23 @@
   <main class="wrap">
     <section class="hero">
       <div class="state" id="stateBox">
-        <div class="state-title">Entrée PIN</div>
-        <div class="state-txt">Vérification sécurisée de l’accès PAY avant ouverture du cockpit réel.</div>
+        <div class="state-title">Entrée sécurisée</div>
+        <div class="state-txt">Vérification sécurisée avant ouverture de Mon argent.</div>
       </div>
     </section>
 
     <section class="grid">
       <article class="card">
         <div class="card-head">
-          <div class="card-title">🔐 Accès sécurisé PAY</div>
+          <div class="card-title">🔐 Accès sécurisé</div>
         </div>
 
         <div class="card-body">
           <div class="intro">
-            <h1 class="big">Entre vite.<br>Lis clair.<br>Pilote propre.</h1>
+            <h1 class="big">Entre vite.<br>Lis clair.<br>Garde le cap.</h1>
             <p class="lead">
-              Le PIN ouvre ta session PAY pour la journée de travail.
-              Une fois validé, tu accèdes à ton cockpit réel : entrées, dépenses pro, épargne, net et modules.
+              Le code ouvre ta session Mon argent pour la journée de travail.
+              Une fois validé, tu accèdes à l’accueil : entrées, dépenses, épargne, net et activités.
             </p>
           </div>
 
@@ -703,6 +765,12 @@
               <div class="hud-v">Voir le wagon fort</div>
               <div class="hud-s">Comprendre quel module pousse réellement le business.</div>
             </div>
+          </div>
+          <div class="mobileFastRow">
+            <a id="fastHome" href="./cockpit.html">🏠 Accueil</a>
+            <a id="fastMovements" href="./cockpit.html#resultList">📜 Mouvements</a>
+            <a id="fastAdd" href="./admin.html">➕ Ajouter</a>
+            <a id="fastMore" href="./brain-admin.html">⚙️ Plus</a>
           </div>
 
           <div class="points">
@@ -733,24 +801,24 @@
 
           <div class="mini-line">
             <div class="tag" id="tagModule">MODULE : PAY</div>
-            <div class="tag" id="tagSlug">SLUG : —</div>
-            <div class="tag" id="tagPhone">PHONE : —</div>
+            <div class="tag" id="tagSlug">REPÈRE : —</div>
+            <div class="tag" id="tagPhone">TÉL : —</div>
           </div>
         </div>
       </article>
 
       <article class="card">
         <div class="card-head">
-          <div class="card-title">🔑 Vérification PIN</div>
+          <div class="card-title">🔑 Vérification Code</div>
         </div>
 
         <div class="card-body">
           <form class="form" id="pinForm" novalidate>
             <div class="focus-box">
               <div class="focus-top">Ce qu’il faut pour entrer</div>
-              <div class="focus-main">Téléphone + PIN = cockpit ouvert</div>
+              <div class="focus-main">Téléphone + code = accès ouvert</div>
               <div class="focus-sub">
-                Le slug PAY peut être reconstruit automatiquement à partir du téléphone principal du pro.
+                Le repère PAY peut se remplir automatiquement à partir du téléphone principal.
               </div>
             </div>
 
@@ -761,26 +829,26 @@
             </div>
 
             <div class="field">
-              <label class="label" for="slug">Slug PAY</label>
+              <label class="label" for="slug">Repère PAY</label>
               <input class="input" id="slug" type="text" autocomplete="off" placeholder="pay-221771342889" />
               <div class="hint">Tu peux le laisser se remplir automatiquement depuis le téléphone.</div>
             </div>
 
             <div class="field">
-              <label class="label" for="pin">PIN</label>
+              <label class="label" for="pin">Code</label>
               <div class="pin-row">
                 <input class="input" id="pin" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="••••" />
                 <button class="btn btn-secondary" id="btnTogglePin" type="button">👁 Voir</button>
               </div>
-              <div class="hint">Code PIN DIGIY PAY pour ouvrir le cockpit protégé.</div>
+              <div class="hint">Code Code DIGIY PAY pour ouvrir le cockpit protégé.</div>
             </div>
 
             <div class="msg" id="msgBox">
-              Entre ton téléphone et ton PIN pour ouvrir le cockpit PAY.
+              Entre ton téléphone et ton Code pour ouvrir le cockpit PAY.
             </div>
 
             <div class="actions">
-              <button class="btn btn-primary" id="btnSubmit" type="submit">Ouvrir le cockpit</button>
+              <button class="btn btn-primary" id="btnSubmit" type="submit">Ouvrir Mon argent</button>
               <button class="btn btn-secondary" id="btnClear" type="button">Effacer</button>
             </div>
 
@@ -793,16 +861,16 @@
           <div class="quick-links">
             <a class="quick-link" id="quickCockpitLink" href="./cockpit.html">
               <div class="ql-left">
-                <div class="ql-k">Voir la destination</div>
-                <div class="ql-s">Le cockpit PAY lit les vraies données agrégées du backbone.</div>
+                <div class="ql-k">Voir l’accueil</div>
+                <div class="ql-s">L’accueil lit les vraies données de Mon argent.</div>
               </div>
               <div class="ql-arrow">→</div>
             </a>
 
             <a class="quick-link" id="quickAdminLink" href="./admin.html">
               <div class="ql-left">
-                <div class="ql-k">Ajouter un mouvement</div>
-                <div class="ql-s">Entrée, dépense ou épargne utile, dans la logique terrain DIGIY.</div>
+                <div class="ql-k">Ajouter</div>
+                <div class="ql-s">Entrée, dépense, épargne ou brouillon utile.</div>
               </div>
               <div class="ql-arrow">→</div>
             </a>
@@ -813,6 +881,17 @@
   </main>
 
   <div id="toast"></div>
+
+  <nav class="bottomNav" aria-label="Navigation Mon argent">
+    <div class="bottomNavInner">
+      <a id="bottomHome" href="./cockpit.html"><span class="icoBottom">🏠</span><span>Accueil</span></a>
+      <a id="bottomMovements" href="./cockpit.html#resultList"><span class="icoBottom">📜</span><span>Mouvements</span></a>
+      <a id="bottomAdd" href="./admin.html"><span class="icoBottom">➕</span><span>Ajouter</span></a>
+      <a id="bottomDrafts" href="./admin.html#draftPrefillBox"><span class="icoBottom">🧾</span><span>Brouillons</span></a>
+      <a class="active" id="bottomAccess" href="./pin.html"><span class="icoBottom">🔐</span><span>Accès</span></a>
+    </div>
+  </nav>
+
 
   <script>
     const SESSION = window.DIGIY_SESSION || null;
@@ -860,8 +939,8 @@
     }
 
     function updateTags(slug, phone){
-      $("tagSlug").textContent = "SLUG : " + (slug || "—");
-      $("tagPhone").textContent = "PHONE : " + (phone || "—");
+      $("tagSlug").textContent = "REPÈRE : " + (slug || "—");
+      $("tagPhone").textContent = "TÉL : " + (phone || "—");
     }
 
     function inferSlugFromPhone(phone){
@@ -883,15 +962,32 @@
     function setContextLinks(slug, phone){
       const cockpitHref = buildCtxHref("./cockpit.html", slug, phone);
       const adminHref = buildCtxHref("./admin.html", slug, phone);
+      const brainHref = buildCtxHref("./brain-admin.html", slug, phone);
+      const movementsHref = cockpitHref + "#resultList";
+      const draftsHref = adminHref + "#draftPrefillBox";
+      const pinHref = buildCtxHref("./pin.html", slug, phone);
 
-      [ "navCockpitLink", "quickCockpitLink" ].forEach(id => {
+      [ "navCockpitLink", "quickCockpitLink", "fastHome", "bottomHome" ].forEach(id => {
         const el = $(id);
         if(el) el.href = cockpitHref;
       });
 
-      [ "navAdminLink", "quickAdminLink" ].forEach(id => {
+      [ "navAdminLink", "quickAdminLink", "fastAdd", "bottomAdd" ].forEach(id => {
         const el = $(id);
         if(el) el.href = adminHref;
+      });
+
+      const map = {
+        fastMovements: movementsHref,
+        bottomMovements: movementsHref,
+        bottomDrafts: draftsHref,
+        fastMore: brainHref,
+        bottomAccess: pinHref
+      };
+
+      Object.entries(map).forEach(([id, href]) => {
+        const el = $(id);
+        if(el) el.href = href;
       });
     }
 
@@ -922,6 +1018,10 @@
         case "admin":
         case "admin.html":
           return "./admin.html";
+        case "brain":
+        case "brain-admin":
+        case "brain-admin.html":
+          return "./brain-admin.html";
         case "cockpit":
         case "cockpit.html":
         default:
@@ -1152,7 +1252,7 @@
     async function verifyPin(phoneValue, slugValue, pinValue){
       const pin = String(pinValue || "").trim();
       if(!pin){
-        throw new Error("PIN manquant.");
+        throw new Error("Code manquant.");
       }
 
       const resolved = await resolvePayIdentity(phoneValue, slugValue);
@@ -1160,7 +1260,7 @@
       const slug = SESSION.normalizeSlug(resolved.slug || inferSlugFromPhone(phone));
 
       if(!slug){
-        throw new Error("Slug PAY manquant.");
+        throw new Error("Repère PAY manquant.");
       }
 
       if(!phone){
@@ -1169,7 +1269,7 @@
 
       const verify = await callVerifyPin(phone, pin);
       if(!verify?.ok){
-        throw new Error("PIN incorrect.");
+        throw new Error("Code incorrect.");
       }
 
       const accessOk = await callHasAccess(phone);
@@ -1212,15 +1312,15 @@
       syncContextUi(slug, phone);
 
       if(!phone && !slug){
-        setState("bad", "Contexte requis", "Le rail PIN PAY a besoin d’un téléphone ou d’un slug PAY.");
+        setState("bad", "Contexte requis", "Le rail Code PAY a besoin d’un téléphone ou d’un slug PAY.");
         setMsg("Entre d’abord le téléphone du pro ou le slug PAY.", "bad");
         focusBadField($("phone"));
         return;
       }
 
       if(!pin){
-        setState("bad", "PIN requis", "Le code PIN PAY est nécessaire pour déverrouiller l’accès.");
-        setMsg("Entre le PIN PAY pour continuer.", "bad");
+        setState("bad", "Code requis", "Le code Code PAY est nécessaire pour déverrouiller l’accès.");
+        setMsg("Entre le Code PAY pour continuer.", "bad");
         focusBadField($("pin"));
         return;
       }
@@ -1229,8 +1329,8 @@
 
       try{
         setLoading(true);
-        setState("", "Vérification", "Contrôle du PIN sur le vrai rail DIGIY PAY…");
-        setMsg("Vérification du PIN en cours…", "");
+        setState("", "Vérification", "Contrôle du Code sur le vrai rail DIGIY PAY…");
+        setMsg("Vérification du Code en cours…", "");
 
         const payload = await verifyPin(phone, slug, pin);
         const finalPhone = SESSION.normalizePhone(payload.phone || phone);
@@ -1246,8 +1346,8 @@
 
         syncContextUi(finalSlug, finalPhone);
 
-        setState("ok", "Accès validé", "PIN correct. Ouverture du cockpit PAY en cours.");
-        setMsg("Accès PAY validé. Redirection vers le cockpit…", "ok");
+        setState("ok", "Accès validé", "Code correct. Ouverture du cockpit PAY en cours.");
+        setMsg("Accès PAY validé. Ouverture de Mon argent…", "ok");
         toast("✅ Accès PAY validé");
 
         redirecting = true;
@@ -1259,7 +1359,7 @@
         }, 280);
       }catch(err){
         console.error("[PAY pin]", err);
-        const message = err && err.message ? err.message : "Vérification PIN impossible.";
+        const message = err && err.message ? err.message : "Vérification Code impossible.";
         setState("bad", "Accès refusé", message);
         setMsg(message, "bad");
         focusBadField($("pin"));
@@ -1291,10 +1391,10 @@
       }
 
       if(q.reason === "session_absente"){
-        setState("bad", "Session expirée", "La session PAY a expiré. Entre le PIN pour repartir proprement.");
-        setMsg("Session expirée ou absente. Vérifie le téléphone et entre le PIN.", "bad");
+        setState("bad", "Session expirée", "La session PAY a expiré. Entre le Code pour repartir proprement.");
+        setMsg("Session expirée ou absente. Vérifie le téléphone et entre le Code.", "bad");
       }else{
-        setState("", "Entrée PIN", "Vérification sécurisée de l’accès PAY avant ouverture du cockpit réel.");
+        setState("", "Entrée sécurisée", "Vérification sécurisée avant ouverture de Mon argent.");
       }
     }
 
@@ -1306,7 +1406,7 @@
         $("slug").value = "";
         $("pin").value = "";
         syncContextUi("", "");
-        setState("", "Entrée PIN", "Vérification sécurisée de l’accès PAY avant ouverture du cockpit réel.");
+        setState("", "Entrée sécurisée", "Vérification sécurisée avant ouverture de Mon argent.");
         setMsg("Champs effacés. Tu peux repartir proprement.", "");
       });
 
