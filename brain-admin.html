@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>DIGIY PAY — Base argent</title>
+  <title>MON ARGENT — Plus</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Pose ici ta base argent : réserve, charges fixes, remboursements, dettes et projets. Tout reste sur cet appareil, avec téléchargement simple et version prête pour GitHub."
+    content="Mon argent — Plus : base argent, réserve, charges, crédits, dettes, projets et export JSON."
   />
 
   <script src="./session.js"></script>
@@ -49,6 +49,7 @@
         linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
+      padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));
     }
 
     a{text-decoration:none;color:inherit}
@@ -57,7 +58,7 @@
     .wrap{
       width:min(var(--max), calc(100% - 20px));
       margin:0 auto;
-      padding:18px 0 40px;
+      padding:18px 0 calc(104px + env(safe-area-inset-bottom,0px));
     }
 
     .topbar{
@@ -466,6 +467,86 @@
 
     .file-input{display:none}
 
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(4,17,13,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(243,255,247,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+
+    .bottomNav .icoBottom{font-size:18px;line-height:1}
+
+    .bottomNav a.active{
+      color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--gold));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+
+    .mobileFastRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:950;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+    }
+
+    .mobileFastRow a.primary{
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#032215;
+      border:none;
+    }
+
+    @media(max-width:700px){
+      .mobileFastRow{grid-template-columns:1fr 1fr}
+      .nav{display:none}
+    }
+
+
     @media (max-width:980px){
       .grid{grid-template-columns:1fr}
       .hero-grid{grid-template-columns:1fr 1fr}
@@ -483,15 +564,15 @@
       <div class="brand">
         <div class="mark">₣</div>
         <div>
-          <div class="brand-title">Base argent PAY</div>
+          <div class="brand-title">MON ARGENT — Plus</div>
           <div class="brand-sub" id="brainMeta">Repère actif et éléments gardés sur cet appareil</div>
         </div>
       </div>
 
       <nav class="nav">
         <a class="pill" id="navHomeLink" href="./index.html">← Accueil</a>
-        <a class="pill" id="navCockpitLink" href="./cockpit.html">📊 Vue argent</a>
-        <a class="pill" id="navAdminLink" href="./admin.html">➕ Mouvements</a>
+        <a class="pill" id="navCockpitLink" href="./cockpit.html">🏠 Accueil</a>
+        <a class="pill" id="navAdminLink" href="./admin.html">➕ Ajouter</a>
         <button class="pill primary" id="btnSaveTop" type="button">💾 Enregistrer</button>
       </nav>
     </div>
@@ -499,12 +580,12 @@
 
   <main class="wrap">
     <section class="hero">
-      <div class="eyebrow">💼 PAY — base argent gardée ici</div>
-      <h1>Pose ta base argent une fois.<br>Ta vue suivra plus juste.</h1>
+      <div class="eyebrow">💼 MON ARGENT — base argent</div>
+      <h1>Pose tes repères.<br>Ta lecture restera juste.</h1>
       <p>
-        Ici tu poses tes repères d’argent : réserve, charges fixes, remboursements, dettes et projets.
+        Ici tu poses les repères qui protègent ton mois : réserve, charges fixes, remboursements, dettes et projets.
         Tout reste d’abord sur cet appareil. Ensuite tu peux télécharger ton fichier
-        ou préparer une version à partager avec ton équipe.
+        ou préparer une version à partager.
       </p>
 
       <div class="hero-grid">
@@ -525,9 +606,16 @@
         </div>
         <div class="mini">
           <div class="mini-k">Étape 4</div>
-          <div class="mini-v">Partager</div>
-          <div class="mini-s">Fichier à garder ici ou version prête à partager.</div>
+          <div class="mini-v">Sauvegarder</div>
+          <div class="mini-s">Fichier gardé ici ou version exportable.</div>
         </div>
+      </div>
+
+      <div class="mobileFastRow">
+        <a id="fastHome" href="./cockpit.html">🏠 Accueil</a>
+        <a id="fastMovements" href="./cockpit.html#resultList">📜 Mouvements</a>
+        <a id="fastAdd" href="./admin.html">➕ Ajouter</a>
+        <a class="primary" id="fastMore" href="./brain-admin.html">⚙️ Plus</a>
       </div>
     </section>
 
@@ -535,7 +623,7 @@
       <section class="stack">
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Repères de base</div>
+            <div class="card-title">Base du mois</div>
             <div class="toolbar">
               <button class="btn outline" id="btnResetTemplate" type="button">Base vide</button>
             </div>
@@ -588,7 +676,7 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Ajouter un crédit à rembourser</div>
+            <div class="card-title">Crédit à rembourser</div>
             <button class="btn green" id="btnAddCredit" type="button">+ L’ajouter</button>
           </div>
 
@@ -630,7 +718,7 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Ajouter une dette à payer</div>
+            <div class="card-title">Dette à payer</div>
             <button class="btn green" id="btnAddDebt" type="button">+ L’ajouter</button>
           </div>
 
@@ -672,7 +760,7 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Ajouter un projet à financer</div>
+            <div class="card-title">Projet à financer</div>
             <button class="btn green" id="btnAddProject" type="button">+ L’ajouter</button>
           </div>
 
@@ -716,7 +804,7 @@
       <aside class="stack">
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Gardé sur cet appareil</div>
+            <div class="card-title">Sauvegarde locale</div>
           </div>
           <div class="card-body">
             <div class="status ok" id="statusBox">
@@ -744,7 +832,7 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Vue rapide</div>
+            <div class="card-title">Lecture rapide</div>
           </div>
           <div class="card-body">
             <div class="items">
@@ -804,7 +892,7 @@
 
         <article class="card">
           <div class="card-head">
-            <div class="card-title">Aperçu du fichier</div>
+            <div class="card-title">Aperçu JSON</div>
           </div>
           <div class="card-body">
             <div class="preview" id="jsonPreview">{}</div>
@@ -813,6 +901,17 @@
       </aside>
     </div>
   </main>
+
+
+  <nav class="bottomNav" aria-label="Navigation Mon argent">
+    <div class="bottomNavInner">
+      <a id="bottomHome" href="./cockpit.html"><span class="icoBottom">🏠</span><span>Accueil</span></a>
+      <a id="bottomMovements" href="./cockpit.html#resultList"><span class="icoBottom">📜</span><span>Mouvements</span></a>
+      <a id="bottomAdd" href="./admin.html"><span class="icoBottom">➕</span><span>Ajouter</span></a>
+      <a id="bottomDrafts" href="./admin.html#draftPrefillBox"><span class="icoBottom">🧾</span><span>Brouillons</span></a>
+      <a class="active" id="bottomMore" href="./brain-admin.html"><span class="icoBottom">⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
 
   <script>
     function normalizeSlug(v){
@@ -1128,9 +1227,33 @@
     let brain = loadDraft();
 
     function setContextLinks(){
-      document.getElementById("navHomeLink").href = buildCtxHref("./index.html", CTX.slug, CTX.phone);
-      document.getElementById("navCockpitLink").href = buildCtxHref("./cockpit.html", CTX.slug, CTX.phone);
-      document.getElementById("navAdminLink").href = buildCtxHref("./admin.html", CTX.slug, CTX.phone);
+      const home = buildCtxHref("./index.html", CTX.slug, CTX.phone);
+      const cockpit = buildCtxHref("./cockpit.html", CTX.slug, CTX.phone);
+      const admin = buildCtxHref("./admin.html", CTX.slug, CTX.phone);
+      const brain = buildCtxHref("./brain-admin.html", CTX.slug, CTX.phone);
+      const movements = cockpit + "#resultList";
+      const drafts = admin + "#draftPrefillBox";
+
+      document.getElementById("navHomeLink").href = home;
+      document.getElementById("navCockpitLink").href = cockpit;
+      document.getElementById("navAdminLink").href = admin;
+
+      const map = {
+        fastHome: cockpit,
+        fastMovements: movements,
+        fastAdd: admin,
+        fastMore: brain,
+        bottomHome: cockpit,
+        bottomMovements: movements,
+        bottomAdd: admin,
+        bottomDrafts: drafts,
+        bottomMore: brain
+      };
+
+      Object.entries(map).forEach(([id, href]) => {
+        const node = document.getElementById(id);
+        if(node) node.href = href;
+      });
     }
 
     function setStatus(kind, text){
