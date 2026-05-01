@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Mon espace DIGIY ♾️</title>
+  <title>MON ARGENT — Accueil</title>
   <meta name="theme-color" content="#04110d" />
-  <meta name="description" content="Espace stratégique MON ARGENT by DIGIY : protéger la base, éviter les erreurs financières, lire le vrai cap du mois." />
+  <meta name="description" content="Mon argent : voir ce qui entre, ce qui sort, ce qu’il reste, ajouter un mouvement et lire le cap du mois." />
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -33,7 +33,7 @@
     }
     *,*::before,*::after{box-sizing:border-box}
     html,body{margin:0;padding:0}
-    body{min-height:100vh;color:var(--text);font-family:var(--ff-body);background:radial-gradient(circle at 10% 0%,rgba(34,197,94,.10),transparent 36%),radial-gradient(circle at 100% 100%,rgba(250,204,21,.07),transparent 28%),linear-gradient(180deg,var(--bg),#061710 58%,#04110d);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+    body{min-height:100vh;color:var(--text);font-family:var(--ff-body);background:radial-gradient(circle at 10% 0%,rgba(34,197,94,.10),transparent 36%),radial-gradient(circle at 100% 100%,rgba(250,204,21,.07),transparent 28%),linear-gradient(180deg,var(--bg),#061710 58%,#04110d);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));}
     a{text-decoration:none;color:inherit}
     button{font-family:var(--ff-body)}
     .wrap{width:min(var(--max),calc(100% - 24px));margin:0 auto;}
@@ -294,6 +294,78 @@
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:800;background:var(--card);border:1px solid var(--line-g);color:#bbf7d0;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     @keyframes spin{to{transform:rotate(360deg)}}
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(4,17,13,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(243,255,247,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+    .bottomNav .icoBottom{font-size:18px;line-height:1}
+    .bottomNav a.active{
+      color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--gold));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+    .mobileFastRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:950;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+    }
+    .mobileFastRow a.primary{
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#032215;
+      border:none;
+    }
+    @media(max-width:700px){
+      .mobileFastRow{grid-template-columns:1fr 1fr}
+      .nav{display:none}
+      #toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+    }
+
     @media(max-width:1100px){.hero-grid{grid-template-columns:1fr}.synth-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:980px){.kpi-strip{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}.status-grid{grid-template-columns:1fr}.hud2s-grid,.module-strip-grid{grid-template-columns:1fr}}
     @media(max-width:760px){.hero-mini{grid-template-columns:1fr}.synth-grid{grid-template-columns:1fr}}
@@ -307,14 +379,14 @@
       <div class="brand">
         <div class="brand-mark">₣</div>
         <div>
-          <div class="brand-title">MON ARGENT ♾️</div>
+          <div class="brand-title">MON ARGENT</div>
           <div class="brand-sub" id="topSlug">Chargement…</div>
         </div>
       </div>
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
         <a class="pill" href="./pin.html">🔐 Mon code</a>
-        <a class="pill" href="./brain-admin.html" id="topBrainLink">🧭 Pilote</a>
+        <a class="pill" href="./brain-admin.html" id="topBrainLink">⚙️ Plus</a>
         <a class="pill primary" href="./admin.html" id="topAdminLink">➕ Ajouter</a>
         <button class="pill" id="btnRefresh" type="button">🔄 Recharger</button>
         <button class="pill" id="btnLogout" type="button">🚪 Quitter</button>
@@ -326,17 +398,23 @@
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-card hero-main">
-          <div class="eyebrow">💳 Ma lecture utile</div>
-          <h1 class="hero-title">Ce que tu dois faire maintenant.</h1>
-          <p class="hero-text">Ici, tu lis vite le cap du moment puis tu poses l'action utile sans te noyer dans les détails.</p>
+          <div class="eyebrow">💳 Accueil</div>
+          <h1 class="hero-title">Voir ce qui entre, sort et reste.</h1>
+          <p class="hero-text">Accueil de Mon argent : lecture rapide, mouvements, réserves, pressions et prochaine action utile.</p>
           <div class="hero-mini">
             <div class="mini"><div class="mini-k">Lecture utile</div><div class="mini-v">Cap du mois</div><div class="mini-s">Protéger, tenir, consolider ou accélérer selon la vraie pression visible.</div></div>
           </div>
+          <div class="mobileFastRow">
+            <a class="primary" id="fastHome" href="./cockpit.html">🏠 Accueil</a>
+            <a id="fastMovements" href="#resultList">📜 Mouvements</a>
+            <a id="fastAdd" href="./admin.html">➕ Ajouter</a>
+            <a id="fastDrafts" href="./admin.html#fromDraft">🧾 Brouillons</a>
+          </div>
         </div>
         <aside class="hud-focus">
-          <div class="hud-title">Action maître</div>
-          <div class="hud-big">Ajouter un mouvement.</div>
-          <div class="hud-sub">Commence par noter l'entrée ou la dépense du moment. Le reste vient ensuite.</div>
+          <div class="hud-title">Action du moment</div>
+          <div class="hud-big">Ajouter une trace.</div>
+          <div class="hud-sub">Une entrée, une dépense, une réserve ou un brouillon reçu : on garde la mémoire propre.</div>
           <div class="hud-actions">
             <a class="hud-link" id="hudAdminLink" href="./admin.html">
               <div class="left">
@@ -560,6 +638,17 @@
   </main>
 
   <div id="toast"></div>
+
+  <nav class="bottomNav" aria-label="Navigation Mon argent">
+    <div class="bottomNavInner">
+      <a class="active" id="bottomHome" href="./cockpit.html"><span class="icoBottom">🏠</span><span>Accueil</span></a>
+      <a id="bottomMovements" href="#resultList"><span class="icoBottom">📜</span><span>Mouvements</span></a>
+      <a id="bottomAdd" href="./admin.html"><span class="icoBottom">➕</span><span>Ajouter</span></a>
+      <a id="bottomDrafts" href="./admin.html#fromDraft"><span class="icoBottom">🧾</span><span>Brouillons</span></a>
+      <a id="bottomMore" href="./brain-admin.html"><span class="icoBottom">⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
+
 <script>
 (function(){
   "use strict";
@@ -743,7 +832,8 @@
     if(c==="orange_money") return "orange_money";
     if(c==="bank_transfer"||c==="bank") return "bank";
     if(c==="card") return "other";
-    return "manual";
+    if(c==="manual"||c==="unknown") return "other";
+    return "other";
   }
 
   function adminCategoryFromDraft(draft){
@@ -766,7 +856,8 @@
 
   function adminSourceModuleFromDraft(draft){
     const mod=String(draft?.module_source||"").toUpperCase();
-    if(["PAY","DRIVER","COMMERCE","LOC","MARKET","BUILD","RESA","OTHER"].includes(mod)) return mod;
+    if(mod==="CAISSE") return "POS";
+    if(["PAY","DRIVER","COMMERCE","POS","LOC","MARKET","BUILD","RESA","EXPLORE","JOBS","QR_PRO","OTHER"].includes(mod)) return mod;
     const comp=String(draft?.complement||"").toLowerCase();
     if(comp.includes("course")||String(draft?.category||"").toLowerCase()==="ride_income") return "DRIVER";
     return "PAY";
@@ -796,6 +887,7 @@
     qs.set("direction",String(draft?.direction||"out"));
     qs.set("scope",adminScopeFromDraft(draft));
     qs.set("amount",String(Math.round(num(draft?.amount_xof))));
+    qs.set("amount_xof",String(Math.round(num(draft?.amount_xof))));
     qs.set("kind",adminKindFromDraft(draft));
     qs.set("channel",adminChannelFromDraft(draft));
     qs.set("category",adminCategoryFromDraft(draft));
@@ -803,8 +895,12 @@
     qs.set("label",adminLabelFromDraft(draft));
     qs.set("note",String(draft?.sentence||"").trim());
 
+    if(draft?.source_slug) qs.set("source_slug",String(draft.source_slug||"").trim());
+    else if(SLUG) qs.set("source_slug",SLUG);
+    if(draft?.source_id) qs.set("source_id",String(draft.source_id||"").trim());
     if(draft?.complement) qs.set("complement",String(draft.complement||"").trim());
     if(draft?.intent_code) qs.set("intent",String(draft.intent_code||"").trim());
+    else qs.set("intent","quick_note");
 
     return "./admin.html?"+qs.toString();
   }
