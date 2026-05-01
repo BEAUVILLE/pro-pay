@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Saisie DIGIY ♾️</title>
+  <title>MON ARGENT — Ajouter</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Saisie manuelle PAY : ajouter vite une entrée, une sortie ou une épargne, avec historique clair et lecture terrain."
+    content="Mon argent : recevoir les brouillons, ajouter un mouvement, vérifier les entrées, sorties et épargne."
   />
 
   <script>
@@ -60,6 +60,7 @@
         linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
+      padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));
     }
 
     a{text-decoration:none;color:inherit}
@@ -784,6 +785,87 @@
       transform:translateX(-50%) translateY(0);
     }
 
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(4,17,13,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(243,255,247,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+
+    .bottomNav .ico{font-size:18px;line-height:1}
+
+    .bottomNav a.active{
+      color:#032215;
+      background:linear-gradient(135deg,var(--green),var(--gold));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+
+    .mobileFastRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:950;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+    }
+
+    .mobileFastRow a.primary{
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      color:#032215;
+      border:none;
+    }
+
+    @media(max-width:700px){
+      .mobileFastRow{grid-template-columns:1fr 1fr}
+      .nav{display:none}
+      #toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+    }
+
+
     @media (max-width:1080px){
       .hero-grid{grid-template-columns:1fr}
     }
@@ -817,7 +899,7 @@
       <div class="brand">
         <div class="brand-mark">₣</div>
         <div>
-          <div class="brand-title">MON ARGENT — Saisie ♾️</div>
+          <div class="brand-title">MON ARGENT — Ajouter</div>
           <div class="brand-sub" id="topSlug">Chargement…</div>
         </div>
       </div>
@@ -836,11 +918,11 @@
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-card">
-          <div class="eyebrow">➕ PAY — saisie manuelle terrain</div>
-          <h1 class="hero-title">Ajoute vite.<br>Confirme proprement.<br>Continue d’avancer.</h1>
+          <div class="eyebrow">➕ MON ARGENT — ajouter ou confirmer</div>
+          <h1 class="hero-title">Reçois.<br>Vérifie.<br>Enregistre proprement.</h1>
           <p class="hero-text">
-            Cette page sert à nourrir PAY sans bruit :
-            enregistrer une entrée, une sortie ou une épargne utile,
+            Cette page reçoit les brouillons des modules et permet d’ajouter vite :
+            une entrée, une sortie, une dépense, une épargne ou une note utile,
             puis laisser l’espace relire le tout proprement.
           </p>
 
@@ -853,15 +935,22 @@
 
             <div class="mini">
               <div class="mini-k">En 1 lecture</div>
-              <div class="mini-v">Historique</div>
-              <div class="mini-s">Voir ce qui vient d’être saisi sur le rail actif.</div>
+              <div class="mini-v">Mouvements</div>
+              <div class="mini-s">Voir les derniers mouvements du compte actif.</div>
             </div>
 
             <div class="mini">
               <div class="mini-k">En 1 retour</div>
-              <div class="mini-v">Espace</div>
-              <div class="mini-s">Revenir voir l’impact global du mouvement.</div>
+              <div class="mini-v">Accueil</div>
+              <div class="mini-s">Revenir voir ce qui entre, sort et reste.</div>
             </div>
+          </div>
+
+          <div class="mobileFastRow">
+            <a id="fastHome" href="./cockpit.html">🏠 Accueil</a>
+            <a id="fastMovements" href="#historyList">📜 Mouvements</a>
+            <a class="primary" id="fastAdd" href="#payForm">➕ Ajouter</a>
+            <a id="fastDrafts" href="#draftPrefillBox">🧾 Brouillons</a>
           </div>
         </div>
 
@@ -873,8 +962,8 @@
             </div>
           </div>
 
-          <div class="hud-title">Focus saisie</div>
-          <div class="hud-big">Le bon mouvement.<br>Au bon rail.</div>
+          <div class="hud-title">Focus</div>
+          <div class="hud-big">Le bon mouvement.<br>Au bon compte.</div>
           <div class="hud-sub">
             Ici on n’écrit pas pour remplir une base.
             On écrit pour que l’espace lise juste ensuite :
@@ -910,21 +999,21 @@
     <section class="grid">
       <article class="card">
         <div class="card-head">
-          <div class="card-title">➕ Nouveau mouvement</div>
+          <div class="card-title">➕ Ajouter un mouvement</div>
         </div>
 
         <div class="card-body">
           <div class="focus-box">
-            <div class="focus-top">Lecture simple avant écriture</div>
-            <div class="focus-main">Direction + scope + montant = la base juste</div>
+            <div class="focus-top">Vérifier avant d’enregistrer</div>
+            <div class="focus-main">Sens + montant + canal = base propre</div>
             <div class="focus-sub">
-              Commence par l’essentiel, puis affine avec le canal, la catégorie, l’activité source et une note utile.
+              Vérifie le brouillon reçu, ou ajoute une trace simple avec canal, activité source et note utile.
             </div>
           </div>
 
 
           <div class="draft-prefill" id="draftPrefillBox">
-            <strong>✅ Brouillon reçu depuis Mon espace.</strong><br>
+            <strong>✅ Brouillon reçu depuis une activité DIGIY.</strong><br>
             Vérifie les champs puis clique sur <strong>💾 Enregistrer</strong>.
           </div>
 
@@ -972,7 +1061,6 @@
                   <option value="cash">Cash</option>
                   <option value="orange_money">Orange Money</option>
                   <option value="bank">Banque</option>
-                  <option value="manual">Manuel</option>
                   <option value="other">Autre</option>
                 </select>
               </div>
@@ -997,10 +1085,14 @@
                   <option value="PAY">PAY</option>
                   <option value="DRIVER">DRIVER</option>
                   <option value="COMMERCE">COMMERCE</option>
+                  <option value="POS">POS</option>
                   <option value="LOC">LOC</option>
                   <option value="MARKET">MARKET</option>
                   <option value="BUILD">BUILD</option>
                   <option value="RESA">RESA</option>
+                  <option value="EXPLORE">EXPLORE</option>
+                  <option value="JOBS">JOBS</option>
+                  <option value="QR_PRO">QR PRO</option>
                   <option value="OTHER">AUTRE</option>
                 </select>
               </div>
@@ -1035,23 +1127,23 @@
 
       <article class="card">
         <div class="card-head">
-          <div class="card-title">🧾 Derniers mouvements saisis</div>
+          <div class="card-title">🧾 Mouvements récents</div>
         </div>
 
         <div class="card-body">
           <div class="stats">
             <div class="stat">
-              <div class="stat-k">Entrées visibles</div>
+              <div class="stat-k">Entrées</div>
               <div class="stat-v green" id="statIn">—</div>
             </div>
 
             <div class="stat">
-              <div class="stat-k">Sorties visibles</div>
+              <div class="stat-k">Sorties</div>
               <div class="stat-v danger" id="statOut">—</div>
             </div>
 
             <div class="stat">
-              <div class="stat-k">Épargne visible</div>
+              <div class="stat-k">Épargne</div>
               <div class="stat-v gold" id="statSavings">—</div>
             </div>
           </div>
@@ -1065,6 +1157,17 @@
   </main>
 
   <div id="toast"></div>
+
+  <nav class="bottomNav" aria-label="Navigation Mon argent">
+    <div class="bottomNavInner">
+      <a id="bottomHome" href="./cockpit.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a id="bottomMovements" href="#historyList"><span class="ico">📜</span><span>Mouvements</span></a>
+      <a class="active" id="bottomAdd" href="#payForm"><span class="ico">➕</span><span>Ajouter</span></a>
+      <a id="bottomDrafts" href="#draftPrefillBox"><span class="ico">🧾</span><span>Brouillons</span></a>
+      <a id="bottomMore" href="./brain-admin.html"><span class="ico">⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
+
 
   <script>
     const sb = window.supabase.createClient(
@@ -1153,15 +1256,16 @@
 
     function normalizePrefillChannel(value){
       const v = String(value || "").toLowerCase();
-      if(["wave","cash","orange_money","bank","manual","other"].includes(v)) return v;
+      if(["wave","cash","orange_money","bank","other"].includes(v)) return v;
       if(v === "bank_transfer") return "bank";
-      if(v === "unknown") return "manual";
-      return "manual";
+      if(v === "manual" || v === "unknown") return "other";
+      return "other";
     }
 
     function normalizePrefillSourceModule(value){
       const v = String(value || "PAY").toUpperCase();
-      if(["PAY","DRIVER","COMMERCE","LOC","MARKET","BUILD","RESA","OTHER"].includes(v)) return v;
+      if(v === "CAISSE") return "POS";
+      if(["PAY","DRIVER","COMMERCE","POS","LOC","MARKET","BUILD","RESA","EXPLORE","JOBS","QR_PRO","OTHER"].includes(v)) return v;
       return "PAY";
     }
 
@@ -1171,7 +1275,7 @@
 
       const direction = params.get("direction") || "";
       const scope = normalizePrefillScope(params.get("scope") || "");
-      const amount = params.get("amount") || "";
+      const amount = params.get("amount_xof") || params.get("amount") || "";
       const kind = normalizePrefillKind(params.get("kind") || "", scope);
       const channel = normalizePrefillChannel(params.get("channel") || "");
       const category = params.get("category") || "";
@@ -1200,7 +1304,7 @@
       if(box){
         box.style.display = "block";
         box.innerHTML = `
-          <strong>✅ Brouillon reçu depuis Mon espace.</strong><br>
+          <strong>✅ Brouillon reçu depuis une activité DIGIY.</strong><br>
           ${amount ? "Montant : <strong>" + esc(money(amount)) + "</strong><br>" : ""}
           ${label ? "Libellé : <strong>" + esc(label) + "</strong><br>" : ""}
           Vérifie les champs puis clique sur <strong>💾 Enregistrer</strong>.
@@ -1367,7 +1471,7 @@
               <div class="item-meta">
                 ${esc((item.scope || "").toUpperCase())}
                 · ${esc(item.kind || "other")}
-                · ${esc(item.channel || "manual")}
+                · ${esc(String(item.channel || "other") === "manual" ? "other" : (item.channel || "other"))}
                 · ${esc(item.source_module || "PAY")}
                 · ${fmtDate(item.movement_date)}
                 ${note}
@@ -1397,7 +1501,7 @@
 
     async function loadHistory(){
       if(!SLUG){
-        $("historyList").innerHTML = `<div class="empty">Slug PAY manquant.</div>`;
+        $("historyList").innerHTML = `<div class="empty">Compte PAY manquant.</div>`;
         return;
       }
 
@@ -1417,7 +1521,7 @@
         HISTORY = Array.isArray(data) ? data : [];
         renderStats(HISTORY);
         renderHistory(HISTORY);
-        setState("ok", "Saisie PAY prête", "Historique chargé sur le slug PAY actif.");
+        setState("ok", "Saisie PAY prête", "Mouvements chargé sur le slug PAY actif.");
       }catch(err){
         logErr("[PAY admin history]", err);
         const msg = errText(err);
@@ -1434,7 +1538,7 @@
       const dbScope = dbScopeFromUi(scope);
       const amount = Number($("amount").value || 0);
       const kind = $("kind").value;
-      const channel = $("channel").value;
+      const channel = $("channel").value === "manual" ? "other" : $("channel").value;
       const category = String($("category").value || "").trim();
       const movementDate = $("movementDate").value;
       const sourceModule = $("sourceModule").value;
@@ -1444,7 +1548,7 @@
 
       if(!SLUG){
         toast("❌ Slug PAY manquant");
-        setState("bad", "Slug manquant", "Aucun slug PAY actif pour enregistrer le mouvement.");
+        setState("bad", "Compte manquant", "Aucun compte PAY actif pour enregistrer le mouvement.");
         return;
       }
 
@@ -1493,7 +1597,9 @@
           meta: {
             from_draft: params.get("fromDraft") === "1",
             intent: params.get("intent") || null,
-            complement: params.get("complement") || null
+            complement: params.get("complement") || null,
+            source_slug: params.get("source_slug") || null,
+            draft_source_module: params.get("source_module") || null
           }
         };
 
@@ -1514,7 +1620,7 @@
         toast("✅ Mouvement enregistré");
         resetForm();
         await loadHistory();
-        setState("ok", "Saisie PAY prête", "Mouvement enregistré sur le slug PAY actif.");
+        setState("ok", "Saisie PAY prête", "Mouvement enregistré sur le compte PAY actif.");
       }catch(err){
         const clean = logErr("[PAY admin save]", err);
         const msg = [
@@ -1552,6 +1658,20 @@
     }
 
     function bindAnchorLinks(){
+      ["fastMovements","bottomMovements","fastAdd","bottomAdd","fastDrafts","bottomDrafts"].forEach(id => {
+        const el = $(id);
+        if(!el) return;
+        el.addEventListener("click", (e) => {
+          const href = el.getAttribute("href") || "";
+          if(!href.startsWith("#")) return;
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if(target){
+            try{ target.scrollIntoView({ behavior:"smooth", block:"start" }); }catch(_){}
+          }
+        });
+      });
+
       const historyLink = document.querySelector('.hud-link[href="#historyList"]');
       if(historyLink){
         historyLink.addEventListener("click", (e) => {
@@ -1595,6 +1715,23 @@
         const cockpitHref = `./cockpit.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
         $("topCockpitLink").href = cockpitHref;
         $("hudCockpitLink").href = cockpitHref;
+
+        const brainHref = `./brain-admin.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
+        const pinHref = `./pin.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
+
+        const linkMap = {
+          fastHome: cockpitHref,
+          bottomHome: cockpitHref,
+          bottomMore: brainHref
+        };
+
+        Object.entries(linkMap).forEach(([id, href]) => {
+          const node = $(id);
+          if(node) node.href = href;
+        });
+
+        const bottomAccess = document.querySelector('.nav a[href="./pin.html"]');
+        if(bottomAccess) bottomAccess.href = pinHref;
 
         setState("ok", "Saisie PAY prête", "Session chargée. Tu peux enregistrer des mouvements manuels.");
         await loadHistory();
