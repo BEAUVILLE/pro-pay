@@ -830,6 +830,110 @@
         text-align:left;
       }
     }
+
+    .audioBox{
+      position:relative;
+      margin-top:4px;
+      border:1px solid rgba(250,204,21,.42);
+      border-radius:22px;
+      padding:15px;
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.16), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(34,197,94,.13), transparent 42%),
+        linear-gradient(180deg, rgba(250,204,21,.08), rgba(34,197,94,.055));
+      box-shadow:0 16px 36px rgba(0,0,0,.20), inset 0 0 0 1px rgba(250,204,21,.04);
+      overflow:hidden;
+    }
+
+    .audioLead{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      margin-bottom:8px;
+      padding:6px 11px;
+      border-radius:999px;
+      background:rgba(250,204,21,.14);
+      border:1px solid rgba(250,204,21,.36);
+      color:#fff3bf;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+
+    .audioLead .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--gold);
+      box-shadow:0 0 14px rgba(250,204,21,.70);
+      animation:audioPulse 1.5s ease-in-out infinite;
+    }
+
+    .audioTitle{
+      color:#fff8dc;
+      font-weight:900;
+      line-height:1.25;
+      font-size:16px;
+    }
+
+    .audioText{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .audioActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .audioBtn{
+      min-height:44px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.55);
+      background:linear-gradient(135deg,var(--gold),#f59e0b);
+      color:#032215;
+      font-weight:1000;
+      padding:10px 14px;
+      cursor:pointer;
+      box-shadow:0 12px 26px rgba(250,204,21,.20);
+    }
+
+    .audioBtn.stop{
+      background:rgba(239,68,68,.10);
+      border-color:rgba(239,68,68,.35);
+      color:#fecaca;
+      box-shadow:none;
+    }
+
+    .audioProgressWrap{
+      height:5px;
+      margin-top:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+
+    .audioProgress{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--gold),var(--green));
+      transition:width .2s linear;
+    }
+
+    @keyframes audioPulse{
+      0%,100%{transform:scale(1);opacity:1}
+      50%{transform:scale(1.25);opacity:.72}
+    }
+
+    @media(max-width:580px){
+      .audioBtn{width:100%}
+    }
+
   </style>
 </head>
 <body>
@@ -844,6 +948,9 @@
       </div>
 
       <nav class="nav">
+        <a class="pill" href="https://digiylyfe.com/">🌍 Site</a>
+        <a class="pill" href="https://pro-espace.digiylyfe.com/">🧭 HUB</a>
+        <a class="pill" href="https://tarifs.digiylyfe.com/">📦 Tarifs</a>
         <a class="pill primary" href="./pin.html">🔐 Entrée sécurisée</a>
         <a class="pill" href="./cockpit.html">📊 Mon espace</a>
         <a class="pill" href="./admin.html">➕ Ajouter</a>
@@ -863,6 +970,20 @@
           Le professionnel reste maître de son argent.
           PAY sert à lire clairement les entrées, les dépenses pro, l’épargne et le net,
           sans bruit et sans confusion.
+        </div>
+
+        <div class="audioBox" aria-label="Explication audio Mon argent">
+          <div class="audioLead"><span class="dot"></span> Conseil DIGIY · écoute courte</div>
+          <div class="audioTitle">🎧 Comprendre Mon argent simplement</div>
+          <div class="audioText">
+            Une voix explique à un novice ce que fait ce logiciel :
+            recettes, dépenses, net, épargne et notes rapides.
+          </div>
+          <div class="audioActions">
+            <button class="audioBtn" id="btnPayProAudio" type="button">🎧 Écouter DIGIY</button>
+            <button class="audioBtn stop" id="btnPayProAudioStop" type="button">⏹ Stop</button>
+          </div>
+          <div class="audioProgressWrap" aria-hidden="true"><div class="audioProgress" id="payProAudioProgress"></div></div>
         </div>
 
         <div class="cta-row">
@@ -1132,5 +1253,103 @@
       <a href="./admin.html">Saisie</a>
     </div>
   </main>
+
+  <script>
+    (function(){
+      "use strict";
+
+      const audioText =
+        "Bienvenue dans Mon argent by DIGIY. Si tu découvres cet outil, pense à un carnet d’argent moderne, simple, lisible sur téléphone. " +
+        "Ce n’est pas une banque. Ce n’est pas Wave. Ce n’est pas une caisse qui garde ton argent. L’argent reste chez toi, chez le professionnel, dans tes moyens habituels : Wave, espèces, Orange Money, banque ou autre. " +
+        "Mon argent sert à comprendre ton activité. Il te montre ce qui entre, ce qui sort, et ce qu’il reste vraiment à la fin. " +
+        "Ce qui entre, ce sont les recettes : une vente boutique, une course chauffeur, une réservation, une prestation, un acompte ou un paiement client. " +
+        "Ce qui sort, ce sont les dépenses : stock, carburant, livraison, réparation, ménage, électricité, transport, matériel ou petite charge du jour. " +
+        "Ce qui reste, c’est le net : la lecture qui aide à savoir si ton activité avance, fatigue ou doit être corrigée. " +
+        "Les notes rapides sont très importantes. Tu écris comme tu parles : vente sac quinze mille Wave, carburant cinq mille cash, client Awa doit trois mille. DIGIY prépare la trace, puis tu confirmes. " +
+        "Petit à petit, Mon argent devient ton tableau de bord : tu vois les recettes, les dépenses, l’épargne, les modules qui rapportent, et les gestes du quotidien qui ne doivent plus disparaître dans la mémoire. " +
+        "Mon argent ne remplace pas ton jugement. Il t’aide à voir clair pour décider vite et garder la main.";
+
+      let playing = false;
+      let timer = null;
+      let startedAt = 0;
+      const duration = 118000;
+
+      function $(id){ return document.getElementById(id); }
+
+      function progress(v){
+        const bar = $("payProAudioProgress");
+        if(bar) bar.style.width = Math.max(0, Math.min(100, v)) + "%";
+      }
+
+      function startProgress(){
+        clearInterval(timer);
+        startedAt = Date.now();
+        progress(0);
+        timer = setInterval(() => {
+          progress(((Date.now() - startedAt) / duration) * 100);
+        }, 180);
+      }
+
+      function pickFrenchVoice(){
+        try{
+          const voices = window.speechSynthesis.getVoices() || [];
+          return voices.find(v => /fr[-_ ]?FR/i.test(v.lang || "")) ||
+                 voices.find(v => /^fr/i.test(v.lang || "")) ||
+                 null;
+        }catch(_){ return null; }
+      }
+
+      function stop(){
+        try{ window.speechSynthesis.cancel(); }catch(_){}
+        clearInterval(timer);
+        timer = null;
+        playing = false;
+        progress(0);
+        const btn = $("btnPayProAudio");
+        if(btn) btn.textContent = "🎧 Écouter DIGIY";
+      }
+
+      function play(){
+        if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
+          alert("Audio non disponible sur ce navigateur.");
+          return;
+        }
+        if(playing){ stop(); return; }
+        stop();
+
+        const utter = new SpeechSynthesisUtterance(audioText);
+        utter.lang = "fr-FR";
+        utter.rate = 0.84;
+        utter.pitch = 1.02;
+        utter.volume = 1;
+        const voice = pickFrenchVoice();
+        if(voice) utter.voice = voice;
+
+        utter.onstart = () => {
+          playing = true;
+          const btn = $("btnPayProAudio");
+          if(btn) btn.textContent = "⏸️ Lecture en cours";
+          startProgress();
+        };
+        utter.onend = () => {
+          clearInterval(timer);
+          timer = null;
+          progress(100);
+          setTimeout(stop, 500);
+        };
+        utter.onerror = stop;
+
+        window.speechSynthesis.speak(utter);
+      }
+
+      $("btnPayProAudio")?.addEventListener("click", play);
+      $("btnPayProAudioStop")?.addEventListener("click", stop);
+      window.addEventListener("beforeunload", stop);
+      document.addEventListener("visibilitychange", () => { if(document.hidden) stop(); });
+      if("speechSynthesis" in window){ window.speechSynthesis.onvoiceschanged = () => {}; }
+    })();
+  </script>
+
 </body>
 </html>
+
