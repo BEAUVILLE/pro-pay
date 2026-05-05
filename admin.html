@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Mon argent : recevoir les brouillons, ajouter un mouvement, vérifier les entrées, sorties et épargne."
+    content="Mon argent : recevoir les brouillons, ajouter un mouvement, vérifier les entrées, sorties et épargne sans exposer la session dans l’adresse."
   />
 
   <script>
@@ -272,7 +272,7 @@
         linear-gradient(160deg, rgba(16,40,32,.94), rgba(8,24,18,.96));
     }
 
-    .slug-badge{
+    .compte-badge{
       display:none;
       align-items:center;
       gap:10px;
@@ -282,21 +282,21 @@
       background:rgba(34,197,94,.07);
     }
 
-    .slug-badge .dot{
+    .compte-badge .dot{
       width:10px;height:10px;border-radius:50%;
       background:var(--green);
       box-shadow:0 0 0 3px rgba(34,197,94,.2);
       flex-shrink:0;
     }
 
-    .slug-badge .info{
+    .compte-badge .info{
       font-size:13px;
       font-weight:800;
       color:#bbf7d0;
       line-height:1.45;
     }
 
-    .slug-badge .info span{
+    .compte-badge .info span{
       color:var(--muted);
       font-weight:700;
     }
@@ -900,12 +900,14 @@
         <div class="brand-mark">₣</div>
         <div>
           <div class="brand-title">MON ARGENT — Ajouter</div>
-          <div class="brand-sub" id="topSlug">Chargement…</div>
+          <div class="brand-sub" id="topCompte">Session protégée</div>
         </div>
       </div>
 
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
+        <a class="pill" href="https://digiy-hub.digiylyfe.com/">🧭 HUB</a>
+        <a class="pill" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
         <a class="pill" href="./pin.html">🔐 Code</a>
         <a class="pill primary" href="./cockpit.html" id="topCockpitLink">📊 Mon espace</a>
         <button class="pill" id="btnRefresh" type="button">🔄 Recharger</button>
@@ -955,10 +957,10 @@
         </div>
 
         <aside class="hud-focus">
-          <div class="slug-badge" id="slugBadge">
+          <div class="compte-badge" id="compteBadge">
             <div class="dot"></div>
             <div class="info">
-              Session active — <span id="badgeSlug"></span> · <span>PAY</span>
+              Session active — <span id="badgeCompte">référence protégée</span> · <span>PAY</span>
             </div>
           </div>
 
@@ -982,7 +984,7 @@
             <a class="hud-link" href="#historyList">
               <div class="left">
                 <div class="k">Voir l’historique</div>
-                <div class="s">Contrôler les derniers mouvements visibles sur ce slug.</div>
+                <div class="s">Contrôler les derniers mouvements visibles sur ce compte.</div>
               </div>
               <div class="arrow">→</div>
             </a>
@@ -992,7 +994,7 @@
 
       <div class="state" id="stateBox">
         <div class="state-title">Chargement</div>
-        <div class="state-txt">Connexion à la saisie PAY…</div>
+        <div class="state-txt">Connexion à la saisie PAY protégée…</div>
       </div>
     </section>
 
@@ -1220,6 +1222,70 @@
 
     function getParam(name){
       return new URLSearchParams(window.location.search).get(name) || "";
+    }
+
+    function cleanVisibleUrl(){
+      try{
+        const url = new URL(window.location.href);
+        let changed = false;
+
+        [
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "compte",
+          "pay_compte",
+          "subscription_compte",
+          "business_phone",
+          "wave_phone",
+          "wallet_phone",
+          "pay_phone",
+          "access_note",
+          "keybox_code",
+          "keybox_location"
+        ].forEach(function(key){
+          if(url.searchParams.has(key)){
+            url.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        if(changed){
+          history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+        }
+      }catch(_){}
+    }
+
+    function cleanInternalHref(page){
+      try{
+        const url = new URL(page || "./cockpit.html", window.location.href);
+
+        [
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "compte",
+          "pay_compte",
+          "subscription_compte",
+          "business_phone",
+          "wave_phone",
+          "wallet_phone",
+          "pay_phone"
+        ].forEach(function(key){
+          url.searchParams.delete(key);
+        });
+
+        if(url.origin !== window.location.origin){
+          return "./cockpit.html";
+        }
+
+        const file = url.pathname.split("/").pop() || "cockpit.html";
+        return "./" + file + url.search + url.hash;
+      }catch(_){
+        return "./cockpit.html";
+      }
     }
 
     function setFieldValue(id, value){
@@ -1510,8 +1576,8 @@
 
         const { data, error } = await sb
           .from(PAY_MOVEMENTS_TABLE)
-          .select("id,slug,direction,scope,kind,category,amount_xof,channel,label,note_text,source_module,source_id,movement_date,created_at,status")
-          .eq("slug", SLUG)
+          .select("id,compte,direction,scope,kind,category,amount_xof,channel,label,note_text,source_module,source_id,movement_date,created_at,status")
+          .eq("compte", SLUG)
           .order("movement_date", { ascending: false })
           .order("created_at", { ascending: false })
           .limit(30);
@@ -1521,7 +1587,7 @@
         HISTORY = Array.isArray(data) ? data : [];
         renderStats(HISTORY);
         renderHistory(HISTORY);
-        setState("ok", "Saisie PAY prête", "Mouvements chargé sur le slug PAY actif.");
+        setState("ok", "Saisie PAY prête", "Mouvements chargéss sur le compte PAY actif.");
       }catch(err){
         logErr("[PAY admin history]", err);
         const msg = errText(err);
@@ -1547,8 +1613,8 @@
       const note = String($("noteText").value || "").trim();
 
       if(!SLUG){
-        toast("❌ Slug PAY manquant");
-        setState("bad", "Compte manquant", "Aucun compte PAY actif pour enregistrer le mouvement.");
+        toast("❌ Compte PAY manquant");
+        setState("bad", "Compte manquant", "Aucune session PAY active pour enregistrer le mouvement.");
         return;
       }
 
@@ -1574,11 +1640,11 @@
         setSaving(true);
 
         const params = new URLSearchParams(window.location.search);
-        const cleanPhone = String(PHONE || params.get("phone") || "").replace(/[^\d]/g, "");
-        const cleanSlug = String(SLUG || params.get("slug") || "").trim().toLowerCase();
+        const cleanPhone = String(PHONE || "").replace(/[^\d]/g, "");
+        const cleanCompte = String(SLUG || "").trim().toLowerCase();
 
         const payload = {
-          slug: cleanSlug,
+          compte: cleanCompte,
           phone: cleanPhone || null,
           direction,
           scope: dbScope,
@@ -1598,14 +1664,14 @@
             from_draft: params.get("fromDraft") === "1",
             intent: params.get("intent") || null,
             complement: params.get("complement") || null,
-            source_slug: params.get("source_slug") || null,
+            source_compte: params.get("source_compte") || null,
             draft_source_module: params.get("source_module") || null
           }
         };
 
         if(!payload.phone){
-          toast("❌ Téléphone manquant dans l'URL");
-          setState("bad", "Téléphone manquant", "Ajoute phone=221771342889 dans l'URL ou repasse par le code.");
+          toast("❌ Session incomplète");
+          setState("bad", "Session incomplète", "Repasse par le code pour rouvrir Mon argent proprement.");
           return;
         }
 
@@ -1643,7 +1709,7 @@
           .from(PAY_MOVEMENTS_TABLE)
           .delete()
           .eq("id", id)
-          .eq("slug", SLUG);
+          .eq("compte", SLUG);
 
         if(error) throw error;
 
@@ -1688,36 +1754,30 @@
 
     async function boot(){
       try{
-        const fromUrl = window.DIGIY_SESSION.fromUrl();
-        if(fromUrl && fromUrl.slug){
-          window.DIGIY_SESSION.save(fromUrl.slug, fromUrl.phone);
-        }
+        cleanVisibleUrl();
 
         const session = window.DIGIY_SESSION.require("./pin.html?redirect=admin");
         if(!session) return;
 
-        const params = new URLSearchParams(window.location.search);
+        SLUG = String(session.compte || "").trim().toLowerCase();
+        PHONE = String(session.phone || "").replace(/[^\d]/g, "");
 
-        SLUG = session.slug || params.get("slug") || "";
-        PHONE = session.phone || params.get("phone") || "";
+        if(!SLUG || !PHONE){
+          setState("bad", "Session incomplète", "Repasse par le code pour rouvrir Mon argent proprement.");
+          return;
+        }
 
-        SLUG = String(SLUG || "").trim().toLowerCase();
-        PHONE = String(PHONE || "").replace(/[^\d]/g, "");
-
-        window.DIGIY_SESSION.applyUrl(SLUG, PHONE);
-
-        $("topSlug").textContent = SLUG;
-        $("badgeSlug").textContent = SLUG;
-        $("slugBadge").style.display = "flex";
+        $("topCompte").textContent = "Session protégée";
+        $("badgeCompte").textContent = "Référence protégée";
+        $("compteBadge").style.display = "flex";
         $("movementDate").value = todayStr();
         applyDraftPrefillFromUrl();
 
-        const cockpitHref = `./cockpit.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
+        const cockpitHref = cleanInternalHref("./cockpit.html");
         $("topCockpitLink").href = cockpitHref;
         $("hudCockpitLink").href = cockpitHref;
 
-        const brainHref = `./brain-admin.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
-        const pinHref = `./pin.html?slug=${encodeURIComponent(SLUG)}${PHONE ? `&phone=${encodeURIComponent(PHONE)}` : ""}`;
+        const brainHref = cleanInternalHref("./brain-admin.html");
 
         const linkMap = {
           fastHome: cockpitHref,
@@ -1730,9 +1790,6 @@
           if(node) node.href = href;
         });
 
-        const bottomAccess = document.querySelector('.nav a[href="./pin.html"]');
-        if(bottomAccess) bottomAccess.href = pinHref;
-
         setState("ok", "Saisie PAY prête", "Session chargée. Tu peux enregistrer des mouvements manuels.");
         await loadHistory();
       }catch(err){
@@ -1740,6 +1797,7 @@
         setState("bad", "Erreur de session", errText(err));
       }
     }
+
 
     $("scope").addEventListener("change", syncKindByScope);
     $("btnReset").addEventListener("click", resetForm);
