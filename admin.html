@@ -1190,7 +1190,7 @@
     );
 
     const sessionBoot = window.DIGIY_SESSION?.boot?.() || null;
-    const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
+    const PAY_MOVEMENTS_TABLE = "digiy_pay_movements"; // repère historique : accès direct remplacé par RPC
 
     let SLUG = "";
     let PHONE = "";
@@ -1412,6 +1412,21 @@
       return clean;
     }
 
+    async function callPayRpc(name, args){
+      const { data, error } = await sb.rpc(name, args || {});
+      if(error) throw error;
+
+      const payload = data && typeof data === "object" ? data : {};
+      if(payload.ok === false){
+        const e = new Error(payload.error || "rpc_failed");
+        e.details = JSON.stringify(payload);
+        e.code = payload.error || "rpc_failed";
+        throw e;
+      }
+
+      return payload;
+    }
+
     function toast(msg, duration = 2200){
       const t = $("toast");
       if(!t) return;
@@ -1566,35 +1581,32 @@
     }
 
     async function loadHistory(){
-      if(!SLUG){
-        $("historyList").innerHTML = `<div class="empty">Compte PAY manquant.</div>`;
+      if(!SLUG || !PHONE){
+        $("historyList").innerHTML = `<div class="empty">Session PAY manquante.</div>`;
         return;
       }
 
       try{
         $("historyList").innerHTML = `<div class="loader"><div class="spinner"></div> Chargement…</div>`;
 
-        const { data, error } = await sb
-          .from(PAY_MOVEMENTS_TABLE)
-          .select("id,compte,direction,scope,kind,category,amount_xof,channel,label,note_text,source_module,source_id,movement_date,created_at,status")
-          .eq("compte", SLUG)
-          .order("movement_date", { ascending: false })
-          .order("created_at", { ascending: false })
-          .limit(30);
+        const payload = await callPayRpc("digiy_pay_pro_list_movements", {
+          p_slug: SLUG,
+          p_phone: PHONE,
+          p_limit: 30
+        });
 
-        if(error) throw error;
-
-        HISTORY = Array.isArray(data) ? data : [];
+        HISTORY = Array.isArray(payload.items) ? payload.items : [];
         renderStats(HISTORY);
         renderHistory(HISTORY);
-        setState("ok", "Saisie PAY prête", "Mouvements chargéss sur le compte PAY actif.");
+        setState("ok", "Saisie PAY prête", "Mouvements chargés via le coffre PAY contrôlé.");
       }catch(err){
-        logErr("[PAY admin history]", err);
+        logErr("[PAY admin history RPC]", err);
         const msg = errText(err);
         $("historyList").innerHTML = `<div class="empty">Impossible de charger l’historique.<br>${esc(msg)}</div>`;
         setState("bad", "Lecture bloquée", msg);
       }
     }
+
 
     async function saveMovement(evt){
       evt.preventDefault();
@@ -1675,18 +1687,18 @@
           return;
         }
 
-        console.log("[PAY admin save payload]", payload);
+        console.log("[PAY admin save payload RPC]", payload);
 
-        const { error } = await sb
-          .from(PAY_MOVEMENTS_TABLE)
-          .insert([payload]);
-
-        if(error) throw error;
+        await callPayRpc("digiy_pay_pro_insert_movement", {
+          p_slug: SLUG,
+          p_phone: PHONE,
+          p_payload: payload
+        });
 
         toast("✅ Mouvement enregistré");
         resetForm();
         await loadHistory();
-        setState("ok", "Saisie PAY prête", "Mouvement enregistré sur le compte PAY actif.");
+        setState("ok", "Saisie PAY prête", "Mouvement enregistré via le coffre PAY contrôlé.");
       }catch(err){
         const clean = logErr("[PAY admin save]", err);
         const msg = [
@@ -1705,23 +1717,22 @@
 
     async function deleteMovement(id){
       try{
-        const { error } = await sb
-          .from(PAY_MOVEMENTS_TABLE)
-          .delete()
-          .eq("id", id)
-          .eq("compte", SLUG);
-
-        if(error) throw error;
+        await callPayRpc("digiy_pay_pro_delete_movement", {
+          p_slug: SLUG,
+          p_phone: PHONE,
+          p_id: id
+        });
 
         toast("🗑 Mouvement supprimé");
         await loadHistory();
       }catch(err){
-        logErr("[PAY admin delete]", err);
+        logErr("[PAY admin delete RPC]", err);
         const msg = errText(err);
         toast("❌ Suppression impossible");
         setState("bad", "Suppression bloquée", msg);
       }
     }
+
 
     function bindAnchorLinks(){
       ["fastMovements","bottomMovements","fastAdd","bottomAdd","fastDrafts","bottomDrafts"].forEach(id => {
