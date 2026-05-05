@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Mon argent — Plus : base argent, réserve, charges, crédits, dettes, projets et export JSON."
+    content="Mon argent — Plus : base argent, réserve, charges, crédits, dettes, projets et export JSON sans exposer la session dans l’adresse."
   />
 
   <script src="./session.js"></script>
@@ -565,12 +565,14 @@
         <div class="mark">₣</div>
         <div>
           <div class="brand-title">MON ARGENT — Plus</div>
-          <div class="brand-sub" id="brainMeta">Repère actif et éléments gardés sur cet appareil</div>
+          <div class="brand-sub" id="brainMeta">Session protégée et éléments gardés sur cet appareil</div>
         </div>
       </div>
 
       <nav class="nav">
         <a class="pill" id="navHomeLink" href="./index.html">← Accueil</a>
+        <a class="pill" href="https://digiy-hub.digiylyfe.com/">🧭 HUB</a>
+        <a class="pill" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
         <a class="pill" id="navCockpitLink" href="./cockpit.html">🏠 Accueil</a>
         <a class="pill" id="navAdminLink" href="./admin.html">➕ Ajouter</a>
         <button class="pill primary" id="btnSaveTop" type="button">💾 Enregistrer</button>
@@ -581,9 +583,9 @@
   <main class="wrap">
     <section class="hero">
       <div class="eyebrow">💼 MON ARGENT — base argent</div>
-      <h1>Pose tes repères.<br>Ta lecture restera juste.</h1>
+      <h1>Pose tes références.<br>Ta lecture restera juste.</h1>
       <p>
-        Ici tu poses les repères qui protègent ton mois : réserve, charges fixes, remboursements, dettes et projets.
+        Ici tu poses les références qui protègent ton mois : réserve, charges fixes, remboursements, dettes et projets.
         Tout reste d’abord sur cet appareil. Ensuite tu peux télécharger ton fichier
         ou préparer une version à partager.
       </p>
@@ -808,7 +810,7 @@
           </div>
           <div class="card-body">
             <div class="status ok" id="statusBox">
-              Tes repères d’argent sont prêts. Rien ne part ailleurs.
+              Tes références d’argent sont prêts. Rien ne part ailleurs.
             </div>
 
             <div class="toolbar" style="margin-top:12px">
@@ -824,7 +826,7 @@
             <input class="file-input" id="fileImport" type="file" accept="application/json,.json" />
 
             <div class="status warn" style="margin-top:12px">
-              Cet appareil garde tes repères d’argent pour ce repère PAY.
+              Cet appareil garde tes références d’argent pour ce compte PAY.
               La vue argent lit d’abord ta version enregistrée, puis le brouillon gardé ici.
             </div>
           </div>
@@ -952,35 +954,95 @@
         .replace(/'/g, "&#39;");
     }
 
-    function buildCtxHref(page, slug, phone){
-      const s = normalizeSlug(slug);
-      const p = normalizePhone(phone);
-      const qs = [];
-      if(s) qs.push("slug=" + encodeURIComponent(s));
-      if(p) qs.push("phone=" + encodeURIComponent(p));
-      return qs.length ? `${page}?${qs.join("&")}` : page;
+    function cleanVisibleUrl(){
+      try{
+        const url = new URL(window.location.href);
+        let changed = false;
+
+        [
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "slug",
+          "pay_slug",
+          "subscription_slug",
+          "business_phone",
+          "wave_phone",
+          "wallet_phone",
+          "pay_phone",
+          "access_note",
+          "keybox_code",
+          "keybox_location"
+        ].forEach(function(key){
+          if(url.searchParams.has(key)){
+            url.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        if(changed){
+          history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+        }
+      }catch(_){}
+    }
+
+    function cleanInternalHref(page){
+      try{
+        const url = new URL(page || "./cockpit.html", window.location.href);
+
+        [
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "slug",
+          "pay_slug",
+          "subscription_slug",
+          "business_phone",
+          "wave_phone",
+          "wallet_phone",
+          "pay_phone"
+        ].forEach(function(key){
+          url.searchParams.delete(key);
+        });
+
+        if(url.origin !== window.location.origin){
+          return "./cockpit.html";
+        }
+
+        const file = url.pathname.split("/").pop() || "cockpit.html";
+        return "./" + file + url.search + url.hash;
+      }catch(_){
+        return "./cockpit.html";
+      }
+    }
+
+    function buildCtxHref(page){
+      return cleanInternalHref(page || "./cockpit.html");
     }
 
     function getCtx(){
-      const session = window.DIGIY_SESSION && typeof window.DIGIY_SESSION.read === "function"
-        ? window.DIGIY_SESSION.read()
+      cleanVisibleUrl();
+
+      const session = window.DIGIY_SESSION && typeof window.DIGIY_SESSION.require === "function"
+        ? window.DIGIY_SESSION.require("./pin.html?redirect=brain-admin")
         : (
-            window.DIGIY_SESSION && typeof window.DIGIY_SESSION.get === "function"
-              ? window.DIGIY_SESSION.get()
-              : null
+            window.DIGIY_SESSION && typeof window.DIGIY_SESSION.read === "function"
+              ? window.DIGIY_SESSION.read()
+              : (
+                  window.DIGIY_SESSION && typeof window.DIGIY_SESSION.get === "function"
+                    ? window.DIGIY_SESSION.get()
+                    : null
+                )
           );
 
-      const url = new URL(window.location.href);
-      const slug =
-        normalizeSlug(url.searchParams.get("slug")) ||
-        normalizeSlug(session?.slug);
-
-      const phone =
-        normalizePhone(url.searchParams.get("phone")) ||
-        normalizePhone(session?.phone);
+      const slug = normalizeSlug(session?.slug);
+      const phone = normalizePhone(session?.phone);
 
       return { slug, phone };
     }
+
 
     const CTX = getCtx();
     const AUTOSAVE_DELAY_MS = 420;
@@ -992,7 +1054,7 @@
       const box = document.getElementById("statusBox");
       if(box){
         box.className = "status bad";
-        box.innerHTML = "Repère PAY manquant. Ouvre d’abord ton code d’accès ou ta vue argent pour revenir ici.";
+        box.innerHTML = "Référence PAY manquant. Ouvre d’abord ton code d’accès pour revenir ici.";
       }
 
       setTimeout(() => {
@@ -1227,10 +1289,10 @@
     let brain = loadDraft();
 
     function setContextLinks(){
-      const home = buildCtxHref("./index.html", CTX.slug, CTX.phone);
-      const cockpit = buildCtxHref("./cockpit.html", CTX.slug, CTX.phone);
-      const admin = buildCtxHref("./admin.html", CTX.slug, CTX.phone);
-      const brain = buildCtxHref("./brain-admin.html", CTX.slug, CTX.phone);
+      const home = buildCtxHref("./index.html");
+      const cockpit = buildCtxHref("./cockpit.html");
+      const admin = buildCtxHref("./admin.html");
+      const brain = buildCtxHref("./brain-admin.html");
       const movements = cockpit + "#resultList";
       const drafts = admin + "#draftPrefillBox";
 
@@ -1256,6 +1318,7 @@
       });
     }
 
+
     function setStatus(kind, text){
       const el = document.getElementById("statusBox");
       el.className = "status " + kind;
@@ -1269,13 +1332,12 @@
         brain.projects.length
       ].reduce((a,b)=>a+b,0);
 
-      const ctxParts = [];
-      if(CTX.slug) ctxParts.push("Repère actif · " + CTX.slug);
-      if(CTX.phone) ctxParts.push("Numéro lié · " + CTX.phone);
+      const sessionText = CTX.slug ? "Session protégée" : "Session à ouvrir";
 
       document.getElementById("brainMeta").textContent =
-        `${ctxParts.join(" · ")}${ctxParts.length ? " · " : ""}${count} élément(s) gardé(s) ici`;
+        `${sessionText} · ${count} élément(s) gardé(s) ici`;
     }
+
 
     function buildExportObject(){
       return normalizeBrain(deepClone(brain));
@@ -1283,16 +1345,17 @@
 
     function buildRepoExportObject(){
       return {
-        slug: CTX.slug,
-        phone: CTX.phone || "",
+        module: "PAY",
+        account_ref: CTX.slug ? "protected" : "",
         updated_at: new Date().toISOString(),
         brain: buildExportObject()
       };
     }
 
     function getCockpitHref(){
-      return buildCtxHref("./cockpit.html", CTX.slug, CTX.phone);
+      return buildCtxHref("./cockpit.html");
     }
+
 
     function saveDraft(showMessage = true, sourceLabel = "manuel"){
       const normalized = normalizeBrain(brain);
@@ -1306,16 +1369,15 @@
       if(window.DIGIY_SESSION && typeof window.DIGIY_SESSION.save === "function"){
         try{
           window.DIGIY_SESSION.save(CTX.slug, CTX.phone);
-          if(typeof window.DIGIY_SESSION.applyUrl === "function"){
-            window.DIGIY_SESSION.applyUrl(CTX.slug, CTX.phone);
-          }
         }catch(_){}
       }
+
+      cleanVisibleUrl();
 
       if(showMessage){
         setStatus(
           "ok",
-          `Ta base argent est bien enregistrée sur cet appareil.<br><strong>Repère :</strong> ${esc(CTX.slug || "local")}`
+          "Ta base argent est bien enregistrée sur cet appareil.<br><strong>Session :</strong> protégée"
         );
       }
 
@@ -1706,14 +1768,14 @@
           const extracted = extractBrainObject(raw, CTX.slug);
 
           if(!extracted || typeof extracted !== "object"){
-            setStatus("bad", "Import refusé : fichier invalide ou repères d’argent introuvables.");
+            setStatus("bad", "Import refusé : fichier invalide ou références d’argent introuvables.");
             return;
           }
 
           brain = normalizeBrain(extracted);
           renderAll();
           saveDraft(false, "import_json");
-          setStatus("ok", "Le fichier a bien été chargé sur cet appareil pour ce repère.");
+          setStatus("ok", "Le fichier a bien été chargé sur cet appareil pour cette session.");
         }catch(_){
           setStatus("bad", "Import refusé : fichier illisible.");
         }
@@ -1725,7 +1787,7 @@
       saveDraft(false, "sync_cockpit");
       setStatus(
         "ok",
-        `Ta vue argent a bien été mise à jour.<br><strong>Repère :</strong> ${esc(CTX.slug || "local")}<br><a href="${esc(getCockpitHref())}" style="color:#bbf7d0;text-decoration:underline">Ouvrir ma vue argent</a>`
+        `Ta vue argent a bien été mise à jour.<br><strong>Session :</strong> protégée<br><a href="${esc(getCockpitHref())}" style="color:#bbf7d0;text-decoration:underline">Ouvrir ma vue argent</a>`
       );
     }
 
@@ -1738,13 +1800,13 @@
       document.getElementById("btnSaveTop").addEventListener("click", () => saveDraft(true, "manuel"));
 
       document.getElementById("btnExport").addEventListener("click", () => {
-        const filename = `pay-brain-${CTX.slug || "local"}.json`;
+        const filename = "pay-brain-mon-argent.json";
         downloadJson(filename, buildExportObject());
         setStatus("ok", `Ton fichier ${filename} est prêt.`);
       });
 
       document.getElementById("btnExportRepo").addEventListener("click", () => {
-        const filename = `pay-brain-${CTX.slug || "local"}-repo.json`;
+        const filename = "pay-brain-mon-argent-partage.json";
         downloadJson(filename, buildRepoExportObject());
         setStatus("ok", `La version GitHub est prête : ${filename}`);
       });
@@ -1772,7 +1834,7 @@
         brain = deepClone(TEMPLATE);
         renderAll();
         saveDraft(false, "base_vide");
-        setStatus("ok", "La base vide est chargée sur cet appareil pour ce repère.");
+        setStatus("ok", "La base vide est chargée sur cet appareil pour cette session.");
       });
 
       document.getElementById("btnClearLocal").addEventListener("click", () => {
@@ -1783,7 +1845,7 @@
 
         brain = deepClone(TEMPLATE);
         renderAll();
-        setStatus("warn", "Tout ce qui était gardé ici pour ce repère a été effacé. La base vide a été rechargée.");
+        setStatus("warn", "Tout ce qui était gardé ici pour cette session a été effacé. La base vide a été rechargée.");
       });
 
       [
@@ -1800,6 +1862,8 @@
       });
     }
 
+    cleanVisibleUrl();
+
     if(requireSlugOrRedirect()){
       bindBaseFields();
       bindActions();
@@ -1807,7 +1871,7 @@
 
       setStatus(
         "ok",
-        `Repère actif : <strong>${esc(CTX.slug)}</strong>. Cette base reste séparée pour ce repère.`
+        `Session active : <strong>${esc(CTX.slug)}</strong>. Cette base reste séparée pour cette session.`
       );
     }
 
