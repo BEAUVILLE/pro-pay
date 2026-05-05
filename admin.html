@@ -1234,9 +1234,9 @@
           "tel",
           "owner_phone",
           "owner_id",
-          "compte",
-          "pay_compte",
-          "subscription_compte",
+          "slug",
+          "pay_slug",
+          "subscription_slug",
           "business_phone",
           "wave_phone",
           "wallet_phone",
@@ -1266,9 +1266,9 @@
           "tel",
           "owner_phone",
           "owner_id",
-          "compte",
-          "pay_compte",
-          "subscription_compte",
+          "slug",
+          "pay_slug",
+          "subscription_slug",
           "business_phone",
           "wave_phone",
           "wallet_phone",
@@ -1653,10 +1653,10 @@
 
         const params = new URLSearchParams(window.location.search);
         const cleanPhone = String(PHONE || "").replace(/[^\d]/g, "");
-        const cleanCompte = String(SLUG || "").trim().toLowerCase();
+        const cleanSlug = String(SLUG || "").trim().toLowerCase();
 
         const payload = {
-          compte: cleanCompte,
+          slug: cleanSlug,
           phone: cleanPhone || null,
           direction,
           scope: dbScope,
@@ -1676,7 +1676,7 @@
             from_draft: params.get("fromDraft") === "1",
             intent: params.get("intent") || null,
             complement: params.get("complement") || null,
-            source_compte: params.get("source_compte") || null,
+            source_slug: params.get("source_slug") || null,
             draft_source_module: params.get("source_module") || null
           }
         };
@@ -1770,7 +1770,7 @@
         const session = window.DIGIY_SESSION.require("./pin.html?redirect=admin");
         if(!session) return;
 
-        SLUG = String(session.compte || "").trim().toLowerCase();
+        SLUG = String(session.slug || session.compte || "").trim().toLowerCase();
         PHONE = String(session.phone || "").replace(/[^\d]/g, "");
 
         if(!SLUG || !PHONE){
