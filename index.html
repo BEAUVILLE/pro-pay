@@ -1,27 +1,14 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<script>
-  window.DIGIY_SUPABASE_URL  = "https://wesqmwjjtsefyjnluosj.supabase.co";
-  window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
-  window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
-  window.DIGIY_MODULE = "PAY";
 
-  // IMPORTANT : défini AVANT guard.js
-  window.DIGIY_LOGIN_URL = "./pin.html";
-
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./guard.js"></script>
-  
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT by DIGIY ♾️</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="MON ARGENT by DIGIY — lecture financière terrain pour voir vite, comprendre vite et agir vite. Paiement direct, 0% commission, lecture claire."
+    content="MON ARGENT by DIGIY — porte d’entrée vers le coffre financier PAY : lire, ajouter, protéger, sans exposer la session dans l’adresse."
   />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -948,12 +935,12 @@
       </div>
 
       <nav class="nav">
-        <a class="pill" href="https://digiylyfe.com/">🌍 Site</a>
-        <a class="pill" href="https://pro-espace.digiylyfe.com/">🧭 HUB</a>
-        <a class="pill" href="https://tarifs.digiylyfe.com/">📦 Tarifs</a>
+        <a class="pill" href="https://digiylyfe.com/" target="_blank" rel="noopener noreferrer">🌍 Site</a>
+        <a class="pill" href="https://digiy-hub.digiylyfe.com/" target="_blank" rel="noopener noreferrer">🧭 HUB</a>
+        <a class="pill" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
         <a class="pill primary" href="./pin.html">🔐 Entrée sécurisée</a>
-        <a class="pill" href="./cockpit.html">📊 Mon espace</a>
-        <a class="pill" href="./admin.html">➕ Ajouter</a>
+        <a class="pill" href="./pin.html?redirect=cockpit">📊 Espace</a>
+        <a class="pill" href="./pin.html?redirect=admin">➕ Ajouter</a>
       </nav>
     </div>
   </header>
@@ -988,8 +975,8 @@
 
         <div class="cta-row">
           <a class="btn primary" href="./pin.html">🔐 Entrer dans mon espace</a>
-          <a class="btn secondary" href="./cockpit.html">📊 Ouvrir mon espace</a>
-          <a class="btn ghost" href="./admin.html">➕ Ajouter un mouvement</a>
+          <a class="btn secondary" href="./pin.html?redirect=cockpit">📊 Ouvrir mon espace</a>
+          <a class="btn ghost" href="./pin.html?redirect=admin">➕ Ajouter un mouvement</a>
         </div>
 
         <div class="hero-strip">
@@ -1065,7 +1052,7 @@
             <div class="qa-arrow">→</div>
           </a>
 
-          <a class="qa" href="./cockpit.html">
+          <a class="qa" href="./pin.html?redirect=cockpit">
             <div class="qa-left">
               <div class="qa-k">Voir mon espace</div>
               <div class="qa-s">Lecture réelle du backbone PAY, sans démo parasite.</div>
@@ -1073,7 +1060,7 @@
             <div class="qa-arrow">→</div>
           </a>
 
-          <a class="qa" href="./admin.html">
+          <a class="qa" href="./pin.html?redirect=admin">
             <div class="qa-left">
               <div class="qa-k">Ajouter un mouvement</div>
               <div class="qa-s">Saisie simple d’une entrée, dépense ou épargne utile.</div>
@@ -1249,10 +1236,45 @@
     <div class="footer">
       MON ARGENT by DIGIY ♾️ — lecture financière terrain • 0% commission • paiement direct au professionnel •
       <a href="./pin.html">Entrée sécurisée</a> •
-      <a href="./cockpit.html">Mon espace</a> •
-      <a href="./admin.html">Saisie</a>
+      <a href="./pin.html?redirect=cockpit">Mon espace</a> •
+      <a href="./pin.html?redirect=admin">Saisie</a>
     </div>
   </main>
+
+
+  <script>
+    (function(){
+      "use strict";
+      try{
+        const url = new URL(window.location.href);
+        let changed = false;
+        [
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "slug",
+          "pay_slug",
+          "subscription_slug",
+          "business_phone",
+          "wave_phone",
+          "wallet_phone",
+          "pay_phone",
+          "access_note",
+          "keybox_code",
+          "keybox_location"
+        ].forEach(function(key){
+          if(url.searchParams.has(key)){
+            url.searchParams.delete(key);
+            changed = true;
+          }
+        });
+        if(changed){
+          history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+        }
+      }catch(_){}
+    })();
+  </script>
 
   <script>
     (function(){
