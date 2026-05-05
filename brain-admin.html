@@ -1054,7 +1054,7 @@
       const box = document.getElementById("statusBox");
       if(box){
         box.className = "status bad";
-        box.innerHTML = "Référence PAY manquant. Ouvre d’abord ton code d’accès pour revenir ici.";
+        box.innerHTML = "Session PAY manquante. Ouvre d’abord ton code d’accès pour revenir ici.";
       }
 
       setTimeout(() => {
@@ -1871,7 +1871,7 @@
 
       setStatus(
         "ok",
-        `Session active : <strong>${esc(CTX.slug)}</strong>. Cette base reste séparée pour cette session.`
+        "Session protégée active. Cette base reste séparée pour ce compte."
       );
     }
 
