@@ -1,10 +1,18 @@
 (function(){
   "use strict";
 
+  /*
+    session.js — MON ARGENT / PRO PAY
+    Rôle : garder la session locale 8h.
+    Règle : ne jamais remettre phone / slug dans l’URL visible.
+  */
+
   const SESSION_KEY = "digiy_pay_session";
+  const MAIN_PRO_SESSION_KEY = "DIGIY_PAY_PRO_SESSION";
 
   const SESSION_KEYS = [
     "digiy_pay_session",
+    "DIGIY_PAY_PRO_SESSION",
     "DIGIY_PAY_PIN_SESSION",
     "DIGIY_PIN_SESSION",
     "DIGIY_ACCESS",
@@ -14,8 +22,31 @@
   const MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8h
   const MODULE_NAME = "PAY";
 
+  const SENSITIVE_URL_KEYS = [
+    "phone",
+    "tel",
+    "owner_phone",
+    "owner_id",
+    "slug",
+    "pay_slug",
+    "subscription_slug",
+    "business_phone",
+    "wave_phone",
+    "wallet_phone",
+    "pay_phone",
+    "access_note",
+    "keybox_code",
+    "keybox_location"
+  ];
+
   function normalizeSlug(v){
-    return String(v || "").trim().toLowerCase();
+    return String(v || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
   }
 
   function normalizePhone(v){
@@ -28,6 +59,61 @@
     }catch(_){
       return null;
     }
+  }
+
+  function cleanVisibleUrl(){
+    try{
+      const url = new URL(window.location.href);
+      let changed = false;
+
+      SENSITIVE_URL_KEYS.forEach(function(key){
+        if(url.searchParams.has(key)){
+          url.searchParams.delete(key);
+          changed = true;
+        }
+      });
+
+      if(changed){
+        window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+      }
+    }catch(_){}
+  }
+
+  function cleanInternalUrl(target){
+    try{
+      const url = new URL(target || "./pin.html", window.location.href);
+
+      SENSITIVE_URL_KEYS.forEach(function(key){
+        url.searchParams.delete(key);
+      });
+
+      if(url.origin !== window.location.origin){
+        return "./pin.html";
+      }
+
+      const file = url.pathname.split("/").pop() || "pin.html";
+      return "./" + file + url.search + url.hash;
+    }catch(_){
+      return target || "./pin.html";
+    }
+  }
+
+  function safeRedirectName(value){
+    const raw = String(value || "").trim().toLowerCase();
+
+    const map = {
+      "cockpit": "cockpit.html",
+      "cockpit.html": "cockpit.html",
+      "admin": "admin.html",
+      "admin.html": "admin.html",
+      "brain": "brain-admin.html",
+      "brain-admin": "brain-admin.html",
+      "brain-admin.html": "brain-admin.html",
+      "pin": "pin.html",
+      "pin.html": "pin.html"
+    };
+
+    return map[raw] || "cockpit.html";
   }
 
   function buildPayload(slug, phone){
@@ -70,6 +156,16 @@
     });
 
     try{
+      localStorage.setItem(MAIN_PRO_SESSION_KEY, JSON.stringify(payload));
+      sessionStorage.setItem(MAIN_PRO_SESSION_KEY, JSON.stringify(payload));
+    }catch(_){}
+
+    /*
+      Compatibilité interne :
+      ces valeurs restent en stockage local pour les pages PRO,
+      mais elles ne sont plus propagées dans les URLs visibles.
+    */
+    try{
       localStorage.setItem("digiy_pay_slug", payload.slug || "");
       localStorage.setItem("digiy_pay_phone", payload.phone || "");
       localStorage.setItem("digiy_pay_last_slug", payload.slug || "");
@@ -79,10 +175,21 @@
       sessionStorage.setItem("digiy_pay_last_slug", payload.slug || "");
     }catch(_){}
 
+    /*
+      Ne pas exposer phone/slug dans window.DIGIY_ACCESS.
+      Les pages qui ont besoin de l’identité doivent passer par DIGIY_SESSION.get().
+    */
     try{
-      window.DIGIY_ACCESS = Object.assign({}, window.DIGIY_ACCESS || {}, payload);
+      window.DIGIY_ACCESS = Object.assign({}, window.DIGIY_ACCESS || {}, {
+        module: MODULE_NAME,
+        ok: true,
+        access_ok: true,
+        verified: true,
+        ts: payload.ts || Date.now()
+      });
     }catch(_){}
 
+    cleanVisibleUrl();
     return payload;
   }
 
@@ -103,6 +210,11 @@
     });
 
     try{
+      localStorage.removeItem(MAIN_PRO_SESSION_KEY);
+      sessionStorage.removeItem(MAIN_PRO_SESSION_KEY);
+    }catch(_){}
+
+    try{
       localStorage.removeItem("digiy_pay_slug");
       localStorage.removeItem("digiy_pay_phone");
       localStorage.removeItem("digiy_pay_last_slug");
@@ -111,11 +223,21 @@
       sessionStorage.removeItem("digiy_pay_phone");
       sessionStorage.removeItem("digiy_pay_last_slug");
     }catch(_){}
+
+    try{
+      window.DIGIY_ACCESS = {
+        module: MODULE_NAME,
+        ok: false,
+        access_ok: false
+      };
+    }catch(_){}
+
+    cleanVisibleUrl();
   }
 
   function readOne(key){
     try{
-      return safeJsonParse(localStorage.getItem(key)) || safeJsonParse(sessionStorage.getItem(key));
+      return safeJsonParse(sessionStorage.getItem(key)) || safeJsonParse(localStorage.getItem(key));
     }catch(_){
       return null;
     }
@@ -123,6 +245,8 @@
 
   function get(){
     try{
+      cleanVisibleUrl();
+
       let parsed = null;
 
       for(const key of SESSION_KEYS){
@@ -175,7 +299,20 @@
         return null;
       }
 
-      return save(slug, phone);
+      return writePayload({
+        ...parsed,
+        slug,
+        phone,
+        module: MODULE_NAME,
+        access: true,
+        access_ok: true,
+        ok: true,
+        verified: true,
+        has_access: true,
+        verified_at: parsed.verified_at || parsed.ts || Date.now(),
+        validated_at: parsed.validated_at || new Date(Date.now()).toISOString(),
+        ts: parsed.ts || Date.now()
+      });
     }catch(_){
       clear();
       return null;
@@ -187,51 +324,26 @@
   }
 
   function fromUrl(){
-    try{
-      const url = new URL(window.location.href);
-      const slug = normalizeSlug(url.searchParams.get("slug"));
-      const phone = normalizePhone(url.searchParams.get("phone"));
-
-      if(!slug) return null;
-      return { slug, phone };
-    }catch(_){
-      return null;
-    }
+    /*
+      Ancienne compatibilité neutralisée :
+      on ne crée plus de session depuis ?slug=... ou ?phone=...
+      car la session PRO doit venir du PIN.
+    */
+    cleanVisibleUrl();
+    return null;
   }
 
-  function applyUrl(slug, phone){
-    try{
-      const cleanSlug = normalizeSlug(slug);
-      const cleanPhone = normalizePhone(phone);
-      const url = new URL(window.location.href);
-
-      if(cleanSlug) url.searchParams.set("slug", cleanSlug);
-      else url.searchParams.delete("slug");
-
-      if(cleanPhone) url.searchParams.set("phone", cleanPhone);
-      else url.searchParams.delete("phone");
-
-      window.history.replaceState({}, "", url.toString());
-    }catch(_){}
+  function applyUrl(){
+    /*
+      Ancien comportement : ajoutait ?slug=...&phone=...
+      Nouveau comportement : nettoie seulement l’URL visible.
+    */
+    cleanVisibleUrl();
   }
 
   function boot(){
-    const urlCtx = fromUrl();
-
-    if(urlCtx && urlCtx.slug){
-      const saved = save(urlCtx.slug, urlCtx.phone);
-      applyUrl(saved?.slug || urlCtx.slug, saved?.phone || urlCtx.phone);
-      return saved || null;
-    }
-
-    const session = get();
-
-    if(session){
-      applyUrl(session.slug, session.phone);
-      return session;
-    }
-
-    return null;
+    cleanVisibleUrl();
+    return get();
   }
 
   function buildPinUrl(pinUrl){
@@ -239,18 +351,23 @@
       const target = pinUrl || "./pin.html";
       const url = new URL(target, window.location.href);
 
+      SENSITIVE_URL_KEYS.forEach(function(key){
+        url.searchParams.delete(key);
+      });
+
       const current = new URL(window.location.href);
-      const redirect = current.pathname.split("/").pop() || "cockpit.html";
+      const redirect = safeRedirectName(current.searchParams.get("redirect") || current.pathname.split("/").pop() || "cockpit.html");
 
       if(!url.searchParams.get("redirect")){
         url.searchParams.set("redirect", redirect);
       }
 
-      const currentSession = get();
-      if(currentSession?.slug) url.searchParams.set("slug", currentSession.slug);
-      if(currentSession?.phone) url.searchParams.set("phone", currentSession.phone);
+      if(url.origin !== window.location.origin){
+        return "./pin.html?redirect=" + encodeURIComponent(redirect);
+      }
 
-      return url.toString();
+      const file = url.pathname.split("/").pop() || "pin.html";
+      return "./" + file + url.search + url.hash;
     }catch(_){
       return pinUrl || "./pin.html";
     }
@@ -264,9 +381,11 @@
       return null;
     }
 
-    applyUrl(s.slug, s.phone);
+    cleanVisibleUrl();
     return s;
   }
+
+  cleanVisibleUrl();
 
   window.DIGIY_SESSION = {
     save,
@@ -277,6 +396,7 @@
     applyUrl,
     fromUrl,
     boot,
+    cleanVisibleUrl,
     normalizeSlug,
     normalizePhone
   };
