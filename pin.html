@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="Mon argent — Accès sécurisé pour ouvrir Accueil, Ajouter, Brouillons et Plus."
+    content="Mon argent — Accès sécurisé pour ouvrir Accueil, Ajouter, Brouillons et Plus sans exposer les données dans l’adresse."
   />
 
   <script>
@@ -712,12 +712,14 @@
         <div class="brand-mark">₣</div>
         <div>
           <div class="brand-title">MON ARGENT</div>
-          <div class="brand-sub">Accès protégé • session terrain • lecture rapide</div>
+          <div class="brand-sub">Accès protégé • session protégée • lecture rapide</div>
         </div>
       </div>
 
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
+        <a class="pill" href="https://digiy-hub.digiylyfe.com/">🧭 HUB</a>
+        <a class="pill" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
         <a class="pill" id="navCockpitLink" href="./cockpit.html">🏠 Accueil</a>
         <a class="pill" id="navAdminLink" href="./admin.html">➕ Ajouter</a>
       </nav>
@@ -794,15 +796,15 @@
               <div class="point-ico">♾️</div>
               <div>
                 <strong>Rail réel DIGIY</strong>
-                <span>Zéro démo locale. Vérification sur le vrai accès PAY avec session terrain.</span>
+                <span>Zéro démo locale. Vérification sur le vrai accès PAY avec session protégée.</span>
               </div>
             </div>
           </div>
 
           <div class="mini-line">
             <div class="tag" id="tagModule">MODULE : PAY</div>
-            <div class="tag" id="tagSlug">REPÈRE : —</div>
-            <div class="tag" id="tagPhone">TÉL : —</div>
+            <div class="tag" id="tagSlug">RÉFÉRENCE : —</div>
+            <div class="tag" id="tagPhone">SESSION : —</div>
           </div>
         </div>
       </article>
@@ -816,9 +818,9 @@
           <form class="form" id="pinForm" novalidate>
             <div class="focus-box">
               <div class="focus-top">Ce qu’il faut pour entrer</div>
-              <div class="focus-main">Téléphone + code = accès ouvert</div>
+              <div class="focus-main">Téléphone + code = session ouverte</div>
               <div class="focus-sub">
-                Le repère PAY peut se remplir automatiquement à partir du téléphone principal.
+                La référence PAY reste rangée en session locale après validation.
               </div>
             </div>
 
@@ -829,9 +831,11 @@
             </div>
 
             <div class="field">
-              <label class="label" for="slug">Repère PAY</label>
-              <input class="input" id="slug" type="text" autocomplete="off" placeholder="pay-221771342889" />
-              <div class="hint">Tu peux le laisser se remplir automatiquement depuis le téléphone.</div>
+              <label class="label">Référence PAY</label>
+              <input id="référence" type="hidden" autocomplete="off" />
+              <div class="msg ok" style="min-height:auto;">
+                Référence protégée : elle reste en session locale après validation.
+              </div>
             </div>
 
             <div class="field">
@@ -840,7 +844,7 @@
                 <input class="input" id="pin" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="••••" />
                 <button class="btn btn-secondary" id="btnTogglePin" type="button">👁 Voir</button>
               </div>
-              <div class="hint">Code Code DIGIY PAY pour ouvrir le cockpit protégé.</div>
+              <div class="hint">Code DIGIY PAY pour ouvrir le cockpit protégé.</div>
             </div>
 
             <div class="msg" id="msgBox">
@@ -933,39 +937,109 @@
 
     function setLoading(on){
       const loader = $("loader");
-      [ $("btnSubmit"), $("btnClear"), $("btnTogglePin"), $("phone"), $("slug"), $("pin") ]
+      [ $("btnSubmit"), $("btnClear"), $("btnTogglePin"), $("phone"), $("référence"), $("pin") ]
         .forEach(el => { if(el) el.disabled = !!on; });
       if(loader) loader.style.display = on ? "inline-flex" : "none";
     }
 
-    function updateTags(slug, phone){
-      $("tagSlug").textContent = "REPÈRE : " + (slug || "—");
-      $("tagPhone").textContent = "TÉL : " + (phone || "—");
+    function cleanVisibleUrl(){
+      try{
+        const url = new URL(window.location.href);
+        let changed = false;
+
+        [
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "référence",
+          "pay_référence",
+          "subscription_référence",
+          "business_phone",
+          "wave_phone",
+          "wallet_phone",
+          "pay_phone",
+          "access_note",
+          "keybox_code",
+          "keybox_location"
+        ].forEach(function(key){
+          if(url.searchParams.has(key)){
+            url.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        if(changed){
+          history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+        }
+      }catch(_){}
     }
+
+    function cleanInternalHref(page){
+      try{
+        const url = new URL(page || "./cockpit.html", window.location.href);
+        [
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "référence",
+          "pay_référence",
+          "subscription_référence",
+          "business_phone",
+          "wave_phone",
+          "wallet_phone",
+          "pay_phone"
+        ].forEach(function(key){
+          url.searchParams.delete(key);
+        });
+
+        if(url.origin === window.location.origin){
+          return url.pathname.split("/").pop() + url.search + url.hash;
+        }
+
+        return "./cockpit.html";
+      }catch(_){
+        return "./cockpit.html";
+      }
+    }
+
+    function safeNextTarget(raw){
+      const value = String(raw || "").trim();
+      if(!value) return "";
+      try{
+        const url = new URL(value, window.location.href);
+        if(url.origin !== window.location.origin) return "";
+        return cleanInternalHref(url.pathname + url.search + url.hash);
+      }catch(_){
+        return "";
+      }
+    }
+
+    function updateTags(référence, phone){
+      const cleanSlug = SESSION.normalizeSlug(référence);
+      const cleanPhone = SESSION.normalizePhone(phone);
+      $("tagSlug").textContent = "RÉFÉRENCE : " + (cleanSlug ? "OK" : "—");
+      $("tagPhone").textContent = "SESSION : " + (cleanPhone ? "ouverte" : "—");
+    }
+
 
     function inferSlugFromPhone(phone){
       const clean = SESSION.normalizePhone(phone);
       return clean ? ("pay-" + clean) : "";
     }
 
-    function buildCtxHref(page, slug, phone){
-      const s = SESSION.normalizeSlug(slug);
-      const p = SESSION.normalizePhone(phone);
-      const url = new URL(page, window.location.href);
-
-      if(s) url.searchParams.set("slug", s);
-      if(p) url.searchParams.set("phone", p);
-
-      return url.toString();
+    function buildCtxHref(page){
+      return cleanInternalHref(page || "./cockpit.html");
     }
 
-    function setContextLinks(slug, phone){
-      const cockpitHref = buildCtxHref("./cockpit.html", slug, phone);
-      const adminHref = buildCtxHref("./admin.html", slug, phone);
-      const brainHref = buildCtxHref("./brain-admin.html", slug, phone);
+    function setContextLinks(référence, phone){
+      const cockpitHref = buildCtxHref("./cockpit.html");
+      const adminHref = buildCtxHref("./admin.html");
+      const brainHref = buildCtxHref("./brain-admin.html");
       const movementsHref = cockpitHref + "#resultList";
       const draftsHref = adminHref + "#draftPrefillBox";
-      const pinHref = buildCtxHref("./pin.html", slug, phone);
+      const pinHref = buildCtxHref("./pin.html");
 
       [ "navCockpitLink", "quickCockpitLink", "fastHome", "bottomHome" ].forEach(id => {
         const el = $(id);
@@ -991,27 +1065,30 @@
       });
     }
 
-    function syncContextUi(slug, phone){
-      const cleanSlug = SESSION.normalizeSlug(slug);
+
+    function syncContextUi(référence, phone){
+      const cleanSlug = SESSION.normalizeSlug(référence);
       const cleanPhone = SESSION.normalizePhone(phone);
       updateTags(cleanSlug, cleanPhone);
       setContextLinks(cleanSlug, cleanPhone);
     }
 
     function readQuery(){
+      cleanVisibleUrl();
       try{
         const url = new URL(window.location.href);
         return {
-          slug: SESSION.normalizeSlug(url.searchParams.get("slug")),
-          phone: SESSION.normalizePhone(url.searchParams.get("phone")),
-          next: String(url.searchParams.get("next") || "").trim(),
+          référence: "",
+          phone: "",
+          next: safeNextTarget(url.searchParams.get("next")),
           redirect: String(url.searchParams.get("redirect") || "cockpit").trim().toLowerCase(),
           reason: String(url.searchParams.get("reason") || "").trim()
         };
       }catch(_){
-        return { slug:"", phone:"", next:"", redirect:"cockpit", reason:"" };
+        return { référence:"", phone:"", next:"", redirect:"cockpit", reason:"" };
       }
     }
+
 
     function chooseRedirectTarget(name){
       switch(String(name || "").trim().toLowerCase()){
@@ -1077,7 +1154,7 @@
           ok: true,
           module: module || "PAY",
           phone: finalPhone,
-          slug: inferSlugFromPhone(finalPhone),
+          référence: inferSlugFromPhone(finalPhone),
           label,
           id,
           raw
@@ -1114,26 +1191,26 @@
       }
     );
 
-    async function resolvePayIdentity(phoneValue, slugValue){
+    async function resolvePayIdentity(phoneValue, référenceValue){
       let phone = SESSION.normalizePhone(phoneValue || "");
-      let slug = SESSION.normalizeSlug(slugValue || "");
+      let référence = SESSION.normalizeSlug(référenceValue || "");
 
-      if(!slug && phone){
-        slug = inferSlugFromPhone(phone);
+      if(!référence && phone){
+        référence = inferSlugFromPhone(phone);
       }
 
-      if(slug){
+      if(référence){
         const { data, error } = await sb
           .from("digiy_subscriptions_public")
-          .select("phone,slug,module")
-          .eq("slug", slug)
+          .select("phone,référence,module")
+          .eq("référence", référence)
           .eq("module", "PAY")
           .limit(1);
 
         if(!error && Array.isArray(data) && data[0]){
           return {
             phone: SESSION.normalizePhone(data[0].phone || phone),
-            slug: SESSION.normalizeSlug(data[0].slug || slug)
+            référence: SESSION.normalizeSlug(data[0].référence || référence)
           };
         }
       }
@@ -1141,7 +1218,7 @@
       if(phone){
         const { data, error } = await sb
           .from("digiy_subscriptions_public")
-          .select("phone,slug,module")
+          .select("phone,référence,module")
           .eq("phone", phone)
           .eq("module", "PAY")
           .limit(1);
@@ -1149,14 +1226,14 @@
         if(!error && Array.isArray(data) && data[0]){
           return {
             phone: SESSION.normalizePhone(data[0].phone || phone),
-            slug: SESSION.normalizeSlug(data[0].slug || inferSlugFromPhone(phone))
+            référence: SESSION.normalizeSlug(data[0].référence || inferSlugFromPhone(phone))
           };
         }
       }
 
       return {
         phone: SESSION.normalizePhone(phone),
-        slug: SESSION.normalizeSlug(slug)
+        référence: SESSION.normalizeSlug(référence)
       };
     }
 
@@ -1185,7 +1262,7 @@
         return {
           ok: true,
           phone: finalPhone,
-          slug: inferSlugFromPhone(finalPhone),
+          référence: inferSlugFromPhone(finalPhone),
           label: "MON ARGENT PRO",
           raw: current
         };
@@ -1203,7 +1280,7 @@
           return {
             ok: true,
             phone: finalPhone,
-            slug: SESSION.normalizeSlug(current.slug || inferSlugFromPhone(finalPhone)),
+            référence: SESSION.normalizeSlug(current.référence || inferSlugFromPhone(finalPhone)),
             label: current.label || current.business_name || "MON ARGENT PRO",
             raw: current
           };
@@ -1249,18 +1326,18 @@
       return false;
     }
 
-    async function verifyPin(phoneValue, slugValue, pinValue){
+    async function verifyPin(phoneValue, référenceValue, pinValue){
       const pin = String(pinValue || "").trim();
       if(!pin){
         throw new Error("Code manquant.");
       }
 
-      const resolved = await resolvePayIdentity(phoneValue, slugValue);
+      const resolved = await resolvePayIdentity(phoneValue, référenceValue);
       const phone = SESSION.normalizePhone(resolved.phone);
-      const slug = SESSION.normalizeSlug(resolved.slug || inferSlugFromPhone(phone));
+      const référence = SESSION.normalizeSlug(resolved.référence || inferSlugFromPhone(phone));
 
-      if(!slug){
-        throw new Error("Repère PAY manquant.");
+      if(!référence){
+        throw new Error("Référence protégée manquant.");
       }
 
       if(!phone){
@@ -1280,7 +1357,7 @@
       return {
         ok: true,
         phone,
-        slug: slug || SESSION.normalizeSlug(verify.slug || inferSlugFromPhone(phone)),
+        référence: référence || SESSION.normalizeSlug(verify.référence || inferSlugFromPhone(phone)),
         label: verify.label || "MON ARGENT PRO"
       };
     }
@@ -1289,31 +1366,25 @@
       const q = readQuery();
 
       if(q.next){
-        const url = new URL(q.next, window.location.origin);
-        if(result?.slug) url.searchParams.set("slug", SESSION.normalizeSlug(result.slug));
-        if(result?.phone) url.searchParams.set("phone", SESSION.normalizePhone(result.phone));
-        return url.toString();
+        return q.next;
       }
 
-      return buildCtxHref(
-        chooseRedirectTarget(q.redirect),
-        result?.slug || "",
-        result?.phone || ""
-      );
+      return cleanInternalHref(chooseRedirectTarget(q.redirect));
     }
+
 
     async function openAccess(evt){
       evt.preventDefault();
 
       const phone = SESSION.normalizePhone($("phone").value);
       const pin = String($("pin").value || "").trim();
-      const slug = SESSION.normalizeSlug($("slug").value) || inferSlugFromPhone(phone);
+      const référence = SESSION.normalizeSlug($("référence").value) || inferSlugFromPhone(phone);
 
-      syncContextUi(slug, phone);
+      syncContextUi(référence, phone);
 
-      if(!phone && !slug){
-        setState("bad", "Contexte requis", "Le rail Code PAY a besoin d’un téléphone ou d’un slug PAY.");
-        setMsg("Entre d’abord le téléphone du pro ou le slug PAY.", "bad");
+      if(!phone && !référence){
+        setState("bad", "Contexte requis", "Le rail Code PAY a besoin du téléphone pro.");
+        setMsg("Entre d’abord le téléphone du pro.", "bad");
         focusBadField($("phone"));
         return;
       }
@@ -1332,16 +1403,13 @@
         setState("", "Vérification", "Contrôle du Code sur le vrai rail DIGIY PAY…");
         setMsg("Vérification du Code en cours…", "");
 
-        const payload = await verifyPin(phone, slug, pin);
+        const payload = await verifyPin(phone, référence, pin);
         const finalPhone = SESSION.normalizePhone(payload.phone || phone);
-        const finalSlug = SESSION.normalizeSlug(payload.slug || slug) || inferSlugFromPhone(finalPhone);
+        const finalSlug = SESSION.normalizeSlug(payload.référence || référence) || inferSlugFromPhone(finalPhone);
 
         SESSION.save(finalSlug, finalPhone);
-        if(typeof SESSION.applyUrl === "function"){
-          SESSION.applyUrl(finalSlug, finalPhone);
-        }
 
-        if($("slug")) $("slug").value = finalSlug;
+        if($("référence")) $("référence").value = finalSlug;
         if($("phone")) $("phone").value = finalPhone;
 
         syncContextUi(finalSlug, finalPhone);
@@ -1352,10 +1420,7 @@
 
         redirecting = true;
         window.setTimeout(() => {
-          window.location.href = buildNextUrl({
-            slug: finalSlug,
-            phone: finalPhone
-          });
+          window.location.href = buildNextUrl({});
         }, 280);
       }catch(err){
         console.error("[PAY pin]", err);
@@ -1374,21 +1439,16 @@
       const q = readQuery();
       const s = SESSION.get();
 
-      const phone = q.phone || (s && s.phone) || "";
-      const slug =
-        q.slug ||
-        (s && s.slug) ||
+      const phone = (s && s.phone) || "";
+      const référence =
+        (s && s.référence) ||
         inferSlugFromPhone(phone) ||
         "";
 
-      if(slug) $("slug").value = slug;
+      if(référence) $("référence").value = référence;
       if(phone) $("phone").value = phone;
 
-      syncContextUi(slug, phone);
-
-      if((slug || phone) && typeof SESSION.applyUrl === "function"){
-        SESSION.applyUrl(slug, phone);
-      }
+      syncContextUi(référence, phone);
 
       if(q.reason === "session_absente"){
         setState("bad", "Session expirée", "La session PAY a expiré. Entre le Code pour repartir proprement.");
@@ -1398,12 +1458,13 @@
       }
     }
 
+
     function bind(){
       $("pinForm").addEventListener("submit", openAccess);
 
       $("btnClear").addEventListener("click", () => {
         $("phone").value = "";
-        $("slug").value = "";
+        $("référence").value = "";
         $("pin").value = "";
         syncContextUi("", "");
         setState("", "Entrée sécurisée", "Vérification sécurisée avant ouverture de Mon argent.");
@@ -1419,27 +1480,28 @@
 
       $("phone").addEventListener("input", () => {
         const phone = SESSION.normalizePhone($("phone").value);
-        const currentSlug = SESSION.normalizeSlug($("slug").value);
+        const currentSlug = SESSION.normalizeSlug($("référence").value);
 
         if(!currentSlug || currentSlug.startsWith("pay-")){
-          $("slug").value = inferSlugFromPhone(phone);
+          $("référence").value = inferSlugFromPhone(phone);
         }
 
         syncContextUi(
-          SESSION.normalizeSlug($("slug").value),
+          SESSION.normalizeSlug($("référence").value),
           phone
         );
       });
 
-      $("slug").addEventListener("input", () => {
+      $("référence").addEventListener("input", () => {
         syncContextUi(
-          SESSION.normalizeSlug($("slug").value),
+          SESSION.normalizeSlug($("référence").value),
           SESSION.normalizePhone($("phone").value)
         );
       });
     }
 
     (function boot(){
+      cleanVisibleUrl();
       autofill();
       bind();
     })();
