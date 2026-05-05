@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT — Accueil</title>
   <meta name="theme-color" content="#04110d" />
-  <meta name="description" content="Mon argent : voir ce qui entre, ce qui sort, ce qu’il reste, ajouter un mouvement et lire le cap du mois." />
+  <meta name="description" content="Mon argent : voir ce qui entre, ce qui sort, ce qu’il reste, ajouter un mouvement et lire le cap du mois sans exposer la session dans l’adresse." />
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -385,6 +385,8 @@
       </div>
       <nav class="nav">
         <a class="pill" href="./index.html">← Accueil</a>
+        <a class="pill" href="https://digiy-hub.digiylyfe.com/" target="_blank" rel="noopener noreferrer">🧭 HUB</a>
+        <a class="pill" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
         <a class="pill" href="./pin.html">🔐 Mon code</a>
         <a class="pill" href="./brain-admin.html" id="topBrainLink">⚙️ Plus</a>
         <a class="pill primary" href="./admin.html" id="topAdminLink">➕ Ajouter</a>
@@ -520,7 +522,7 @@
         <div class="info-grid">
           <div class="ibox"><div class="ibox-t">Nom</div><div class="ibox-v" id="iboxBusiness">—</div><div class="ibox-s">Nom visible de ton espace argent.</div></div>
           <div class="ibox"><div class="ibox-t">Plan</div><div class="ibox-v" id="iboxPlan">—</div><div class="ibox-s">Formule active pour cet accès.</div></div>
-          <div class="ibox"><div class="ibox-t">Téléphone</div><div class="ibox-v" id="iboxPhone">—</div><div class="ibox-s">Numéro utilisé pour l'accès en cours.</div></div>
+          <div class="ibox"><div class="ibox-t">Session</div><div class="ibox-v" id="iboxPhone">Protégée</div><div class="ibox-s">Session locale ouverte, sans téléphone dans l’adresse.</div></div>
           <div class="ibox"><div class="ibox-t">Accès</div><div class="ibox-v" id="iboxAccess">—</div><div class="ibox-s">État réel de l'ouverture actuelle.</div></div>
         </div>
       </div>
@@ -671,7 +673,7 @@
     { auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storage:{ getItem:()=>null, setItem:()=>{}, removeItem:()=>{} } } }
   );
 
-  const PAY_MOVEMENTS_TABLE = "digiy_pay_movements";
+  const PAY_MOVEMENTS_TABLE = "digiy_pay_movements"; // repère historique : lecture directe remplacée par RPC
   const PAY_BRAIN_FALLBACK_URL = "./data/pay-brain.json";
 
   let SLUG = "";
@@ -880,9 +882,6 @@
   function buildAdminPrefillUrl(draft){
     const qs=new URLSearchParams();
 
-    if(SLUG) qs.set("slug",SLUG);
-    if(PHONE) qs.set("phone",PHONE);
-
     qs.set("fromDraft","1");
     qs.set("direction",String(draft?.direction||"out"));
     qs.set("scope",adminScopeFromDraft(draft));
@@ -895,8 +894,9 @@
     qs.set("label",adminLabelFromDraft(draft));
     qs.set("note",String(draft?.sentence||"").trim());
 
-    if(draft?.source_slug) qs.set("source_slug",String(draft.source_slug||"").trim());
-    else if(SLUG) qs.set("source_slug",SLUG);
+    if(draft?.source_slug && !String(draft.source_slug).includes("221")){
+      qs.set("source_slug",String(draft.source_slug||"").trim());
+    }
     if(draft?.source_id) qs.set("source_id",String(draft.source_id||"").trim());
     if(draft?.complement) qs.set("complement",String(draft.complement||"").trim());
     if(draft?.intent_code) qs.set("intent",String(draft.intent_code||"").trim());
@@ -1259,12 +1259,36 @@
   }
 
   function setContextLinks(slug,phone){
-    const s=normalizeSlug(slug), p=normalizePhone(phone);
-    const qs=[]; if(s) qs.push("slug="+encodeURIComponent(s)); if(p) qs.push("phone="+encodeURIComponent(p));
-    const suffix=qs.length?`?${qs.join("&")}`:"";
-    ["topBrainLink","hudBrainLink"].forEach(id=>{ const el=document.getElementById(id); if(el) el.href="./brain-admin.html"+suffix; });
-    ["topAdminLink","hudAdminLink","btnGoAdmin"].forEach(id=>{ const el=document.getElementById(id); if(el) el.href="./admin.html"+suffix; });
+    const cockpitHref = cleanInternalHref("./cockpit.html");
+    const adminHref = cleanInternalHref("./admin.html");
+    const brainHref = cleanInternalHref("./brain-admin.html");
+
+    [
+      "topBrainLink",
+      "hudBrainLink",
+      "bottomMore"
+    ].forEach(id=>{ const el=document.getElementById(id); if(el) el.href=brainHref; });
+
+    [
+      "topAdminLink",
+      "hudAdminLink",
+      "btnGoAdmin",
+      "fastAdd",
+      "bottomAdd"
+    ].forEach(id=>{ const el=document.getElementById(id); if(el) el.href=adminHref; });
+
+    [
+      "fastHome",
+      "bottomHome"
+    ].forEach(id=>{ const el=document.getElementById(id); if(el) el.href=cockpitHref; });
+
+    const fastDrafts=document.getElementById("fastDrafts");
+    if(fastDrafts) fastDrafts.href=adminHref+"#draftPrefillBox";
+
+    const bottomDrafts=document.getElementById("bottomDrafts");
+    if(bottomDrafts) bottomDrafts.href=adminHref+"#draftPrefillBox";
   }
+
 
   function normalizeMovement(row){
     const movementDate=row?.movement_date||row?.created_at||"";
@@ -1285,6 +1309,60 @@
   }
 
   function getQueryParam(name){ return new URLSearchParams(window.location.search).get(name)||""; }
+
+  function cleanVisibleUrl(){
+    try{
+      const url = new URL(window.location.href);
+      let changed = false;
+      [
+        "phone","tel","owner_phone","owner_id","slug","pay_slug","subscription_slug",
+        "business_phone","wave_phone","wallet_phone","pay_phone","access_note",
+        "keybox_code","keybox_location"
+      ].forEach(function(key){
+        if(url.searchParams.has(key)){
+          url.searchParams.delete(key);
+          changed = true;
+        }
+      });
+      if(changed){
+        history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+      }
+    }catch(_){}
+  }
+
+  function cleanInternalHref(page){
+    try{
+      const url = new URL(page || "./cockpit.html", window.location.href);
+      [
+        "phone","tel","owner_phone","owner_id","slug","pay_slug","subscription_slug",
+        "business_phone","wave_phone","wallet_phone","pay_phone"
+      ].forEach(function(key){ url.searchParams.delete(key); });
+
+      if(url.origin !== window.location.origin){
+        return "./cockpit.html";
+      }
+
+      const file = url.pathname.split("/").pop() || "cockpit.html";
+      return "./" + file + url.search + url.hash;
+    }catch(_){
+      return "./cockpit.html";
+    }
+  }
+
+  async function callPayRpc(name, args){
+    const { data, error } = await sb.rpc(name, args || {});
+    if(error) throw error;
+
+    const payload = data && typeof data === "object" ? data : {};
+    if(payload.ok === false){
+      const e = new Error(payload.error || "rpc_failed");
+      e.details = JSON.stringify(payload);
+      e.code = payload.error || "rpc_failed";
+      throw e;
+    }
+
+    return payload;
+  }
 
   /* ═══════════════════════════════════════════════════
      BRAIN — NORMALISATION & LECTURE
@@ -1467,23 +1545,24 @@
       lastMovementLabel:"", lastMovementModule:"", lastMovementAmount:0
     };
     ALL_ROWS = [];
-    if(!PHONE) return MANUAL_SUMMARY;
+
+    if(!SLUG || !PHONE) return MANUAL_SUMMARY;
+
+    try{
+      const payload = await callPayRpc("digiy_pay_pro_list_movements", {
+        p_slug: SLUG,
+        p_phone: PHONE,
+        p_limit: 200
+      });
+
+      ALL_ROWS = (Array.isArray(payload.items) ? payload.items : []).map(normalizeMovement);
+    }catch(error){
+      console.warn("[PAY cockpit] digiy_pay_pro_list_movements:", error);
+      return MANUAL_SUMMARY;
+    }
 
     const today=todayLocalDate();
-    const { data, error } = await sb
-      .from(PAY_MOVEMENTS_TABLE)
-      .select("source_module,direction,scope,kind,category,channel,label,note_text,amount_xof,movement_date,created_at,status")
-      .eq("phone", PHONE)
-      .eq("status", "posted")
-      .order("movement_date", { ascending:false })
-      .order("created_at", { ascending:false })
-      .limit(200);
 
-    if(error){ console.warn("[PAY cockpit] loadManualMovements:", error); return MANUAL_SUMMARY; }
-
-    ALL_ROWS = (data||[]).map(normalizeMovement);
-
-    // Agrégation mensuelle
     for(const row of ALL_ROWS){
       const amount=num(row.amount_xof);
       if(row.direction==="in"){
@@ -1497,7 +1576,6 @@
       }
     }
 
-    // Agrégation aujourd'hui
     const todayRows=ALL_ROWS.filter(x=>String(x.movement_date||"").slice(0,10)===today);
     const todayByModuleMap=new Map();
 
@@ -1514,7 +1592,7 @@
       .map(([source_module,amount_xof])=>({source_module,amount_xof}))
       .sort((a,b)=>num(b.amount_xof)-num(a.amount_xof));
 
-    const lastIn=ALL_ROWS.find(r=>r.direction==="in")||null;
+    const lastIn=ALL_ROWS.find(r=>r.direction==="in")||ALL_ROWS[0]||null;
     if(lastIn){
       MANUAL_SUMMARY.lastMovement=lastIn;
       MANUAL_SUMMARY.lastMovementLabel=lastIn.label;
@@ -1523,23 +1601,37 @@
     }
 
     return MANUAL_SUMMARY;
-  }  // ← FIX : accolade de fermeture de loadManualMovements
+  }
+
 
   async function loadRpcCockpit(){
-    if(!SLUG) return null;
+    if(!SLUG || !PHONE) return null;
+
     try{
-      const { data, error } = await sb.rpc("digiy_pay_get_cockpit_by_slug", { p_slug: SLUG });
-      if(error){
-        console.warn("[PAY cockpit] digiy_pay_get_cockpit_by_slug:", error);
-        return null;
-      }
-      const payload = normalizeRpcPayload(data);
-      return payload && typeof payload === "object" ? payload : null;
+      const payload = await callPayRpc("digiy_pay_pro_summary", {
+        p_slug: SLUG,
+        p_phone: PHONE
+      });
+
+      const summary = payload.summary || {};
+
+      return {
+        access_ok: true,
+        slug: SLUG,
+        phone: PHONE,
+        month_in: num(summary.total_in_xof),
+        month_out_pro: num(summary.total_out_xof),
+        month_net: num(summary.net_xof),
+        month_savings: num(summary.total_savings_xof),
+        total_savings: num(summary.total_savings_xof),
+        movement_count: num(summary.count)
+      };
     }catch(err){
-      console.warn("[PAY cockpit] loadRpcCockpit:", err);
+      console.warn("[PAY cockpit] digiy_pay_pro_summary:", err);
       return null;
     }
   }
+
 
 
   /* ═══════════════════════════════════════════════════
@@ -1549,18 +1641,28 @@
 
   async function loadCockpit(){
     setState("","Chargement","Connexion à ton espace argent…");
+    cleanVisibleUrl();
 
-    SLUG=normalizeSlug(getQueryParam("slug")||(SESSION&&SESSION.slug)||"");
-    PHONE=normalizePhone(getQueryParam("phone")||(SESSION&&SESSION.phone)||"");
+    const session = SESSION && typeof SESSION.require === "function"
+      ? SESSION.require("./pin.html?redirect=cockpit")
+      : (SESSION && typeof SESSION.get === "function" ? SESSION.get() : null);
 
-    if(!SLUG){
+    if(!session){
       setState("bad","Session invalide","Aucun accès reconnu. Entre avec ton code.");
-      setTimeout(()=>{ window.location.href="./pin.html"; },1400);
+      return;
+    }
+
+    SLUG=normalizeSlug(session.slug||"");
+    PHONE=normalizePhone(session.phone||"");
+
+    if(!SLUG || !PHONE){
+      setState("bad","Session invalide","Session PAY incomplète. Repasse par le code.");
+      setTimeout(()=>{ window.location.href="./pin.html?redirect=cockpit"; },1000);
       return;
     }
 
     setText("topSlug","Lecture utile prête");
-    setText("badgeSlug",SLUG);
+    setText("badgeSlug","Référence protégée");
     setContextLinks(SLUG,PHONE);
 
     await loadPayBrain();
@@ -1569,8 +1671,6 @@
 
     const rpcData = await loadRpcCockpit();
 
-    const mergedSlug = normalizeSlug(rpcData?.slug || SLUG);
-    const mergedPhone = normalizePhone(rpcData?.phone || PHONE);
     const modules = Array.isArray(rpcData?.by_module) && rpcData.by_module.length
       ? rpcData.by_module.map(row=>({ source_module:String(row?.source_module||row?.module||"PAY").toUpperCase(), amount_xof:num(row?.amount_xof) }))
       : getModuleAggregations();
@@ -1593,8 +1693,8 @@
     const plan = String(rpcData?.plan || (PAY_BRAIN ? "pay pro" : "—"));
 
     renderCockpit({
-      slug: mergedSlug || SLUG,
-      phone: mergedPhone || PHONE,
+      slug: SLUG,
+      phone: PHONE,
       month_in: monthIn,
       today_in: todayIn,
       month_out_pro: monthOutPro,
@@ -1612,6 +1712,7 @@
       access_ok: accessOk
     });
   }
+
 
   /* ═══════════════════════════════════════════════════
      RENDU — BLOCS DE BASE
@@ -1980,7 +2081,7 @@
     // Info cockpit
     setText("iboxBusiness","MON ARGENT");
     setText("iboxPlan",String(data.plan||"—").toUpperCase());
-    setText("iboxPhone",data.phone||PHONE||"—");
+    setText("iboxPhone",data.access_ok ? "Session protégée" : "À ouvrir");
     setText("iboxAccess",data.access_ok?"Actif":"Non actif");
 
     const realSlug=data.slug||SLUG;
@@ -1988,13 +2089,13 @@
     SLUG=normalizeSlug(realSlug);
     PHONE=normalizePhone(realPhone);
     setText("topSlug",data.access_ok ? "Lecture utile prête" : "Accès à ouvrir");
-    setText("badgeSlug",SLUG||"Session");
+    setText("badgeSlug","Référence protégée");
     setContextLinks(realSlug,realPhone);
 
     const slugBadge=document.getElementById("slugBadge");
     if(slugBadge) slugBadge.style.display="flex";
 
-    if(SESSION){ SESSION.save(realSlug,realPhone); if(typeof SESSION.applyUrl==="function") SESSION.applyUrl(realSlug,realPhone); }
+    if(SESSION){ SESSION.save(realSlug,realPhone); if(typeof SESSION.cleanVisibleUrl==="function") SESSION.cleanVisibleUrl(); }
 
     // Calcul complet
     const calc={
