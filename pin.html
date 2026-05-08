@@ -1420,14 +1420,19 @@
 
         syncContextUi(finalSlug, finalPhone);
 
-        setState("ok", "Accès validé", "Code correct. Ouverture du cockpit PAY en cours.");
-        setMsg("Accès PAY validé. Ouverture de Mon argent…", "ok");
-        toast("✅ Accès PAY validé");
+        setState(
+  "ok",
+  "✅ Mon argent est ouvert",
+  "Bienvenue dans ton espace argent. Tu peux maintenant voir ce qui entre, ce qui sort, ce qu’il reste, puis ajouter une recette, une dépense ou une réserve."
+);
 
-        redirecting = true;
-        window.setTimeout(() => {
-          window.location.href = buildNextUrl({});
-        }, 280);
+setMsg("✅ Mon argent est ouvert. Entrée dans le cockpit dans quelques secondes…", "ok");
+toast("✅ Mon argent est ouvert");
+
+redirecting = true;
+window.setTimeout(() => {
+  window.location.assign("./cockpit.html");
+}, 2600);
       }catch(err){
         console.error("[PAY pin]", err);
         const message = err && err.message ? err.message : "Vérification Code impossible.";
