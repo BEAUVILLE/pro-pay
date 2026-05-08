@@ -876,16 +876,16 @@
           <form class="form" id="pinForm" novalidate>
             <div class="focus-box">
               <div class="focus-top">Ce qu’il faut pour entrer</div>
-              <div class="focus-main">Téléphone + code = session ouverte</div>
+              <div class="focus-main">Compte reconnu + code = session ouverte</div>
               <div class="focus-sub">
-                La référence PAY reste rangée en session locale après validation.
+                Les infos sensibles restent rangées en session locale après validation.
               </div>
             </div>
 
             <div class="field">
-              <label class="label" for="phone">Téléphone</label>
-              <input class="input" id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="221771342889" />
-              <div class="hint">Numéro principal relié à l’abonnement PAY.</div>
+              <label class="label" for="phone">Téléphone abonné</label>
+              <input class="input" id="phone" type="tel" inputmode="numeric" autocomplete="off" placeholder="Numéro relié à l’abonnement" />
+              <div class="hint" id="phoneHint">Si la session est déjà reconnue, le numéro reste masqué. Sinon, entre le numéro relié à l’abonnement PAY.</div>
             </div>
 
             <div class="field">
@@ -906,7 +906,7 @@
             </div>
 
             <div class="msg" id="msgBox">
-              Entre ton téléphone et ton Code pour ouvrir le cockpit PAY.
+              Entre le Code. Le téléphone reste masqué quand la session est déjà reconnue.
             </div>
 
             <div class="actions">
@@ -982,6 +982,7 @@
   <script>
     const SESSION = window.DIGIY_SESSION || null;
     const $ = (id) => document.getElementById(id);
+    let securePhoneFromSession = "";
 
     function esc(v){
       return String(v == null ? "" : v)
@@ -1022,6 +1023,21 @@
       [ $("btnSubmit"), $("btnClear"), $("btnTogglePin"), $("phone"), $("référence"), $("pin") ]
         .forEach(el => { if(el) el.disabled = !!on; });
       if(loader) loader.style.display = on ? "inline-flex" : "none";
+    }
+
+    function applyPhoneMaskState(hasSecurePhone){
+      const input = $("phone");
+      const hint = $("phoneHint");
+      if(input){
+        input.placeholder = hasSecurePhone
+          ? "Compte reconnu — téléphone masqué"
+          : "Numéro relié à l’abonnement";
+      }
+      if(hint){
+        hint.textContent = hasSecurePhone
+          ? "Compte reconnu. Le téléphone n’est pas affiché sur cette porte d’accès. Entre seulement ton Code."
+          : "Entre le numéro relié à l’abonnement PAY. Il ne sera pas conservé dans l’adresse de la page.";
+      }
     }
 
     function cleanVisibleUrl(){
@@ -1460,7 +1476,8 @@
     async function openAccess(evt){
       evt.preventDefault();
 
-      const phone = SESSION.normalizePhone($("phone").value);
+      const typedPhone = SESSION.normalizePhone($("phone").value);
+      const phone = typedPhone || securePhoneFromSession;
       const pin = String($("pin").value || "").trim();
       const référence = SESSION.normalizeSlug($("référence").value) || inferSlugFromPhone(phone);
 
@@ -1493,8 +1510,10 @@
 
         SESSION.save(finalSlug, finalPhone);
 
+        securePhoneFromSession = finalPhone;
         if($("référence")) $("référence").value = finalSlug;
-        if($("phone")) $("phone").value = finalPhone;
+        if($("phone")) $("phone").value = "";
+        applyPhoneMaskState(true);
 
         syncContextUi(finalSlug, finalPhone);
 
@@ -1528,16 +1547,18 @@ window.setTimeout(() => {
       const q = readQuery();
       const s = SESSION.get();
 
-      const phone = (s && s.phone) || "";
+      const phone = SESSION.normalizePhone((s && s.phone) || "");
       const référence =
-        (s && s.référence) ||
+        SESSION.normalizeSlug((s && s.référence) || "") ||
         inferSlugFromPhone(phone) ||
         "";
 
+      securePhoneFromSession = phone || "";
       if(référence) $("référence").value = référence;
-      if(phone) $("phone").value = phone;
+      if($("phone")) $("phone").value = "";
+      applyPhoneMaskState(!!securePhoneFromSession);
 
-      syncContextUi(référence, phone);
+      syncContextUi(référence, securePhoneFromSession);
 
       if(q.reason === "session_absente"){
         setState("bad", "Session expirée", "La session PAY a expiré. Entre le Code pour repartir proprement.");
@@ -1552,9 +1573,11 @@ window.setTimeout(() => {
       $("pinForm").addEventListener("submit", openAccess);
 
       $("btnClear").addEventListener("click", () => {
+        securePhoneFromSession = "";
         $("phone").value = "";
         $("référence").value = "";
         $("pin").value = "";
+        applyPhoneMaskState(false);
         syncContextUi("", "");
         setState("", "Entrée sécurisée", "Vérification sécurisée avant ouverture de Mon argent.");
         setMsg("Champs effacés. Tu peux repartir proprement.", "");
@@ -1568,8 +1591,14 @@ window.setTimeout(() => {
       });
 
       $("phone").addEventListener("input", () => {
-        const phone = SESSION.normalizePhone($("phone").value);
+        const typedPhone = SESSION.normalizePhone($("phone").value);
+        const phone = typedPhone || securePhoneFromSession;
         const currentSlug = SESSION.normalizeSlug($("référence").value);
+
+        if(typedPhone){
+          securePhoneFromSession = "";
+          applyPhoneMaskState(false);
+        }
 
         if(!currentSlug || currentSlug.startsWith("pay-")){
           $("référence").value = inferSlugFromPhone(phone);
@@ -1584,7 +1613,7 @@ window.setTimeout(() => {
       $("référence").addEventListener("input", () => {
         syncContextUi(
           SESSION.normalizeSlug($("référence").value),
-          SESSION.normalizePhone($("phone").value)
+          SESSION.normalizePhone($("phone").value) || securePhoneFromSession
         );
       });
     }
@@ -1597,6 +1626,9 @@ window.setTimeout(() => {
 
       const existing = SESSION.get();
       if(existing?.slug && existing?.phone){
+        securePhoneFromSession = SESSION.normalizePhone(existing.phone);
+        if($("phone")) $("phone").value = "";
+        applyPhoneMaskState(true);
         document.body.classList.add("session-open");
 
         setState(
