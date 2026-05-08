@@ -952,6 +952,9 @@
           "tel",
           "owner_phone",
           "owner_id",
+          "slug",
+          "pay_slug",
+          "subscription_slug",
           "référence",
           "pay_référence",
           "subscription_référence",
@@ -983,6 +986,9 @@
           "tel",
           "owner_phone",
           "owner_id",
+          "slug",
+          "pay_slug",
+          "subscription_slug",
           "référence",
           "pay_référence",
           "subscription_référence",
@@ -1202,15 +1208,15 @@
       if(référence){
         const { data, error } = await sb
           .from("digiy_subscriptions_public")
-          .select("phone,référence,module")
-          .eq("référence", référence)
+          .select("phone,slug,module")
+          .eq("slug", référence)
           .eq("module", "PAY")
           .limit(1);
 
         if(!error && Array.isArray(data) && data[0]){
           return {
             phone: SESSION.normalizePhone(data[0].phone || phone),
-            référence: SESSION.normalizeSlug(data[0].référence || référence)
+            référence: SESSION.normalizeSlug(data[0].slug || référence)
           };
         }
       }
@@ -1218,7 +1224,7 @@
       if(phone){
         const { data, error } = await sb
           .from("digiy_subscriptions_public")
-          .select("phone,référence,module")
+          .select("phone,slug,module")
           .eq("phone", phone)
           .eq("module", "PAY")
           .limit(1);
@@ -1226,7 +1232,7 @@
         if(!error && Array.isArray(data) && data[0]){
           return {
             phone: SESSION.normalizePhone(data[0].phone || phone),
-            référence: SESSION.normalizeSlug(data[0].référence || inferSlugFromPhone(phone))
+            référence: SESSION.normalizeSlug(data[0].slug || inferSlugFromPhone(phone))
           };
         }
       }
@@ -1280,7 +1286,7 @@
           return {
             ok: true,
             phone: finalPhone,
-            référence: SESSION.normalizeSlug(current.référence || inferSlugFromPhone(finalPhone)),
+            référence: SESSION.normalizeSlug(current.slug || current.référence || inferSlugFromPhone(finalPhone)),
             label: current.label || current.business_name || "MON ARGENT PRO",
             raw: current
           };
@@ -1499,12 +1505,3 @@
         );
       });
     }
-
-    (function boot(){
-      cleanVisibleUrl();
-      autofill();
-      bind();
-    })();
-  </script>
-</body>
-</html>
