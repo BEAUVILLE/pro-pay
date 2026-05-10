@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Cockpit PAY · Anti-cache</title>
+  <title>MON ARGENT — Cockpit PAY · Anti-cache corrigé</title>
 
+  <!-- Note terrain : sur GitHub Pages, les vrais headers HTTP restent gérés par GitHub.
+       Ces meta aident côté document, mais le vrai anti-cache repose surtout sur le versionnement des scripts. -->
   <!-- DIGIY PAY · Anti-cache téléphone -->
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="digiy-build" content="pay-cockpit-20260510-v3-cache-guard" />
+  <meta name="digiy-build" content="pay-cockpit-20260510-v4-cache-clean" />
   <script>
-    window.DIGIY_BUILD_ID = "pay-cockpit-20260510-v3-cache-guard";
+    window.DIGIY_BUILD_ID = "pay-cockpit-20260510-v4-cache-clean";
     window.DIGIY_CACHE_GUARD = true;
   </script>
 
@@ -26,9 +28,9 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./session.js?v=pay-cockpit-20260510-v3-cache-guard"></script>
-  <script src="./pay-tools.js?v=pay-cockpit-20260510-v3-cache-guard"></script>
-  <script src="./pay-alerts.js?v=pay-cockpit-20260510-v3-cache-guard"></script>
+  <script src="./session.js?v=pay-cockpit-20260510-v4-cache-clean"></script>
+  <script src="./pay-tools.js?v=pay-cockpit-20260510-v4-cache-clean"></script>
+  <script src="./pay-alerts.js?v=pay-cockpit-20260510-v4-cache-clean"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -434,7 +436,7 @@
     .synth-badge,
     .status-badge{
       font-size:14px !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
     }
 
     .pill{
@@ -469,7 +471,7 @@
     .module-strip-title,
     .module-rank{
       font-size:13px !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
       letter-spacing:.06em !important;
     }
 
@@ -485,7 +487,7 @@
     .module-name,
     .status-main{
       font-size:22px !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
     }
 
     .cake-value{
@@ -505,7 +507,7 @@
     .synth-main,
     .rescue-title{
       font-size:17px !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
       line-height:1.38 !important;
     }
 
@@ -524,14 +526,14 @@
 
     .real-intent-chip{
       font-size:13px !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
       padding:9px 12px !important;
     }
 
     .bottomNav a{
       min-height:64px !important;
       font-size:13px !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
       color:rgba(31,42,31,.88) !important;
     }
 
@@ -542,7 +544,7 @@
     .mobileFastRow a{
       min-height:54px !important;
       font-size:15px !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
     }
 
     .topbar-in{
@@ -705,7 +707,7 @@
     .row-amount{
       color:#241a0d !important;
       text-shadow:none !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
     }
 
     .brand-sub,
@@ -751,7 +753,7 @@
     .module-strip-title,
     .module-rank{
       color:#5f4308 !important;
-      font-weight:1000 !important;
+      font-weight:900 !important;
     }
 
     .scard-title.green,
@@ -914,6 +916,13 @@
       border-color:rgba(159,18,57,.28) !important;
     }
 
+
+    /* DIGIY PAY — correctif audit lisibilité beige */
+    .hud-link .k{
+      color:#1f2a1f !important;
+      font-weight:900 !important;
+    }
+
   </style>
 </head>
 <body>
@@ -922,7 +931,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "pay-cockpit-20260510-v3-cache-guard";
+      const BUILD_ID = "pay-cockpit-20260510-v4-cache-clean";
       const BUILD_KEY = "digiy_pay_cockpit_build_id";
       const CLEAN_KEY = "digiy_pay_cockpit_cache_cleaned";
 
@@ -943,7 +952,8 @@
         "keybox_location",
         "module",
         "return",
-        "from"
+        "from",
+        "v"
       ];
 
       function cleanUrlKeepVersion() {
@@ -957,11 +967,6 @@
               changed = true;
             }
           });
-
-          if (url.searchParams.get("v") !== BUILD_ID) {
-            url.searchParams.set("v", BUILD_ID);
-            changed = true;
-          }
 
           if (changed) {
             history.replaceState({}, document.title, url.pathname + url.search + url.hash);
@@ -989,7 +994,30 @@
             const regs = await navigator.serviceWorker.getRegistrations();
             await Promise.all(
               regs
-                .filter((reg) => String(reg.scope || "").includes(location.origin))
+                .filter((reg) => {
+                  try {
+                    const scopeUrl = new URL(String(reg.scope || ""), location.href);
+                    const currentPath = String(location.pathname || "").toLowerCase();
+                    const scopePath = String(scopeUrl.pathname || "").toLowerCase();
+                    const host = String(location.hostname || "").toLowerCase();
+                    const scopeHost = String(scopeUrl.hostname || "").toLowerCase();
+
+                    return (
+                      scopeUrl.origin === location.origin &&
+                      (
+                        host.includes("pro-pay") ||
+                        scopeHost.includes("pro-pay") ||
+                        currentPath.includes("/pay") ||
+                        currentPath.includes("pro-pay") ||
+                        scopePath.includes("/pay") ||
+                        scopePath.includes("pro-pay") ||
+                        scopePath.includes("cockpit")
+                      )
+                    );
+                  } catch (_) {
+                    return false;
+                  }
+                })
                 .map((reg) => reg.unregister())
             );
           }
