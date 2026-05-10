@@ -1,1025 +1,250 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT by DIGIY ♾️ — Actions PAY</title>
-  <meta name="theme-color" content="#04110d" />
-  <meta
-    name="description"
-    content="MON ARGENT by DIGIY — écran d’actions PAY : paiement direct, preuve claire, confirmation, relance, sans exposer la session dans l’adresse."
-  />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900;1000&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
-
-  <style>
-    :root{
-      --bg:#1d5644;
-      --bg2:#12392d;
-      --card:rgba(255,255,255,.11);
-      --card2:rgba(255,255,255,.15);
-      --line:rgba(255,255,255,.18);
-      --line2:rgba(255,255,255,.28);
-      --text:#f6fff9;
-      --muted:rgba(246,255,249,.82);
-      --muted2:rgba(246,255,249,.62);
-      --gold:#facc15;
-      --gold2:#fff0ae;
-      --green:#22c55e;
-      --green2:#16a34a;
-      --blue:#38bdf8;
-      --red:#fb7185;
-      --shadow:0 18px 48px rgba(0,0,0,.22);
-      --max:980px;
-      --ff:Outfit,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      --title:'Playfair Display',Georgia,serif;
-    }
-
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;min-height:100%}
-    body{
-      font-family:var(--ff);
-      color:var(--text);
-      background:
-        radial-gradient(circle at top left,rgba(250,204,21,.16),transparent 30%),
-        radial-gradient(circle at 82% 18%,rgba(34,197,94,.14),transparent 26%),
-        linear-gradient(180deg,var(--bg) 0%, var(--bg2) 58%, #0d2c22 100%);
-      padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(92px + env(safe-area-inset-bottom,0px));
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
-    }
-
-    a{text-decoration:none;color:inherit}
-    button{font:inherit;cursor:pointer}
-    .wrap{width:min(100%,var(--max));margin:0 auto}
-
-    .top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:14px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-
-    .mark{
-      width:46px;
-      height:46px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-      color:#032215;
-      font-size:21px;
-      font-weight:1000;
-      background:linear-gradient(135deg,var(--green),var(--gold));
-      box-shadow:0 14px 32px rgba(0,0,0,.26);
-    }
-
-    .brand strong{
-      display:block;
-      font-family:var(--title);
-      color:var(--gold);
-      font-size:20px;
-      line-height:1.02;
-    }
-
-    .brand span{
-      display:block;
-      margin-top:3px;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:850;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:62vw;
-    }
-
-    .top-actions{
-      display:flex;
-      gap:8px;
-      flex:0 0 auto;
-    }
-
-    .chip{
-      min-height:42px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:10px 13px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.12);
-      font-size:13px;
-      font-weight:950;
-      color:var(--text);
-      white-space:nowrap;
-    }
-
-    .chip.gold{
-      color:#151515;
-      background:linear-gradient(135deg,var(--gold),#eab308);
-      border-color:transparent;
-    }
-
-    .hero{
-      border:1px solid var(--line);
-      border-radius:32px;
-      background:
-        radial-gradient(circle at 86% 10%,rgba(250,204,21,.18),transparent 26%),
-        linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
-      box-shadow:var(--shadow);
-      padding:18px;
-      overflow:hidden;
-    }
-
-    .kicker{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      color:var(--gold2);
-      font-size:12px;
-      letter-spacing:.13em;
-      text-transform:uppercase;
-      font-weight:1000;
-    }
-
-    h1{
-      margin:10px 0 8px;
-      font-size:clamp(32px,7vw,58px);
-      line-height:.96;
-      letter-spacing:-.045em;
-      max-width:12ch;
-    }
-
-    .lead{
-      margin:0;
-      max-width:63ch;
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.55;
-      font-weight:780;
-    }
-
-    .doctrine{
-      margin-top:14px;
-      padding:12px 14px;
-      border-radius:20px;
-      border:1px solid rgba(250,204,21,.22);
-      background:rgba(250,204,21,.08);
-      color:#fff4bd;
-      font-weight:950;
-      line-height:1.42;
-    }
-
-    .audio-inline{
-      margin-top:14px;
-      border:1px solid rgba(56,189,248,.22);
-      border-radius:20px;
-      padding:12px 14px;
-      background:rgba(56,189,248,.08);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .audio-inline p{
-      margin:0;
-      color:#d8f5ff;
-      font-size:13px;
-      line-height:1.45;
-      font-weight:830;
-    }
-
-    .audio-inline button{
-      min-height:42px;
-      border:none;
-      border-radius:999px;
-      padding:10px 14px;
-      background:linear-gradient(135deg,var(--gold),#eab308);
-      color:#171717;
-      font-weight:1000;
-    }
-
-    .screen{
-      display:grid;
-      grid-template-columns:1fr .92fr;
-      gap:16px;
-      align-items:stretch;
-      margin-top:16px;
-    }
-
-    .pie-card,
-    .todo-card{
-      border:1px solid var(--line);
-      border-radius:30px;
-      background:var(--card);
-      box-shadow:var(--shadow);
-      padding:16px;
-      min-height:100%;
-    }
-
-    .section-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-      margin-bottom:12px;
-    }
-
-    .section-head h2{
-      margin:0;
-      font-size:20px;
-      line-height:1.1;
-      letter-spacing:-.02em;
-    }
-
-    .section-head p{
-      margin:5px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
-      font-weight:760;
-    }
-
-    .pie{
-      position:relative;
-      width:min(430px,100%);
-      aspect-ratio:1/1;
-      margin:8px auto 2px;
-      border-radius:50%;
-      background:
-        radial-gradient(circle at center,rgba(250,204,21,.17) 0 23%,transparent 24%),
-        conic-gradient(
-          from -90deg,
-          rgba(250,204,21,.20),
-          rgba(34,197,94,.16),
-          rgba(56,189,248,.15),
-          rgba(255,255,255,.08),
-          rgba(250,204,21,.20)
-        );
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
-    }
-
-    .center{
-      position:absolute;
-      inset:50%;
-      transform:translate(-50%,-50%);
-      width:34%;
-      height:34%;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      text-align:center;
-      background:linear-gradient(180deg,var(--gold),#eab308);
-      color:#141414;
-      font-weight:1000;
-      box-shadow:0 18px 35px rgba(0,0,0,.28);
-      z-index:3;
-      padding:10px;
-      line-height:1.05;
-    }
-
-    .slice{
-      position:absolute;
-      left:50%;
-      top:50%;
-      width:124px;
-      min-height:64px;
-      transform:
-        rotate(var(--a))
-        translate(146px)
-        rotate(calc(-1 * var(--a)))
-        translate(-50%,-50%);
-      border:1px solid rgba(255,255,255,.13);
-      border-radius:20px;
-      background:rgba(20,60,47,.92);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      color:var(--text);
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      gap:3px;
-      padding:10px;
-      box-shadow:0 14px 30px rgba(0,0,0,.25);
-      transition:transform .16s ease,border-color .16s ease,background .16s ease;
-    }
-
-    .slice:hover{
-      border-color:rgba(250,204,21,.44);
-      background:rgba(250,204,21,.13);
-      transform:
-        rotate(var(--a))
-        translate(150px)
-        rotate(calc(-1 * var(--a)))
-        translate(-50%,-50%);
-    }
-
-    .slice strong{
-      display:block;
-      font-size:13px;
-      line-height:1.08;
-      font-weight:1000;
-    }
-
-    .slice span{
-      display:block;
-      color:var(--muted);
-      font-size:11px;
-      line-height:1.22;
-      font-weight:760;
-    }
-
-    .quick-list{
-      display:grid;
-      gap:10px;
-    }
-
-    .quick{
-      border:1px solid rgba(255,255,255,.13);
-      border-radius:22px;
-      background:rgba(255,255,255,.10);
-      padding:13px;
-      display:grid;
-      gap:10px;
-    }
-
-    .quick-main{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-    }
-
-    .quick-ico{
-      width:36px;
-      height:36px;
-      flex:0 0 auto;
-      border-radius:14px;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.08);
-      font-size:18px;
-    }
-
-    .quick strong{
-      display:block;
-      color:#ecfff4;
-      font-size:15px;
-      line-height:1.15;
-      font-weight:1000;
-    }
-
-    .quick p{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
-      font-weight:760;
-    }
-
-    .quick-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .quick-btn{
-      min-height:42px;
-      border-radius:15px;
-      padding:10px 12px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      text-decoration:none;
-      background:rgba(255,255,255,.08);
-      color:#ecfff4;
-      font-weight:950;
-      border:1px solid rgba(255,255,255,.12);
-    }
-
-    .quick-btn.primary{
-      background:linear-gradient(135deg,var(--gold),#eab308);
-      color:#151515;
-      border-color:transparent;
-    }
-
-    details{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:20px;
-      background:rgba(255,255,255,.035);
-      margin-top:12px;
-      overflow:hidden;
-    }
-
-    summary{
-      cursor:pointer;
-      list-style:none;
-      padding:13px 14px;
-      font-weight:950;
-      color:#fff4bd;
-    }
-
-    summary::-webkit-details-marker{display:none}
-
-    .details-body{
-      padding:0 14px 14px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-      font-weight:760;
-    }
-
-    .safe-row{
-      margin-top:16px;
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-    }
-
-    .safe{
-      border:1px solid var(--line);
-      border-radius:22px;
-      background:rgba(255,255,255,.09);
-      padding:13px;
-      min-height:94px;
-    }
-
-    .safe b{
-      display:block;
-      color:var(--gold2);
-      font-size:13px;
-      margin-bottom:5px;
-      font-weight:1000;
-    }
-
-    .safe span{
-      display:block;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.42;
-      font-weight:760;
-    }
-
-    .bottom-nav{
-      position:fixed;
-      left:50%;
-      bottom:calc(10px + env(safe-area-inset-bottom,0px));
-      transform:translateX(-50%);
-      width:min(680px,calc(100% - 18px));
-      z-index:99;
-      border:1px solid rgba(255,255,255,.13);
-      border-radius:24px;
-      background:rgba(18,57,45,.94);
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-      padding:8px;
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:6px;
-      box-shadow:0 18px 50px rgba(0,0,0,.35);
-    }
-
-    .bottom-nav a{
-      min-height:50px;
-      border-radius:18px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:2px;
-      font-size:11px;
-      font-weight:950;
-      color:rgba(236,255,244,.78);
-      text-align:center;
-    }
-
-    .bottom-nav a.active{
-      background:rgba(250,204,21,.14);
-      color:#fff4bd;
-      border:1px solid rgba(250,204,21,.22);
-    }
-
-    .bottom-nav b{
-      font-size:18px;
-      line-height:1;
-    }
-
-    #digiyPayAudioBtn{
-      position:fixed;
-      left:14px;
-      bottom:calc(92px + env(safe-area-inset-bottom,0px));
-      z-index:120;
-      min-height:50px;
-      border:none;
-      border-radius:999px;
-      padding:12px 16px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:9px;
-      background:linear-gradient(135deg,#facc15,#eab308);
-      color:#171717;
-      font-weight:1000;
-      box-shadow:0 18px 38px rgba(0,0,0,.24);
-    }
-
-    #digiyPayAudioBtn span{
-      font-size:18px;
-      line-height:1;
-    }
-
-    #digiyPayAudioBtn[aria-pressed="true"]{
-      background:linear-gradient(135deg,#0f172a,#233548);
-      color:#fff;
-    }
-
-    @media (max-width:880px){
-      .screen{grid-template-columns:1fr}
-      .pie{width:min(420px,100%)}
-      .safe-row{grid-template-columns:1fr}
-    }
-
-    @media (max-width:560px){
-      body{padding-left:10px;padding-right:10px}
-      .hide-mobile{display:none}
-      .hero{padding:16px;border-radius:28px}
-      h1{max-width:none;font-size:34px}
-      .lead{font-size:14px}
-      .pie-card,.todo-card{border-radius:26px;padding:14px}
-      .pie{width:100%;max-width:360px}
-      .slice{
-        width:100px;
-        min-height:58px;
-        padding:8px;
-        border-radius:18px;
-        transform:
-          rotate(var(--a))
-          translate(123px)
-          rotate(calc(-1 * var(--a)))
-          translate(-50%,-50%);
-      }
-      .slice:hover{
-        transform:
-          rotate(var(--a))
-          translate(126px)
-          rotate(calc(-1 * var(--a)))
-          translate(-50%,-50%);
-      }
-      .slice strong{font-size:12px}
-      .slice span{font-size:10px}
-      .center{width:32%;height:32%;font-size:13px}
-      #digiyPayAudioBtn{
-        left:10px;
-        bottom:calc(86px + env(safe-area-inset-bottom,0px));
-        padding:12px 14px;
-      }
-    }
-
-    @media (max-width:390px){
-      .slice{
-        width:92px;
-        min-height:54px;
-        transform:
-          rotate(var(--a))
-          translate(112px)
-          rotate(calc(-1 * var(--a)))
-          translate(-50%,-50%);
-      }
-      .slice:hover{
-        transform:
-          rotate(var(--a))
-          translate(115px)
-          rotate(calc(-1 * var(--a)))
-          translate(-50%,-50%);
-      }
-      .center{font-size:12px}
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <header class="top">
-      <a class="brand" href="https://digiylyfe.com/" aria-label="Retour DIGIYLYFE">
-        <span class="mark">₣</span>
-        <span>
-          <strong>MON ARGENT</strong>
-          <span>Paiement direct · preuve claire · action pro</span>
-        </span>
-      </a>
-
-      <nav class="top-actions" aria-label="Liens rapides">
-        <a class="chip hide-mobile" href="https://digiy-hub.digiylyfe.com/">HUB</a>
-        <a class="chip hide-mobile" href="https://tarifs.digiylyfe.com/">Tarifs</a>
-        <a class="chip gold" href="./pin.html" id="topPin">Code</a>
-      </nav>
-    </header>
-
-    <main>
-      <section class="hero">
-        <span class="kicker">PAY PRO · moins de bruit · plus d’action</span>
-
-        <h1>Que veux-tu vérifier maintenant ?</h1>
-
-        <p class="lead">
-          Ici, le pro ne cherche pas l’argent dans un grand tableau. Il choisit un geste :
-          encaisser, vérifier une preuve, confirmer, relancer ou lire son espace.
-        </p>
-
-        <div class="doctrine">
-          PAY ne touche pas l’argent.<br>
-          PAY organise la preuve, la trace et la confiance.
-        </div>
-
-        <div class="audio-inline">
-          <p>
-            🎧 Accueil vocal · une voix explique au professionnel comment utiliser PAY sans se fatiguer.
-          </p>
-          <button type="button" id="digiyPayAudioInline">Écouter</button>
-        </div>
-      </section>
-
-      <section class="screen" aria-label="Actions principales PAY">
-        <article class="pie-card">
-          <div class="section-head">
-            <div>
-              <h2>Camembert d’actions</h2>
-              <p>Les fichiers sont appelés par gestes simples.</p>
-            </div>
-          </div>
-
-          <div class="pie" aria-label="Camembert des actions PAY">
-            <div class="center">PAY<br>PRO</div>
-
-            <a class="slice" style="--a:-90deg" href="./pin.html?redirect=admin">
-              <strong>💰 Encaisser</strong>
-              <span>argent reçu</span>
-            </a>
-
-            <a class="slice" style="--a:-39deg" href="./pin.html?redirect=admin">
-              <strong>🧾 Preuve</strong>
-              <span>client / reçu</span>
-            </a>
-
-            <a class="slice" style="--a:12deg" href="./pin.html?redirect=admin">
-              <strong>✅ Confirmer</strong>
-              <span>paiement OK</span>
-            </a>
-
-            <a class="slice" style="--a:63deg" href="./pin.html?redirect=admin">
-              <strong>⏳ Vérifier</strong>
-              <span>montant / canal</span>
-            </a>
-
-            <a class="slice" style="--a:114deg" href="./pin.html?redirect=admin">
-              <strong>📤 Relancer</strong>
-              <span>client à suivre</span>
-            </a>
-
-            <a class="slice" style="--a:165deg" href="./pin.html?redirect=admin">
-              <strong>➕ Ajouter</strong>
-              <span>note rapide</span>
-            </a>
-
-            <a class="slice" style="--a:216deg" href="./pin.html?redirect=cockpit">
-              <strong>📊 Espace</strong>
-              <span>lecture claire</span>
-            </a>
-          </div>
-
-          <details>
-            <summary>Voir la règle de l’écran</summary>
-            <div class="details-body">
-              L’écran montre les actions. Les longues explications restent rangées dans l’audio.
-              Les données sensibles restent dans le coffre local et la session sécurisée.
-            </div>
-          </details>
-        </article>
-
-        <aside class="todo-card">
-          <div class="section-head">
-            <div>
-              <h2>À faire maintenant</h2>
-              <p>Le chef de passe PAY montre seulement ce qui mérite une action.</p>
-            </div>
-          </div>
-
-          <div class="quick-list">
-            <article class="quick">
-              <div class="quick-main">
-                <div class="quick-ico">🔐</div>
-                <div>
-                  <strong>Ouvrir mon accès</strong>
-                  <p>Session protégée. Pas de téléphone ni de repère sensible dans l’adresse.</p>
-                </div>
-              </div>
-              <div class="quick-actions">
-                <a class="quick-btn primary" href="./pin.html">Entrer le code</a>
-              </div>
-            </article>
-
-            <article class="quick">
-              <div class="quick-main">
-                <div class="quick-ico">🧾</div>
-                <div>
-                  <strong>Traiter une preuve</strong>
-                  <p>Preuve reçue, paiement annoncé, montant à vérifier ou client à relancer.</p>
-                </div>
-              </div>
-              <div class="quick-actions">
-                <a class="quick-btn primary" href="./pin.html?redirect=admin">Traiter</a>
-                <a class="quick-btn" href="./pin.html?redirect=cockpit">Voir l’espace</a>
-              </div>
-            </article>
-
-            <article class="quick">
-              <div class="quick-main">
-                <div class="quick-ico">📊</div>
-                <div>
-                  <strong>Lire mon argent</strong>
-                  <p>Voir ce qui entre, ce qui sort, ce qui reste, sans noyer le pro.</p>
-                </div>
-              </div>
-              <div class="quick-actions">
-                <a class="quick-btn primary" href="./pin.html?redirect=cockpit">Ouvrir</a>
-              </div>
-            </article>
-
-            <article class="quick">
-              <div class="quick-main">
-                <div class="quick-ico">💳</div>
-                <div>
-                  <strong>Carte de paiement</strong>
-                  <p>Le moyen de paiement peut être public seulement si le pro l’a choisi.</p>
-                </div>
-              </div>
-              <div class="quick-actions">
-                <a class="quick-btn" href="./pin.html?redirect=cockpit">Gérer</a>
-              </div>
-            </article>
-          </div>
-
-          <details>
-            <summary>Conseil DIGIY</summary>
-            <div class="details-body">
-              Le client paie directement le professionnel. DIGIY ne prend pas l’argent.
-              PAY garde la trace, aide à confirmer et prépare les relances propres.
-            </div>
-          </details>
-        </aside>
-      </section>
-
-      <section class="safe-row" aria-label="Règles PAY">
-        <div class="safe">
-          <b>Argent direct</b>
-          <span>Le paiement reste entre le client et le professionnel.</span>
-        </div>
-
-        <div class="safe">
-          <b>Preuve claire</b>
-          <span>Capture, reçu, message ou note deviennent une trace à valider.</span>
-        </div>
-
-        <div class="safe">
-          <b>Pro protégé</b>
-          <span>Le code ouvre la session. Les identifiants ne circulent pas dans l’URL.</span>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <nav class="bottom-nav" aria-label="Navigation basse">
-    <a class="active" href="./index.html"><b>◎</b>Actions</a>
-    <a href="./pin.html?redirect=admin"><b>＋</b>Ajouter</a>
-    <a href="./pin.html?redirect=admin"><b>🧾</b>Preuves</a>
-    <a href="./pin.html?redirect=cockpit"><b>📊</b>Espace</a>
-    <a href="./pin.html"><b>🔒</b>Code</a>
-  </nav>
-
-  <button id="digiyPayAudioBtn" type="button" aria-label="Écouter DIGIY PAY" aria-pressed="false">
-    <span>🎧</span>
-    <strong>Écouter DIGIY</strong>
-  </button>
-
-  <script>
-    (() => {
-      "use strict";
-
-      const SENSITIVE_KEYS = [
-        "phone",
-        "tel",
-        "owner_phone",
-        "owner_id",
-        "slug",
-        "pay_slug",
-        "subscription_slug",
-        "business_phone",
-        "wave_phone",
-        "wallet_phone",
-        "pay_phone",
-        "access_note",
-        "keybox_code",
-        "keybox_location",
-        "module",
-        "return",
-        "from"
-      ];
-
-      function cleanVisibleUrl() {
-        try {
-          const url = new URL(window.location.href);
-          let changed = false;
-
-          SENSITIVE_KEYS.forEach((key) => {
-            if (url.searchParams.has(key)) {
-              url.searchParams.delete(key);
-              changed = true;
-            }
-          });
-
-          if (changed) {
-            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-          }
-        } catch (_) {}
-      }
-
-      function cleanInternalLinks() {
-        document.querySelectorAll("a[href]").forEach((link) => {
-          try {
-            const href = link.getAttribute("href") || "";
-            if (
-              !href ||
-              href.startsWith("#") ||
-              href.startsWith("mailto:") ||
-              href.startsWith("tel:")
-            ) {
-              return;
-            }
-
-            const url = new URL(href, window.location.href);
-
-            if (url.origin !== window.location.origin) return;
-
-            SENSITIVE_KEYS.forEach((key) => url.searchParams.delete(key));
-
-            const file = url.pathname.split("/").pop() || "index.html";
-            link.setAttribute("href", `./${file}${url.search || ""}${url.hash || ""}`);
-          } catch (_) {}
+<!-- DIGIY EXPLORE PUBLIC — PATCH DOCTRINE FINAL
+À coller juste avant </body> dans BEAUVILLE/digiy-explore/index.html
+
+Public = découvrir / comprendre / partager.
+PRO = cockpit / lieux / ajouter / PIN.
+Camembert = pilotage PRO.
+Audio = lecteur séparé.
+-->
+
+<style>
+  body.digiy-place-not-found .pro-band,
+  body.digiy-place-not-found #proSection{display:none!important}
+
+  #digiyPublicAudioReader{
+    position:fixed;right:14px;bottom:calc(86px + env(safe-area-inset-bottom,0px));
+    z-index:99998;display:flex;align-items:center;gap:8px;
+    max-width:min(340px,calc(100vw - 118px));padding:9px 10px;
+    border-radius:999px;border:1px solid rgba(242,204,120,.24);
+    background:rgba(6,19,15,.94);box-shadow:0 18px 44px rgba(0,0,0,.34);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    font-family:Outfit,Inter,system-ui,sans-serif
+  }
+  #digiyPublicAudioReader .audioText{
+    min-width:0;color:rgba(247,251,248,.76);font-size:12px;font-weight:900;
+    line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+  }
+  #digiyPublicAudioReader button{
+    min-height:40px;border:none;border-radius:999px;padding:0 13px;cursor:pointer;
+    font-family:inherit;font-size:12px;font-weight:1000;white-space:nowrap
+  }
+  #digiyPublicAudioReader .listenBtn{color:#062414;background:linear-gradient(135deg,#dcb45a,#f2cc78)}
+  #digiyPublicAudioReader .stopBtn{
+    color:#fecaca;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.22);display:none
+  }
+  #digiyPublicAudioReader.playing .listenBtn{display:none}
+  #digiyPublicAudioReader.playing .stopBtn{display:inline-flex;align-items:center}
+
+  #digiyPublicActionCamembert{
+    position:fixed;left:14px;bottom:calc(86px + env(safe-area-inset-bottom,0px));
+    width:84px;height:84px;z-index:99999;font-family:Outfit,Inter,system-ui,sans-serif
+  }
+  #digiyPublicActionCamembert .digiyPublicCenter{
+    position:absolute;inset:0;width:84px;height:84px;border:none;border-radius:50%;
+    cursor:pointer;color:#fff;box-shadow:0 18px 40px rgba(0,0,0,.34);
+    background:radial-gradient(circle at center,rgba(6,19,15,.95) 0 42%,transparent 43%),
+      conic-gradient(from -90deg,rgba(220,180,90,.96) 0 25%,rgba(18,183,106,.90) 25% 50%,rgba(56,189,248,.88) 50% 75%,rgba(168,85,247,.82) 75% 100%);
+    overflow:hidden
+  }
+  #digiyPublicActionCamembert .digiyPublicCenter::before{
+    content:"";position:absolute;inset:13px;border-radius:50%;background:rgba(6,19,15,.97);border:1px solid rgba(255,255,255,.10)
+  }
+  #digiyPublicActionCamembert .digiyPublicCenter span,
+  #digiyPublicActionCamembert .digiyPublicCenter strong{position:relative;z-index:2;display:block;text-align:center}
+  #digiyPublicActionCamembert .digiyPublicCenter span{font-size:20px;line-height:1;margin-bottom:2px}
+  #digiyPublicActionCamembert .digiyPublicCenter strong{font-size:10.5px;font-weight:1000}
+
+  #digiyPublicActionCamembert .digiyPublicMenu{
+    position:absolute;left:94px;bottom:4px;width:248px;display:grid;grid-template-columns:1fr 1fr;gap:8px;
+    padding:10px;border-radius:22px;border:1px solid rgba(255,255,255,.12);
+    background:rgba(6,19,15,.94);box-shadow:0 18px 48px rgba(0,0,0,.32);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    opacity:0;transform:translateX(-8px) scale(.96);pointer-events:none;transition:.18s ease
+  }
+  #digiyPublicActionCamembert.open .digiyPublicMenu{opacity:1;transform:translateX(0) scale(1);pointer-events:auto}
+  #digiyPublicActionCamembert .digiyPublicMenu a{
+    min-height:44px;border:none;border-radius:15px;background:rgba(255,255,255,.07);color:#f7fbf8;
+    padding:9px 10px;font-size:12px;font-weight:1000;text-decoration:none;display:inline-flex;
+    align-items:center;justify-content:center;text-align:center;font-family:inherit
+  }
+  #digiyPublicActionCamembert .gold{background:linear-gradient(135deg,#dcb45a,#f2cc78)!important;color:#062414!important}
+  #digiyPublicActionCamembert .green{background:rgba(18,183,106,.16)!important;color:#dffcea!important;border:1px solid rgba(18,183,106,.25)!important}
+  #digiyPublicActionCamembert .blue{background:rgba(56,189,248,.14)!important;color:#d9f4ff!important;border:1px solid rgba(56,189,248,.24)!important}
+  #digiyPublicActionCamembert .violet{background:rgba(168,85,247,.14)!important;color:#eadcff!important;border:1px solid rgba(168,85,247,.24)!important}
+
+  @media(max-width:640px){
+    #digiyPublicActionCamembert{left:10px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:76px;height:76px}
+    #digiyPublicActionCamembert .digiyPublicCenter{width:76px;height:76px}
+    #digiyPublicActionCamembert .digiyPublicCenter::before{inset:12px}
+    #digiyPublicActionCamembert .digiyPublicMenu{left:0;bottom:86px;width:min(265px,calc(100vw - 20px))}
+    #digiyPublicAudioReader{right:10px;left:96px;bottom:calc(92px + env(safe-area-inset-bottom,0px));max-width:none;justify-content:space-between}
+    #digiyPublicAudioReader .audioText{font-size:11.5px}
+  }
+</style>
+
+<script>
+(function(){
+  "use strict";
+
+  const PRO = {
+    cockpit:"https://pro-explore.digiylyfe.com/cockpit.html",
+    lieux:"https://pro-explore.digiylyfe.com/lieux.html",
+    submit:"https://pro-explore.digiylyfe.com/submit.html",
+    pin:"https://pro-explore.digiylyfe.com/pin.html"
+  };
+
+  const AUDIO_TEXT =
+    "Bienvenue dans DIGIY EXPLORE. Ici, on découvre le coin. Le public regarde, comprend vite, partage et contacte. Le professionnel pilote son lieu dans le cockpit sécurisé. Pas de téléphone dans la barre. Pas de repère interne dehors. Si tu veux gérer ton lieu, ouvre le cockpit. Si tu veux découvrir, reste sur la vitrine. Le terrain garde la main.";
+
+  function cleanText(value){
+    return String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+  }
+
+  function setLink(node, href){
+    if(!node) return;
+    node.setAttribute("href", href);
+    node.removeAttribute("target");
+    node.removeAttribute("rel");
+  }
+
+  function removeOld(){
+    ["#digiyExploreProCamembert","#digiyExploreAudioReader","#digiyPublicActionCamembert","#digiyPublicAudioReader"].forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(n){n.remove()});
+    });
+  }
+
+  function patchProLinks(){
+    document.querySelectorAll('a[href="#proSection"], a[href*="#proSection"]').forEach(function(a){
+      setLink(a, PRO.cockpit);
+    });
+
+    document.querySelectorAll("a,button").forEach(function(node){
+      const t = cleanText(node.textContent);
+      const cockpit = t.includes("mon lieu") || t.includes("ma fiche") || t.includes("espace pro") || t.includes("je veux montrer mon lieu") || t.includes("mon acces") || t.includes("cockpit");
+      const lieux = t.includes("voir mes lieux") || t === "lieux" || t.includes("mes lieux");
+      const add = t.includes("ajouter un lieu") || t === "ajouter";
+
+      if(node.tagName === "A"){
+        if(add) setLink(node, PRO.submit);
+        else if(lieux) setLink(node, PRO.lieux);
+        else if(cockpit) setLink(node, PRO.cockpit);
+      }else if(node.tagName === "BUTTON" && (add || lieux || cockpit)){
+        node.addEventListener("click", function(e){
+          e.preventDefault();
+          window.location.href = add ? PRO.submit : lieux ? PRO.lieux : PRO.cockpit;
         });
       }
+    });
+  }
 
-      cleanVisibleUrl();
-      cleanInternalLinks();
+  function markNotFound(){
+    const t = cleanText(document.body.textContent);
+    if(t.includes("lieu introuvable") || t.includes("aucun lieu public trouve")){
+      document.body.classList.add("digiy-place-not-found");
+    }
+  }
 
-      window.DIGIY_PAY_INDEX = {
-        cleanVisibleUrl,
-        cleanInternalLinks,
-        doctrine:
-          "PAY ne touche pas l’argent. PAY organise la preuve, la trace et la confiance."
-      };
-    })();
-  </script>
+  function cleanProHash(){
+    try{
+      const url = new URL(window.location.href);
+      if(url.hash === "#proSection") history.replaceState({}, document.title, url.pathname + url.search);
+    }catch(_){}
+  }
 
-  <script>
-    (() => {
-      "use strict";
+  function make(html){
+    const tpl = document.createElement("template");
+    tpl.innerHTML = html.trim();
+    return tpl.content.firstElementChild;
+  }
 
-      const AUDIO_TEXT =
-        "Bienvenue dans Mon argent by DIGIY. Ici, PAY ne touche pas l’argent du client. Le client paie directement le professionnel, par ses moyens habituels : Wave, espèces, Orange Money, banque ou autre. PAY sert à organiser la preuve, confirmer proprement et garder une trace claire. Sur cette page, tu choisis une action. Encaisser si l’argent est reçu. Preuve si le client a envoyé une capture ou un reçu. Confirmer si le paiement est vérifié. Vérifier si le montant ou le canal n’est pas encore sûr. Relancer si le client doit être rappelé. Ajouter si tu veux noter une entrée, une dépense, une épargne ou une note rapide. Le pro clique plus qu’il n’écrit. DIGIY prépare le geste, le terrain valide avec sa vérité.";
-
-      const CFG = {
-        rate: 0.86,
-        pitch: 1.04,
-        volume: 1
-      };
-
-      const btn = document.getElementById("digiyPayAudioBtn");
-      const inlineBtn = document.getElementById("digiyPayAudioInline");
-
-      function canSpeak() {
-        return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  function installCamembert(){
+    const root = make(`
+      <div id="digiyPublicActionCamembert" aria-label="Actions DIGIY EXPLORE">
+        <button class="digiyPublicCenter" id="digiyPublicCenter" type="button" aria-expanded="false">
+          <span>🧭</span><strong>PRO</strong>
+        </button>
+        <div class="digiyPublicMenu">
+          <a class="gold" href="${PRO.cockpit}">Cockpit</a>
+          <a class="green" href="${PRO.lieux}">Mes lieux</a>
+          <a class="blue" href="${PRO.submit}">Ajouter</a>
+          <a class="violet" href="${PRO.pin}">PIN</a>
+        </div>
+      </div>
+    `);
+    document.body.appendChild(root);
+    const center = document.getElementById("digiyPublicCenter");
+    center && center.addEventListener("click", function(e){
+      e.preventDefault();
+      root.classList.toggle("open");
+      center.setAttribute("aria-expanded", root.classList.contains("open") ? "true" : "false");
+    });
+    document.addEventListener("click", function(e){
+      if(root && !root.contains(e.target)){
+        root.classList.remove("open");
+        center && center.setAttribute("aria-expanded","false");
       }
+    });
+  }
 
-      function updateButton(isPlaying) {
-        if (btn) {
-          btn.setAttribute("aria-pressed", isPlaying ? "true" : "false");
-          btn.innerHTML = isPlaying
-            ? "<span>⏹</span><strong>Stop</strong>"
-            : "<span>🎧</span><strong>Écouter DIGIY</strong>";
-        }
+  function installAudio(){
+    const reader = make(`
+      <div id="digiyPublicAudioReader" aria-label="Lecteur audio DIGIY EXPLORE">
+        <span class="audioText">Écouter DIGIY expliquer EXPLORE</span>
+        <button class="listenBtn" id="digiyPublicAudioListen" type="button">🎧 Écouter</button>
+        <button class="stopBtn" id="digiyPublicAudioStop" type="button">⏹ Stop</button>
+      </div>
+    `);
+    document.body.appendChild(reader);
 
-        if (inlineBtn) {
-          inlineBtn.textContent = isPlaying ? "Stop" : "Écouter";
-        }
+    const listen = document.getElementById("digiyPublicAudioListen");
+    const stopBtn = document.getElementById("digiyPublicAudioStop");
+    let playing = false;
+
+    function setPlaying(v){ playing = !!v; reader.classList.toggle("playing", playing); }
+    function stop(){ try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(_){} setPlaying(false); }
+    function getVoice(){
+      const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+      return voices.find(v => /^fr/i.test(v.lang || "")) || null;
+    }
+    function speak(){
+      if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
+        alert("Audio indisponible sur ce navigateur."); return;
       }
+      if(playing){ stop(); return; }
+      stop();
+      const u = new SpeechSynthesisUtterance(AUDIO_TEXT);
+      u.lang = "fr-FR"; u.rate = 0.86; u.pitch = 1.04; u.volume = 1;
+      const v = getVoice(); if(v) u.voice = v;
+      u.onstart = () => setPlaying(true);
+      u.onend = () => setTimeout(stop,120);
+      u.onerror = stop;
+      window.speechSynthesis.speak(u);
+    }
 
-      function getFrenchVoice() {
-        const voices = window.speechSynthesis.getVoices() || [];
+    listen && listen.addEventListener("click", speak);
+    stopBtn && stopBtn.addEventListener("click", stop);
+    if(window.speechSynthesis && typeof window.speechSynthesis.onvoiceschanged !== "undefined"){
+      window.speechSynthesis.onvoiceschanged = getVoice;
+    }
+    window.addEventListener("beforeunload", stop);
+    document.addEventListener("visibilitychange", function(){ if(document.hidden) stop(); });
+  }
 
-        return (
-          voices.find((v) => /fr[-_]?fr/i.test(v.lang || "")) ||
-          voices.find((v) => /^fr/i.test(v.lang || "")) ||
-          voices[0] ||
-          null
-        );
-      }
+  function boot(){
+    cleanProHash();
+    removeOld();
+    installCamembert();
+    installAudio();
+    patchProLinks();
+    markNotFound();
+    setTimeout(patchProLinks,500);
+    setTimeout(patchProLinks,1500);
+    setTimeout(markNotFound,800);
+  }
 
-      function loadVoices() {
-        return new Promise((resolve) => {
-          if (!canSpeak()) {
-            resolve([]);
-            return;
-          }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+</script>
 
-          const ready = window.speechSynthesis.getVoices();
-
-          if (ready && ready.length) {
-            resolve(ready);
-            return;
-          }
-
-          let done = false;
-
-          const finish = () => {
-            if (done) return;
-            done = true;
-            resolve(window.speechSynthesis.getVoices() || []);
-          };
-
-          window.speechSynthesis.onvoiceschanged = finish;
-          setTimeout(finish, 700);
-        });
-      }
-
-      function stop() {
-        if (!canSpeak()) return;
-        window.speechSynthesis.cancel();
-        updateButton(false);
-      }
-
-      async function speak() {
-        if (!canSpeak()) {
-          alert("La lecture vocale n’est pas disponible sur ce navigateur.");
-          return;
-        }
-
-        await loadVoices();
-
-        window.speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(AUDIO_TEXT);
-        const voice = getFrenchVoice();
-
-        if (voice) utterance.voice = voice;
-
-        utterance.lang = voice?.lang || "fr-FR";
-        utterance.rate = CFG.rate;
-        utterance.pitch = CFG.pitch;
-        utterance.volume = CFG.volume;
-
-        utterance.onstart = () => updateButton(true);
-        utterance.onend = () => updateButton(false);
-        utterance.onerror = () => updateButton(false);
-
-        window.speechSynthesis.speak(utterance);
-      }
-
-      function toggle() {
-        if (canSpeak() && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-          stop();
-          return;
-        }
-
-        speak();
-      }
-
-      btn?.addEventListener("click", toggle);
-      inlineBtn?.addEventListener("click", toggle);
-      window.addEventListener("pagehide", stop);
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) stop();
-      });
-
-      window.DIGIY_PAY_AUDIO = {
-        speak,
-        stop,
-        text: AUDIO_TEXT
-      };
-    })();
-  </script>
-</body>
-</html>
 
