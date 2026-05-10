@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Cockpit PAY · Anti-cache corrigé</title>
+  <title>MON ARGENT — Cockpit PAY · Audio guide</title>
 
   <!-- Note terrain : sur GitHub Pages, les vrais headers HTTP restent gérés par GitHub.
        Ces meta aident côté document, mais le vrai anti-cache repose surtout sur le versionnement des scripts. -->
@@ -11,9 +11,9 @@
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="digiy-build" content="pay-cockpit-20260510-v5-gotrue-clean" />
+  <meta name="digiy-build" content="pay-cockpit-20260510-v6-audio-guide" />
   <script>
-    window.DIGIY_BUILD_ID = "pay-cockpit-20260510-v5-gotrue-clean";
+    window.DIGIY_BUILD_ID = "pay-cockpit-20260510-v6-audio-guide";
     window.DIGIY_CACHE_GUARD = true;
   </script>
 
@@ -28,9 +28,9 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./session.js?v=pay-cockpit-20260510-v5-gotrue-clean"></script>
-  <script src="./pay-tools.js?v=pay-cockpit-20260510-v5-gotrue-clean"></script>
-  <script src="./pay-alerts.js?v=pay-cockpit-20260510-v5-gotrue-clean"></script>
+  <script src="./session.js?v=pay-cockpit-20260510-v6-audio-guide"></script>
+  <script src="./pay-tools.js?v=pay-cockpit-20260510-v6-audio-guide"></script>
+  <script src="./pay-alerts.js?v=pay-cockpit-20260510-v6-audio-guide"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -923,6 +923,105 @@
       font-weight:900 !important;
     }
 
+
+    /* =========================================================
+       DIGIY PAY — LECTEUR AUDIO FLOTTANT COCKPIT
+       Le cockpit ne reste pas froid : il guide le pro.
+       ========================================================= */
+    .digiy-cockpit-audio{
+      position:fixed;
+      left:14px;
+      bottom:calc(92px + env(safe-area-inset-bottom,0px));
+      z-index:99998;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      max-width:min(420px,calc(100vw - 28px));
+      border:2px solid rgba(121,83,12,.28);
+      border-radius:999px;
+      background:rgba(255,250,238,.96);
+      box-shadow:0 14px 34px rgba(77,52,22,.20);
+      padding:8px;
+      color:#1f2a1f;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+
+    .digiy-cockpit-audio button{
+      min-height:48px;
+      border:none;
+      border-radius:999px;
+      padding:12px 15px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .digiy-cockpit-audio .play{
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#1f2a1f;
+      border:1px solid rgba(121,83,12,.24);
+    }
+
+    .digiy-cockpit-audio .stop{
+      background:rgba(255,255,255,.72);
+      color:#3d3324;
+      border:1px solid rgba(83,58,26,.20);
+    }
+
+    .digiy-cockpit-audio .txt{
+      display:grid;
+      gap:1px;
+      padding-right:8px;
+      min-width:0;
+    }
+
+    .digiy-cockpit-audio .txt strong{
+      color:#241a0d;
+      font-size:13px;
+      font-weight:900;
+      line-height:1.15;
+      white-space:nowrap;
+    }
+
+    .digiy-cockpit-audio .txt span{
+      color:#3d3324;
+      font-size:11px;
+      font-weight:850;
+      line-height:1.2;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:180px;
+    }
+
+    .digiy-cockpit-audio[aria-pressed="true"]{
+      border-color:rgba(22,101,52,.34);
+      background:rgba(220,252,231,.96);
+    }
+
+    @media(max-width:560px){
+      .digiy-cockpit-audio{
+        left:10px;
+        right:10px;
+        bottom:calc(86px + env(safe-area-inset-bottom,0px));
+        justify-content:space-between;
+      }
+
+      .digiy-cockpit-audio .txt span{
+        max-width:150px;
+      }
+
+      .digiy-cockpit-audio button{
+        min-height:50px;
+        padding:12px 13px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -931,7 +1030,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "pay-cockpit-20260510-v5-gotrue-clean";
+      const BUILD_ID = "pay-cockpit-20260510-v6-audio-guide";
       const BUILD_KEY = "digiy_pay_cockpit_build_id";
       const CLEAN_KEY = "digiy_pay_cockpit_cache_cleaned";
 
@@ -1329,6 +1428,16 @@
       <a id="bottomMore" href="./brain-admin.html"><span class="icoBottom">⚙️</span><span>Plus</span></a>
     </div>
   </nav>
+
+
+  <div class="digiy-cockpit-audio" id="digiyCockpitAudioBox" aria-label="Lecteur audio cockpit PAY" aria-pressed="false">
+    <button class="play" id="btnCockpitAudioPlay" type="button">🎧 Écouter DIGIY</button>
+    <div class="txt" aria-hidden="true">
+      <strong>Guide du cockpit</strong>
+      <span>Comprendre vite, agir juste</span>
+    </div>
+    <button class="stop" id="btnCockpitAudioStop" type="button">⏹</button>
+  </div>
 
 <script>
 (function(){
@@ -2967,5 +3076,114 @@
 
 })();
 </script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const AUDIO_TEXT =
+        "Bienvenue dans le cockpit PAY de MON ARGENT by DIGIY. Cette page te donne la vue claire de ton argent. Commence par regarder les entrées du mois : c’est ce qui fait respirer l’activité. Ensuite regarde les dépenses : carburant, stock, courses, ravitaillement, frais scolaires, médicaments, panne voiture ou autres imprévus. Puis regarde le net pro : c’est la différence entre ce qui entre et ce qui sort pour l’activité. La marge protégée indique ce qu’il faut préserver pour ne pas travailler dans le vide. Si le chef de passe signale une preuve reçue, un paiement à vérifier ou un client à relancer, traite d’abord cette action. Pour enregistrer un nouveau mouvement, touche Ajouter. Pour poser les règles du mois, réserve, charges, crédits, dettes ou projets, touche Plus. PAY ne touche pas ton argent. Le client paie directement le professionnel. PAY garde la trace, la preuve et la confiance. Le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide avec sa vérité.";
+
+      function canSpeak(){
+        return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+      }
+
+      function getFrenchVoice(){
+        try{
+          const voices = window.speechSynthesis.getVoices() || [];
+          return (
+            voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
+            voices.find(v => /^fr/i.test(v.lang || "")) ||
+            voices[0] ||
+            null
+          );
+        }catch(_){
+          return null;
+        }
+      }
+
+      function setAudioState(on){
+        const box = document.getElementById("digiyCockpitAudioBox");
+        const btn = document.getElementById("btnCockpitAudioPlay");
+
+        if(box) box.setAttribute("aria-pressed", on ? "true" : "false");
+        if(btn) btn.textContent = on ? "🎧 Lecture…" : "🎧 Écouter DIGIY";
+      }
+
+      function stopCockpitAudio(){
+        try{
+          if(canSpeak()){
+            window.speechSynthesis.cancel();
+          }
+        }catch(_){}
+        setAudioState(false);
+      }
+
+      function speakCockpitAudio(){
+        if(!canSpeak()){
+          const box = document.getElementById("stateBox");
+          if(box){
+            box.className = "state warn";
+            box.innerHTML = '<div class="state-title">Audio indisponible</div><div class="state-txt">La lecture vocale n’est pas disponible sur ce navigateur.</div>';
+          }
+          return;
+        }
+
+        stopCockpitAudio();
+
+        const run = () => {
+          const utterance = new SpeechSynthesisUtterance(AUDIO_TEXT);
+          const voice = getFrenchVoice();
+
+          if(voice) utterance.voice = voice;
+
+          utterance.lang = voice?.lang || "fr-FR";
+          utterance.rate = 0.86;
+          utterance.pitch = 1.04;
+          utterance.volume = 1;
+
+          utterance.onstart = () => setAudioState(true);
+          utterance.onend = () => setAudioState(false);
+          utterance.onerror = () => setAudioState(false);
+
+          window.speechSynthesis.speak(utterance);
+        };
+
+        const voices = window.speechSynthesis.getVoices();
+        if(voices && voices.length){
+          run();
+        }else{
+          window.speechSynthesis.onvoiceschanged = run;
+          setTimeout(run, 650);
+        }
+      }
+
+      function bindCockpitAudio(){
+        const play = document.getElementById("btnCockpitAudioPlay");
+        const stop = document.getElementById("btnCockpitAudioStop");
+
+        if(play) play.addEventListener("click", speakCockpitAudio);
+        if(stop) stop.addEventListener("click", stopCockpitAudio);
+
+        window.addEventListener("pagehide", stopCockpitAudio);
+        document.addEventListener("visibilitychange", () => {
+          if(document.hidden) stopCockpitAudio();
+        });
+      }
+
+      if(document.readyState === "loading"){
+        document.addEventListener("DOMContentLoaded", bindCockpitAudio);
+      }else{
+        bindCockpitAudio();
+      }
+
+      window.DIGIY_PAY_COCKPIT_AUDIO = {
+        speak: speakCockpitAudio,
+        stop: stopCockpitAudio,
+        text: AUDIO_TEXT
+      };
+    })();
+  </script>
+
 </body>
 </html>
