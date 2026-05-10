@@ -1,1379 +1,1025 @@
 <!doctype html>
 <html lang="fr">
 <head>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT by DIGIY ♾️</title>
+  <title>MON ARGENT by DIGIY ♾️ — Actions PAY</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
-    content="MON ARGENT by DIGIY — porte d’entrée vers le coffre financier PAY : lire, ajouter, protéger, sans exposer la session dans l’adresse."
+    content="MON ARGENT by DIGIY — écran d’actions PAY : paiement direct, preuve claire, confirmation, relance, sans exposer la session dans l’adresse."
   />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900;1000&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
 
   <style>
     :root{
-      --bg:#04110d;
-      --bg2:#071a13;
-      --bg3:#0a2018;
-      --card:#0b1f18;
-      --card2:#102820;
-      --card3:#0f2a20;
-      --line:rgba(255,255,255,.08);
-      --line-strong:rgba(255,255,255,.14);
-      --line-g:rgba(34,197,94,.25);
-      --text:#f3fff7;
-      --muted:rgba(243,255,247,.68);
-      --muted2:rgba(243,255,247,.52);
+      --bg:#1d5644;
+      --bg2:#12392d;
+      --card:rgba(255,255,255,.11);
+      --card2:rgba(255,255,255,.15);
+      --line:rgba(255,255,255,.18);
+      --line2:rgba(255,255,255,.28);
+      --text:#f6fff9;
+      --muted:rgba(246,255,249,.82);
+      --muted2:rgba(246,255,249,.62);
+      --gold:#facc15;
+      --gold2:#fff0ae;
       --green:#22c55e;
       --green2:#16a34a;
-      --gold:#facc15;
-      --gold-soft:rgba(250,204,21,.10);
-      --danger:#ef4444;
-      --danger-soft:rgba(239,68,68,.10);
-      --shadow:0 22px 70px rgba(0,0,0,.42);
-      --r:24px;
-      --max:1120px;
-      --ff-title:'Playfair Display', Georgia, serif;
-      --ff-body:'Nunito', system-ui, sans-serif;
+      --blue:#38bdf8;
+      --red:#fb7185;
+      --shadow:0 18px 48px rgba(0,0,0,.22);
+      --max:980px;
+      --ff:Outfit,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --title:'Playfair Display',Georgia,serif;
     }
 
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{margin:0;padding:0}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;min-height:100%}
     body{
-      min-height:100vh;
+      font-family:var(--ff);
       color:var(--text);
-      font-family:var(--ff-body);
       background:
-        radial-gradient(circle at 10% 0%, rgba(34,197,94,.10), transparent 34%),
-        radial-gradient(circle at 100% 100%, rgba(250,204,21,.06), transparent 28%),
-        linear-gradient(180deg, var(--bg), #061710 58%, #04110d);
+        radial-gradient(circle at top left,rgba(250,204,21,.16),transparent 30%),
+        radial-gradient(circle at 82% 18%,rgba(34,197,94,.14),transparent 26%),
+        linear-gradient(180deg,var(--bg) 0%, var(--bg2) 58%, #0d2c22 100%);
+      padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(92px + env(safe-area-inset-bottom,0px));
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
 
     a{text-decoration:none;color:inherit}
-    button,input,select,textarea{font:inherit}
+    button{font:inherit;cursor:pointer}
+    .wrap{width:min(100%,var(--max));margin:0 auto}
 
-    .wrap{
-      width:min(var(--max), calc(100% - 24px));
-      margin:0 auto;
-    }
-
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:50;
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-      background:rgba(4,17,13,.84);
-      border-bottom:1px solid var(--line);
-    }
-
-    .topbar-in{
-      width:min(var(--max), calc(100% - 24px));
-      margin:0 auto;
-      min-height:72px;
+    .top{
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:10px;
       min-width:0;
     }
 
-    .brand-mark{
-      width:44px;height:44px;
-      border-radius:14px;
-      background:linear-gradient(135deg,var(--green),var(--green2));
-      display:grid;place-items:center;
-      font-size:20px;font-weight:900;
+    .mark{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
       color:#032215;
-      box-shadow:var(--shadow);
-      flex-shrink:0;
+      font-size:21px;
+      font-weight:1000;
+      background:linear-gradient(135deg,var(--green),var(--gold));
+      box-shadow:0 14px 32px rgba(0,0,0,.26);
     }
 
-    .brand-title{
-      font-family:var(--ff-title);
+    .brand strong{
+      display:block;
+      font-family:var(--title);
       color:var(--gold);
-      font-size:18px;
-      line-height:1.05;
+      font-size:20px;
+      line-height:1.02;
     }
 
-    .brand-sub{
+    .brand span{
+      display:block;
+      margin-top:3px;
       color:var(--muted);
-      font-size:11px;
-      font-weight:800;
-      margin-top:4px;
-    }
-
-    .nav{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:flex-end;
-    }
-
-    .pill{
-      padding:9px 13px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--muted);
-      font-weight:800;
       font-size:12px;
-      transition:.18s ease;
+      font-weight:850;
       white-space:nowrap;
-    }
-
-    .pill:hover{
-      color:var(--gold);
-      border-color:rgba(250,204,21,.28);
-      background:rgba(250,204,21,.07);
-    }
-
-    .pill.primary{
-      border:none;
-      color:#032215;
-      background:linear-gradient(135deg,var(--green),var(--green2));
-    }
-
-    .pill.primary:hover{
-      filter:brightness(1.05);
-      color:#032215;
-    }
-
-    .hero{
-      padding:26px 0 14px;
-      display:grid;
-      grid-template-columns:1.12fr .88fr;
-      gap:16px;
-      align-items:stretch;
-    }
-
-    .hero-card,
-    .panel,
-    .flow,
-    .event-rail{
-      border:1px solid var(--line);
-      border-radius:30px;
-      background:linear-gradient(160deg, rgba(11,31,24,.98), rgba(8,24,18,.94));
-      box-shadow:var(--shadow);
       overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:62vw;
     }
 
-    .hero-main{
-      padding:26px 24px 22px;
-      display:grid;
-      gap:18px;
-      align-content:start;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      width:max-content;
-      max-width:100%;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--line-g);
-      background:rgba(34,197,94,.08);
-      color:#bbf7d0;
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-    }
-
-    h1{
-      margin:0;
-      font-family:var(--ff-title);
-      font-size:clamp(34px, 5.2vw, 58px);
-      line-height:.96;
-      color:#fff8dc;
-    }
-
-    .hero-text{
-      color:var(--muted);
-      font-size:16px;
-      line-height:1.58;
-      max-width:58ch;
-      font-weight:700;
-    }
-
-    .cta-row{
+    .top-actions{
       display:flex;
-      flex-wrap:wrap;
-      gap:10px;
+      gap:8px;
+      flex:0 0 auto;
     }
 
-    .btn{
-      min-height:50px;
-      padding:12px 18px;
-      border-radius:999px;
+    .chip{
+      min-height:42px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:8px;
-      border:1px solid var(--line);
-      font-weight:900;
-      font-size:14px;
-      transition:.18s ease;
-    }
-
-    .btn.primary{
-      border:none;
-      color:#032215;
-      background:linear-gradient(135deg,var(--green),var(--green2));
-    }
-
-    .btn.primary:hover{filter:brightness(1.06)}
-
-    .btn.secondary{
-      color:var(--text);
-      background:rgba(255,255,255,.04);
-    }
-
-    .btn.secondary:hover{
-      background:rgba(255,255,255,.07);
-      border-color:rgba(255,255,255,.16);
-    }
-
-    .btn.ghost{
-      color:var(--gold);
-      background:rgba(250,204,21,.06);
-      border-color:rgba(250,204,21,.18);
-    }
-
-    .btn.ghost:hover{
-      background:rgba(250,204,21,.10);
-      border-color:rgba(250,204,21,.28);
-    }
-
-    .hero-strip{
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:10px;
-    }
-
-    .strip-box{
-      border:1px solid var(--line);
-      border-radius:20px;
-      background:rgba(255,255,255,.03);
-      padding:14px;
-      display:grid;
-      gap:5px;
-      min-height:104px;
-      align-content:start;
-    }
-
-    .strip-k{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:var(--muted2);
-      font-weight:900;
-    }
-
-    .strip-v{
-      font-size:22px;
-      font-weight:900;
-      color:var(--gold);
-      line-height:1.05;
-    }
-
-    .strip-s{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700;
-      line-height:1.45;
-    }
-
-    .hero-aside{
-      padding:18px;
-      display:grid;
-      gap:12px;
-      align-content:start;
-    }
-
-    .quick-hud{
-      border:1px solid var(--line);
-      border-radius:24px;
-      background:
-        radial-gradient(circle at right top, rgba(34,197,94,.08), transparent 40%),
-        linear-gradient(160deg, rgba(16,40,32,.94), rgba(8,24,18,.96));
-      padding:16px;
-      display:grid;
-      gap:14px;
-    }
-
-    .hud-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .hud-title{
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:#bbf7d0;
-      font-weight:900;
-    }
-
-    .hud-badge{
-      padding:7px 10px;
       border-radius:999px;
-      font-size:11px;
-      font-weight:900;
-      background:rgba(34,197,94,.10);
-      border:1px solid rgba(34,197,94,.24);
-      color:#bbf7d0;
+      padding:10px 13px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.12);
+      font-size:13px;
+      font-weight:950;
+      color:var(--text);
       white-space:nowrap;
     }
 
-    .hud-net{
-      display:grid;
-      gap:4px;
+    .chip.gold{
+      color:#151515;
+      background:linear-gradient(135deg,var(--gold),#eab308);
+      border-color:transparent;
     }
 
-    .hud-net-label{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:800;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-    }
-
-    .hud-net-value{
-      font-size:clamp(28px, 4vw, 40px);
-      line-height:1;
-      font-weight:900;
-      color:#fff8dc;
-    }
-
-    .hud-net-sub{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
-      font-weight:700;
-    }
-
-    .hud-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .hud-box{
+    .hero{
       border:1px solid var(--line);
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      padding:13px;
-      display:grid;
-      gap:4px;
-    }
-
-    .hud-box.in .hud-box-v{color:#86efac}
-    .hud-box.out .hud-box-v{color:#fca5a5}
-    .hud-box.save .hud-box-v{color:#fde68a}
-    .hud-box.mod .hud-box-v{color:#93c5fd}
-
-    .hud-box-k{
-      color:var(--muted2);
-      font-size:11px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.07em;
-    }
-
-    .hud-box-v{
-      font-size:18px;
-      font-weight:900;
-      line-height:1.1;
-    }
-
-    .hud-box-s{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700;
-      line-height:1.4;
-    }
-
-    .quick-actions{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
-    }
-
-    .qa{
-      border:1px solid var(--line);
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      padding:14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      transition:.18s ease;
-    }
-
-    .qa:hover{
-      border-color:var(--line-strong);
-      background:rgba(255,255,255,.05);
-      transform:translateY(-1px);
-    }
-
-    .qa-left{
-      display:grid;
-      gap:2px;
-    }
-
-    .qa-k{
-      font-size:13px;
-      font-weight:900;
-      color:#fff;
-    }
-
-    .qa-s{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700;
-      line-height:1.4;
-    }
-
-    .qa-arrow{
-      color:var(--gold);
-      font-size:18px;
-      font-weight:900;
-      flex-shrink:0;
-    }
-
-    .section{
-      padding:12px 0 0;
-    }
-
-    .section-title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin:0 0 12px;
-    }
-
-    .section-title h2{
-      margin:0;
-      font-family:var(--ff-title);
-      color:var(--gold);
-      font-size:30px;
-      line-height:1;
-    }
-
-    .section-title p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:800;
-      text-align:right;
-    }
-
-    .grid-3{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:14px;
-    }
-
-    .panel{
+      border-radius:32px;
+      background:
+        radial-gradient(circle at 86% 10%,rgba(250,204,21,.18),transparent 26%),
+        linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
+      box-shadow:var(--shadow);
       padding:18px;
-      display:grid;
-      gap:10px;
+      overflow:hidden;
     }
 
-    .panel-ico{
-      width:44px;height:44px;
-      border-radius:14px;
-      display:grid;place-items:center;
-      background:rgba(250,204,21,.08);
-      border:1px solid rgba(250,204,21,.16);
-      font-size:20px;
-    }
-
-    .panel-title{
-      font-size:14px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.07em;
-      color:#fde68a;
-    }
-
-    .panel p{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.55;
-      font-weight:700;
-    }
-
-    .flow{
-      margin-top:16px;
-      padding:20px;
-    }
-
-    .flow-title{
-      font-family:var(--ff-title);
-      color:var(--gold);
-      font-size:28px;
-      margin-bottom:14px;
-    }
-
-    .flow-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-    }
-
-    .step{
-      border:1px solid var(--line);
-      border-radius:20px;
-      background:rgba(255,255,255,.03);
-      padding:16px;
-      display:grid;
+    .kicker{
+      display:inline-flex;
+      align-items:center;
       gap:8px;
-    }
-
-    .step-num{
-      width:32px;height:32px;border-radius:999px;
-      background:rgba(34,197,94,.13);
-      border:1px solid rgba(34,197,94,.22);
-      color:#bbf7d0;
-      display:grid;place-items:center;
-      font-size:13px;font-weight:900;
-    }
-
-    .step-title{
-      font-size:13px;
-      font-weight:900;
-      color:var(--text);
-      text-transform:uppercase;
-      letter-spacing:.05em;
-    }
-
-    .step p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-      font-weight:700;
-    }
-
-    .event-rail{
-      margin-top:16px;
-      padding:20px;
-    }
-
-    .event-head{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px;
-    }
-
-    .event-head h2{
-      margin:0;
-      font-family:var(--ff-title);
-      color:#fff8dc;
-      font-size:28px;
-      line-height:1;
-    }
-
-    .event-head p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:800;
-      text-align:right;
-    }
-
-    .event-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-    }
-
-    .event-card{
-      border:1px solid var(--line);
-      border-radius:20px;
-      background:rgba(255,255,255,.03);
-      padding:16px;
-      display:grid;
-      gap:8px;
-      min-height:160px;
-      align-content:start;
-    }
-
-    .event-tag{
-      width:max-content;
-      max-width:100%;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:11px;
-      font-weight:900;
-      letter-spacing:.05em;
-      text-transform:uppercase;
-      border:1px solid var(--line);
-      color:#d1fae5;
-      background:rgba(34,197,94,.08);
-    }
-
-    .event-tag.out{
-      color:#fecaca;
-      background:rgba(239,68,68,.08);
-      border-color:rgba(239,68,68,.16);
-    }
-
-    .event-tag.save{
-      color:#fde68a;
-      background:rgba(250,204,21,.08);
-      border-color:rgba(250,204,21,.16);
-    }
-
-    .event-tag.mod{
-      color:#bfdbfe;
-      background:rgba(59,130,246,.08);
-      border-color:rgba(59,130,246,.16);
-    }
-
-    .event-title{
-      font-size:14px;
-      font-weight:900;
-      color:#fff;
-      line-height:1.35;
-    }
-
-    .event-text{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-      font-weight:700;
-    }
-
-    .event-meta{
-      margin-top:auto;
-      color:var(--muted2);
+      color:var(--gold2);
       font-size:12px;
-      font-weight:800;
+      letter-spacing:.13em;
+      text-transform:uppercase;
+      font-weight:1000;
+    }
+
+    h1{
+      margin:10px 0 8px;
+      font-size:clamp(32px,7vw,58px);
+      line-height:.96;
+      letter-spacing:-.045em;
+      max-width:12ch;
+    }
+
+    .lead{
+      margin:0;
+      max-width:63ch;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+      font-weight:780;
     }
 
     .doctrine{
-      margin-top:16px;
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:14px;
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:20px;
+      border:1px solid rgba(250,204,21,.22);
+      background:rgba(250,204,21,.08);
+      color:#fff4bd;
+      font-weight:950;
+      line-height:1.42;
     }
 
-    .quote-box,
-    .rules-box{
-      border:1px solid var(--line);
-      border-radius:26px;
-      background:linear-gradient(160deg, rgba(11,31,24,.96), rgba(8,24,18,.9));
-      box-shadow:var(--shadow);
-      padding:20px;
+    .audio-inline{
+      margin-top:14px;
+      border:1px solid rgba(56,189,248,.22);
+      border-radius:20px;
+      padding:12px 14px;
+      background:rgba(56,189,248,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
-    .quote-top{
-      color:#bbf7d0;
-      font-size:12px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      margin-bottom:10px;
-    }
-
-    .quote-main{
+    .audio-inline p{
       margin:0;
-      font-family:var(--ff-title);
-      color:#fff8dc;
-      font-size:30px;
-      line-height:1.08;
-    }
-
-    .quote-sub{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-      font-weight:700;
-    }
-
-    .rules-title{
+      color:#d8f5ff;
       font-size:13px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:#fde68a;
-      margin-bottom:10px;
+      line-height:1.45;
+      font-weight:830;
     }
 
-    .rules{
-      display:grid;
-      gap:10px;
-    }
-
-    .rule{
-      display:grid;
-      grid-template-columns:auto 1fr;
-      gap:10px;
-      align-items:start;
-      padding:12px 0;
-      border-top:1px solid var(--line);
-    }
-
-    .rule:first-child{border-top:none;padding-top:0}
-
-    .rule-ico{
-      width:28px;height:28px;
+    .audio-inline button{
+      min-height:42px;
+      border:none;
       border-radius:999px;
-      display:grid;place-items:center;
-      background:rgba(34,197,94,.10);
-      border:1px solid rgba(34,197,94,.18);
-      color:#bbf7d0;
-      font-size:13px;
-      font-weight:900;
-      margin-top:1px;
+      padding:10px 14px;
+      background:linear-gradient(135deg,var(--gold),#eab308);
+      color:#171717;
+      font-weight:1000;
     }
 
-    .rule strong{
+    .screen{
+      display:grid;
+      grid-template-columns:1fr .92fr;
+      gap:16px;
+      align-items:stretch;
+      margin-top:16px;
+    }
+
+    .pie-card,
+    .todo-card{
+      border:1px solid var(--line);
+      border-radius:30px;
+      background:var(--card);
+      box-shadow:var(--shadow);
+      padding:16px;
+      min-height:100%;
+    }
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:20px;
+      line-height:1.1;
+      letter-spacing:-.02em;
+    }
+
+    .section-head p{
+      margin:5px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      font-weight:760;
+    }
+
+    .pie{
+      position:relative;
+      width:min(430px,100%);
+      aspect-ratio:1/1;
+      margin:8px auto 2px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at center,rgba(250,204,21,.17) 0 23%,transparent 24%),
+        conic-gradient(
+          from -90deg,
+          rgba(250,204,21,.20),
+          rgba(34,197,94,.16),
+          rgba(56,189,248,.15),
+          rgba(255,255,255,.08),
+          rgba(250,204,21,.20)
+        );
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .center{
+      position:absolute;
+      inset:50%;
+      transform:translate(-50%,-50%);
+      width:34%;
+      height:34%;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      background:linear-gradient(180deg,var(--gold),#eab308);
+      color:#141414;
+      font-weight:1000;
+      box-shadow:0 18px 35px rgba(0,0,0,.28);
+      z-index:3;
+      padding:10px;
+      line-height:1.05;
+    }
+
+    .slice{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:124px;
+      min-height:64px;
+      transform:
+        rotate(var(--a))
+        translate(146px)
+        rotate(calc(-1 * var(--a)))
+        translate(-50%,-50%);
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:20px;
+      background:rgba(20,60,47,.92);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      color:var(--text);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:3px;
+      padding:10px;
+      box-shadow:0 14px 30px rgba(0,0,0,.25);
+      transition:transform .16s ease,border-color .16s ease,background .16s ease;
+    }
+
+    .slice:hover{
+      border-color:rgba(250,204,21,.44);
+      background:rgba(250,204,21,.13);
+      transform:
+        rotate(var(--a))
+        translate(150px)
+        rotate(calc(-1 * var(--a)))
+        translate(-50%,-50%);
+    }
+
+    .slice strong{
       display:block;
       font-size:13px;
-      color:#fff;
-      margin-bottom:2px;
+      line-height:1.08;
+      font-weight:1000;
     }
 
-    .rule span{
+    .slice span{
+      display:block;
       color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-      font-weight:700;
-    }
-
-    .footer{
-      padding:28px 0 38px;
-      text-align:center;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .footer a{
-      color:#fde68a;
-    }
-
-    @media (max-width:1040px){
-      .hero{grid-template-columns:1fr}
-      .grid-3{grid-template-columns:1fr}
-      .event-grid{grid-template-columns:1fr 1fr}
-      .doctrine{grid-template-columns:1fr}
-    }
-
-    @media (max-width:820px){
-      .flow-grid{grid-template-columns:1fr 1fr}
-      .hero-strip{grid-template-columns:1fr}
-    }
-
-    @media (max-width:580px){
-      .wrap{width:min(var(--max), calc(100% - 16px))}
-      .topbar-in{width:min(var(--max), calc(100% - 16px))}
-      .topbar-in{
-        align-items:flex-start;
-        flex-direction:column;
-      }
-      .nav{width:100%;justify-content:flex-start}
-      .hero-main,.hero-aside{padding:18px}
-      .brand-title{font-size:16px}
-      .hud-grid,
-      .event-grid,
-      .flow-grid{
-        grid-template-columns:1fr;
-      }
-      .section-title{
-        align-items:flex-start;
-        flex-direction:column;
-      }
-      .section-title p,
-      .event-head p{
-        text-align:left;
-      }
-    }
-
-    .audioBox{
-      position:relative;
-      margin-top:4px;
-      border:1px solid rgba(250,204,21,.42);
-      border-radius:22px;
-      padding:15px;
-      background:
-        radial-gradient(circle at top right, rgba(250,204,21,.16), transparent 40%),
-        radial-gradient(circle at bottom left, rgba(34,197,94,.13), transparent 42%),
-        linear-gradient(180deg, rgba(250,204,21,.08), rgba(34,197,94,.055));
-      box-shadow:0 16px 36px rgba(0,0,0,.20), inset 0 0 0 1px rgba(250,204,21,.04);
-      overflow:hidden;
-    }
-
-    .audioLead{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      margin-bottom:8px;
-      padding:6px 11px;
-      border-radius:999px;
-      background:rgba(250,204,21,.14);
-      border:1px solid rgba(250,204,21,.36);
-      color:#fff3bf;
       font-size:11px;
-      font-weight:900;
-      letter-spacing:.02em;
+      line-height:1.22;
+      font-weight:760;
     }
 
-    .audioLead .dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background:var(--gold);
-      box-shadow:0 0 14px rgba(250,204,21,.70);
-      animation:audioPulse 1.5s ease-in-out infinite;
+    .quick-list{
+      display:grid;
+      gap:10px;
     }
 
-    .audioTitle{
-      color:#fff8dc;
-      font-weight:900;
-      line-height:1.25;
-      font-size:16px;
+    .quick{
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:22px;
+      background:rgba(255,255,255,.10);
+      padding:13px;
+      display:grid;
+      gap:10px;
     }
 
-    .audioText{
-      margin-top:6px;
+    .quick-main{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .quick-ico{
+      width:36px;
+      height:36px;
+      flex:0 0 auto;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.08);
+      font-size:18px;
+    }
+
+    .quick strong{
+      display:block;
+      color:#ecfff4;
+      font-size:15px;
+      line-height:1.15;
+      font-weight:1000;
+    }
+
+    .quick p{
+      margin:4px 0 0;
       color:var(--muted);
       font-size:13px;
-      line-height:1.55;
-      font-weight:800;
+      line-height:1.4;
+      font-weight:760;
     }
 
-    .audioActions{
+    .quick-actions{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+    }
+
+    .quick-btn{
+      min-height:42px;
+      border-radius:15px;
+      padding:10px 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      background:rgba(255,255,255,.08);
+      color:#ecfff4;
+      font-weight:950;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .quick-btn.primary{
+      background:linear-gradient(135deg,var(--gold),#eab308);
+      color:#151515;
+      border-color:transparent;
+    }
+
+    details{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:20px;
+      background:rgba(255,255,255,.035);
       margin-top:12px;
-    }
-
-    .audioBtn{
-      min-height:44px;
-      border-radius:999px;
-      border:1px solid rgba(250,204,21,.55);
-      background:linear-gradient(135deg,var(--gold),#f59e0b);
-      color:#032215;
-      font-weight:1000;
-      padding:10px 14px;
-      cursor:pointer;
-      box-shadow:0 12px 26px rgba(250,204,21,.20);
-    }
-
-    .audioBtn.stop{
-      background:rgba(239,68,68,.10);
-      border-color:rgba(239,68,68,.35);
-      color:#fecaca;
-      box-shadow:none;
-    }
-
-    .audioProgressWrap{
-      height:5px;
-      margin-top:12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.10);
       overflow:hidden;
     }
 
-    .audioProgress{
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,var(--gold),var(--green));
-      transition:width .2s linear;
+    summary{
+      cursor:pointer;
+      list-style:none;
+      padding:13px 14px;
+      font-weight:950;
+      color:#fff4bd;
     }
 
-    @keyframes audioPulse{
-      0%,100%{transform:scale(1);opacity:1}
-      50%{transform:scale(1.25);opacity:.72}
+    summary::-webkit-details-marker{display:none}
+
+    .details-body{
+      padding:0 14px 14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      font-weight:760;
     }
 
-    @media(max-width:580px){
-      .audioBtn{width:100%}
+    .safe-row{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
     }
 
+    .safe{
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:rgba(255,255,255,.09);
+      padding:13px;
+      min-height:94px;
+    }
+
+    .safe b{
+      display:block;
+      color:var(--gold2);
+      font-size:13px;
+      margin-bottom:5px;
+      font-weight:1000;
+    }
+
+    .safe span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.42;
+      font-weight:760;
+    }
+
+    .bottom-nav{
+      position:fixed;
+      left:50%;
+      bottom:calc(10px + env(safe-area-inset-bottom,0px));
+      transform:translateX(-50%);
+      width:min(680px,calc(100% - 18px));
+      z-index:99;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:24px;
+      background:rgba(18,57,45,.94);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      padding:8px;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+    }
+
+    .bottom-nav a{
+      min-height:50px;
+      border-radius:18px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:2px;
+      font-size:11px;
+      font-weight:950;
+      color:rgba(236,255,244,.78);
+      text-align:center;
+    }
+
+    .bottom-nav a.active{
+      background:rgba(250,204,21,.14);
+      color:#fff4bd;
+      border:1px solid rgba(250,204,21,.22);
+    }
+
+    .bottom-nav b{
+      font-size:18px;
+      line-height:1;
+    }
+
+    #digiyPayAudioBtn{
+      position:fixed;
+      left:14px;
+      bottom:calc(92px + env(safe-area-inset-bottom,0px));
+      z-index:120;
+      min-height:50px;
+      border:none;
+      border-radius:999px;
+      padding:12px 16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      background:linear-gradient(135deg,#facc15,#eab308);
+      color:#171717;
+      font-weight:1000;
+      box-shadow:0 18px 38px rgba(0,0,0,.24);
+    }
+
+    #digiyPayAudioBtn span{
+      font-size:18px;
+      line-height:1;
+    }
+
+    #digiyPayAudioBtn[aria-pressed="true"]{
+      background:linear-gradient(135deg,#0f172a,#233548);
+      color:#fff;
+    }
+
+    @media (max-width:880px){
+      .screen{grid-template-columns:1fr}
+      .pie{width:min(420px,100%)}
+      .safe-row{grid-template-columns:1fr}
+    }
+
+    @media (max-width:560px){
+      body{padding-left:10px;padding-right:10px}
+      .hide-mobile{display:none}
+      .hero{padding:16px;border-radius:28px}
+      h1{max-width:none;font-size:34px}
+      .lead{font-size:14px}
+      .pie-card,.todo-card{border-radius:26px;padding:14px}
+      .pie{width:100%;max-width:360px}
+      .slice{
+        width:100px;
+        min-height:58px;
+        padding:8px;
+        border-radius:18px;
+        transform:
+          rotate(var(--a))
+          translate(123px)
+          rotate(calc(-1 * var(--a)))
+          translate(-50%,-50%);
+      }
+      .slice:hover{
+        transform:
+          rotate(var(--a))
+          translate(126px)
+          rotate(calc(-1 * var(--a)))
+          translate(-50%,-50%);
+      }
+      .slice strong{font-size:12px}
+      .slice span{font-size:10px}
+      .center{width:32%;height:32%;font-size:13px}
+      #digiyPayAudioBtn{
+        left:10px;
+        bottom:calc(86px + env(safe-area-inset-bottom,0px));
+        padding:12px 14px;
+      }
+    }
+
+    @media (max-width:390px){
+      .slice{
+        width:92px;
+        min-height:54px;
+        transform:
+          rotate(var(--a))
+          translate(112px)
+          rotate(calc(-1 * var(--a)))
+          translate(-50%,-50%);
+      }
+      .slice:hover{
+        transform:
+          rotate(var(--a))
+          translate(115px)
+          rotate(calc(-1 * var(--a)))
+          translate(-50%,-50%);
+      }
+      .center{font-size:12px}
+    }
   </style>
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="topbar-in">
-      <div class="brand">
-        <div class="brand-mark">₣</div>
-        <div>
-          <div class="brand-title">MON ARGENT by DIGIY ♾️</div>
-          <div class="brand-sub">Lecture financière terrain • paiement direct • lecture rapide • 0% commission</div>
-        </div>
-      </div>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="https://digiylyfe.com/" aria-label="Retour DIGIYLYFE">
+        <span class="mark">₣</span>
+        <span>
+          <strong>MON ARGENT</strong>
+          <span>Paiement direct · preuve claire · action pro</span>
+        </span>
+      </a>
 
-      <nav class="nav">
-        <a class="pill" href="https://digiylyfe.com/" target="_blank" rel="noopener noreferrer">🌍 Site</a>
-        <a class="pill" href="https://digiy-hub.digiylyfe.com/" target="_blank" rel="noopener noreferrer">🧭 HUB</a>
-        <a class="pill" href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener noreferrer">📦 Tarifs</a>
-        <a class="pill" href="https://pro-espace.digiylyfe.com/" target="_blank" rel="noopener noreferrer">🏢 Espace pro</a>
-        <a class="pill primary" href="./pin.html">🔐 Entrée sécurisée</a>
-        <a class="pill" href="./pin.html?redirect=cockpit">📊 Espace</a>
-        <a class="pill" href="./pin.html?redirect=admin">➕ Ajouter</a>
+      <nav class="top-actions" aria-label="Liens rapides">
+        <a class="chip hide-mobile" href="https://digiy-hub.digiylyfe.com/">HUB</a>
+        <a class="chip hide-mobile" href="https://tarifs.digiylyfe.com/">Tarifs</a>
+        <a class="chip gold" href="./pin.html" id="topPin">Code</a>
       </nav>
-    </div>
-  </header>
+    </header>
 
-  <main class="wrap">
-    <section class="hero">
-      <div class="hero-card hero-main">
-        <div class="eyebrow">💳 PAY — lecture financière DIGIYLYFE</div>
+    <main>
+      <section class="hero">
+        <span class="kicker">PAY PRO · moins de bruit · plus d’action</span>
 
-        <h1>Vois vite.<br>Comprends vite.<br>Agis juste.</h1>
+        <h1>Que veux-tu vérifier maintenant ?</h1>
 
-        <div class="hero-text">
-          MON ARGENT by DIGIY ne garde pas les fonds du client.
-          Le professionnel reste maître de son argent.
-          PAY sert à lire clairement les entrées, les dépenses pro, l’épargne et le net,
-          sans bruit et sans confusion.
+        <p class="lead">
+          Ici, le pro ne cherche pas l’argent dans un grand tableau. Il choisit un geste :
+          encaisser, vérifier une preuve, confirmer, relancer ou lire son espace.
+        </p>
+
+        <div class="doctrine">
+          PAY ne touche pas l’argent.<br>
+          PAY organise la preuve, la trace et la confiance.
         </div>
 
-        <div class="audioBox" aria-label="Explication audio Mon argent">
-          <div class="audioLead"><span class="dot"></span> Conseil DIGIY · écoute courte</div>
-          <div class="audioTitle">🎧 Comprendre Mon argent simplement</div>
-          <div class="audioText">
-            Une voix explique à un novice ce que fait ce logiciel :
-            recettes, dépenses, net, épargne et notes rapides.
-          </div>
-          <div class="audioActions">
-            <button class="audioBtn" id="btnPayProAudio" type="button">🎧 Écouter DIGIY</button>
-            <button class="audioBtn stop" id="btnPayProAudioStop" type="button">⏹ Stop</button>
-          </div>
-          <div class="audioProgressWrap" aria-hidden="true"><div class="audioProgress" id="payProAudioProgress"></div></div>
-        </div>
-
-        <div class="cta-row">
-          <a class="btn primary" href="./pin.html">🔐 Entrer dans mon espace</a>
-          <a class="btn secondary" href="./pin.html?redirect=cockpit">📊 Ouvrir mon espace</a>
-          <a class="btn ghost" href="./pin.html?redirect=admin">➕ Ajouter un mouvement</a>
-        </div>
-
-        <div class="hero-strip">
-          <div class="strip-box">
-            <div class="strip-k">En 2 secondes</div>
-            <div class="strip-v">Net du jour</div>
-            <div class="strip-s">Voir si l’activité monte, baisse ou tient la route sans ouvrir dix pages.</div>
-          </div>
-
-          <div class="strip-box">
-            <div class="strip-k">En 1 geste</div>
-            <div class="strip-v">Ajouter</div>
-            <div class="strip-s">Entrée, dépense pro, dépense perso utile ou épargne depuis une saisie simple.</div>
-          </div>
-
-          <div class="strip-box">
-            <div class="strip-k">En 1 lecture</div>
-            <div class="strip-v">Voir les activités</div>
-            <div class="strip-s">Comprendre si DRIVER, COMMERCE ou un autre wagon pousse vraiment le business.</div>
-          </div>
-        </div>
-      </div>
-
-      <aside class="hero-card hero-aside">
-        <div class="quick-hud">
-          <div class="hud-top">
-          <div class="hud-title">HUD PAY — lecture rapide</div>
-            <div class="hud-badge">0% commission</div>
-          </div>
-
-          <div class="hud-net">
-            <div class="hud-net-label">Ce que le pro veut voir d’abord</div>
-            <div class="hud-net-value">Le net. Pas le bruit.</div>
-            <div class="hud-net-sub">
-              PAY est pensé comme un affichage de décision :
-              voir l’essentiel, garder le cap, agir sans friction.
-            </div>
-          </div>
-
-          <div class="hud-grid">
-            <div class="hud-box in">
-              <div class="hud-box-k">Entrées</div>
-              <div class="hud-box-v">Recettes visibles</div>
-              <div class="hud-box-s">Ce qui rentre par module ou par saisie directe.</div>
-            </div>
-
-            <div class="hud-box out">
-              <div class="hud-box-k">Dépenses pro</div>
-              <div class="hud-box-v">Sorties utiles</div>
-              <div class="hud-box-s">Ce qui coûte à l’activité pour tourner proprement.</div>
-            </div>
-
-            <div class="hud-box save">
-              <div class="hud-box-k">Épargne</div>
-              <div class="hud-box-v">Protection réelle</div>
-              <div class="hud-box-s">Sécurité, projet, stock, véhicule, famille.</div>
-            </div>
-
-            <div class="hud-box mod">
-              <div class="hud-box-k">Activités</div>
-              <div class="hud-box-v">Vision DIGIY</div>
-              <div class="hud-box-s">Voir quel wagon alimente le mouvement.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="quick-actions">
-          <a class="qa" href="./pin.html">
-            <div class="qa-left">
-              <div class="qa-k">Entrer avec mon code</div>
-              <div class="qa-s">Session sécurisée avec ton accès PAY réel.</div>
-            </div>
-            <div class="qa-arrow">→</div>
-          </a>
-
-          <a class="qa" href="./pin.html?redirect=cockpit">
-            <div class="qa-left">
-              <div class="qa-k">Voir mon espace</div>
-              <div class="qa-s">Lecture réelle du backbone PAY, sans démo parasite.</div>
-            </div>
-            <div class="qa-arrow">→</div>
-          </a>
-
-          <a class="qa" href="./pin.html?redirect=admin">
-            <div class="qa-left">
-              <div class="qa-k">Ajouter un mouvement</div>
-              <div class="qa-s">Saisie simple d’une entrée, dépense ou épargne utile.</div>
-            </div>
-            <div class="qa-arrow">→</div>
-          </a>
-        </div>
-      </aside>
-    </section>
-
-    <section class="section">
-      <div class="section-title">
-        <h2>Ce que PAY fait vraiment</h2>
-        <p>Pas une banque. Pas un wallet custodial.<br>Un espace de lecture et de pilotage.</p>
-      </div>
-
-      <div class="grid-3">
-        <article class="panel">
-          <div class="panel-ico">📈</div>
-          <div class="panel-title">Voir les entrées</div>
+        <div class="audio-inline">
           <p>
-            Les recettes remontent depuis PAY lui-même ou depuis les modules métier.
-            Le pro voit ce qui rentre, d’où cela vient et quel canal pousse réellement l’activité.
+            🎧 Accueil vocal · une voix explique au professionnel comment utiliser PAY sans se fatiguer.
           </p>
-        </article>
-
-        <article class="panel">
-          <div class="panel-ico">🛟</div>
-          <div class="panel-title">Protéger l’argent</div>
-          <p>
-            L’épargne n’est pas décorative.
-            Elle sert à tenir le terrain : sécurité, stock futur, investissement, projet, véhicule ou famille.
-          </p>
-        </article>
-
-        <article class="panel">
-          <div class="panel-ico">🧭</div>
-          <div class="panel-title">Aider la décision</div>
-          <p>
-            PAY aide à décider vite :
-            continuer, freiner, épargner, corriger une dépense ou voir quelle activité mérite plus d’attention.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <section class="event-rail">
-      <div class="event-head">
-        <h2>Le rail de lecture utile</h2>
-        <p>Demain sur téléphone, espace compact,<br>ou futur HUD lunettes : même logique.</p>
-      </div>
-
-      <div class="event-grid">
-        <article class="event-card">
-          <div class="event-tag">Entrée</div>
-          <div class="event-title">“+ 21 000 FCFA — course chauffeur validée”</div>
-          <div class="event-text">
-            Une recette claire, lisible tout de suite, avec provenance métier visible.
-          </div>
-          <div class="event-meta">Lecture utile : quoi • combien • d’où</div>
-        </article>
-
-        <article class="event-card">
-          <div class="event-tag out">Dépense pro</div>
-          <div class="event-title">“− 3 000 FCFA — carburant / terrain”</div>
-          <div class="event-text">
-            Une sortie utile au business, visible sans noyer le professionnel sous des détails inutiles.
-          </div>
-          <div class="event-meta">Lecture utile : nature • montant • impact</div>
-        </article>
-
-        <article class="event-card">
-          <div class="event-tag save">Épargne</div>
-          <div class="event-title">“+ 5 000 FCFA — sécurité / projet”</div>
-          <div class="event-text">
-            Une couche de protection qui transforme le flux en stabilité et en force de reprise.
-          </div>
-          <div class="event-meta">Lecture utile : réserve • objectif • continuité</div>
-        </article>
-
-        <article class="event-card">
-          <div class="event-tag mod">Module</div>
-          <div class="event-title">“DRIVER pousse fort cette semaine”</div>
-          <div class="event-text">
-            L’espace doit montrer les wagons qui tirent réellement le business, pas seulement des chiffres isolés.
-          </div>
-          <div class="event-meta">Lecture utile : module • poids • tendance</div>
-        </article>
-      </div>
-    </section>
-
-    <section class="flow">
-      <div class="flow-title">Comment ça marche</div>
-
-      <div class="flow-grid">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-title">Activation</div>
-          <p>PAY est activé côté abonnement DIGIY avec son identifiant réel.</p>
+          <button type="button" id="digiyPayAudioInline">Écouter</button>
         </div>
+      </section>
 
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-title">Code</div>
-          <p>Le professionnel entre avec son code pour ouvrir sa session sécurisée propre à PAY.</p>
-        </div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-title">Espace</div>
-          <p>L’espace lit les vraies données agrégées du backbone PAY, sans démo locale.</p>
-        </div>
-
-        <div class="step">
-          <div class="step-num">4</div>
-          <div class="step-title">Pilotage</div>
-          <p>Le pro voit son net, ses dépenses, son épargne et les activités qui poussent le business.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="doctrine">
-      <div class="quote-box">
-        <div class="quote-top">Doctrine PAY</div>
-        <h2 class="quote-main">L’argent reste chez le pro.<br>PAY apporte la vue.</h2>
-        <div class="quote-sub">
-          MON ARGENT by DIGIY fait partie des outils métiers DIGIYLYFE.
-          Il n’encaisse pas les fonds du client.
-          Il structure la lecture financière pour aider le professionnel à mieux voir,
-          mieux protéger et mieux décider.
-        </div>
-      </div>
-
-      <div class="rules-box">
-        <div class="rules-title">Règles simples à retenir</div>
-
-        <div class="rules">
-          <div class="rule">
-            <div class="rule-ico">1</div>
+      <section class="screen" aria-label="Actions principales PAY">
+        <article class="pie-card">
+          <div class="section-head">
             <div>
-              <strong>Paiement direct</strong>
-              <span>Le client paie directement le professionnel. DIGIY ne garde pas l’argent.</span>
+              <h2>Camembert d’actions</h2>
+              <p>Les fichiers sont appelés par gestes simples.</p>
             </div>
           </div>
 
-          <div class="rule">
-            <div class="rule-ico">2</div>
+          <div class="pie" aria-label="Camembert des actions PAY">
+            <div class="center">PAY<br>PRO</div>
+
+            <a class="slice" style="--a:-90deg" href="./pin.html?redirect=admin">
+              <strong>💰 Encaisser</strong>
+              <span>argent reçu</span>
+            </a>
+
+            <a class="slice" style="--a:-39deg" href="./pin.html?redirect=admin">
+              <strong>🧾 Preuve</strong>
+              <span>client / reçu</span>
+            </a>
+
+            <a class="slice" style="--a:12deg" href="./pin.html?redirect=admin">
+              <strong>✅ Confirmer</strong>
+              <span>paiement OK</span>
+            </a>
+
+            <a class="slice" style="--a:63deg" href="./pin.html?redirect=admin">
+              <strong>⏳ Vérifier</strong>
+              <span>montant / canal</span>
+            </a>
+
+            <a class="slice" style="--a:114deg" href="./pin.html?redirect=admin">
+              <strong>📤 Relancer</strong>
+              <span>client à suivre</span>
+            </a>
+
+            <a class="slice" style="--a:165deg" href="./pin.html?redirect=admin">
+              <strong>➕ Ajouter</strong>
+              <span>note rapide</span>
+            </a>
+
+            <a class="slice" style="--a:216deg" href="./pin.html?redirect=cockpit">
+              <strong>📊 Espace</strong>
+              <span>lecture claire</span>
+            </a>
+          </div>
+
+          <details>
+            <summary>Voir la règle de l’écran</summary>
+            <div class="details-body">
+              L’écran montre les actions. Les longues explications restent rangées dans l’audio.
+              Les données sensibles restent dans le coffre local et la session sécurisée.
+            </div>
+          </details>
+        </article>
+
+        <aside class="todo-card">
+          <div class="section-head">
             <div>
-              <strong>Lecture avant décoration</strong>
-              <span>L’espace doit d’abord faire comprendre vite, avant de faire joli.</span>
+              <h2>À faire maintenant</h2>
+              <p>Le chef de passe PAY montre seulement ce qui mérite une action.</p>
             </div>
           </div>
 
-          <div class="rule">
-            <div class="rule-ico">3</div>
-            <div>
-              <strong>Épargne obligatoire dans la logique</strong>
-              <span>Un business qui ne protège rien finit par subir tout.</span>
-            </div>
+          <div class="quick-list">
+            <article class="quick">
+              <div class="quick-main">
+                <div class="quick-ico">🔐</div>
+                <div>
+                  <strong>Ouvrir mon accès</strong>
+                  <p>Session protégée. Pas de téléphone ni de repère sensible dans l’adresse.</p>
+                </div>
+              </div>
+              <div class="quick-actions">
+                <a class="quick-btn primary" href="./pin.html">Entrer le code</a>
+              </div>
+            </article>
+
+            <article class="quick">
+              <div class="quick-main">
+                <div class="quick-ico">🧾</div>
+                <div>
+                  <strong>Traiter une preuve</strong>
+                  <p>Preuve reçue, paiement annoncé, montant à vérifier ou client à relancer.</p>
+                </div>
+              </div>
+              <div class="quick-actions">
+                <a class="quick-btn primary" href="./pin.html?redirect=admin">Traiter</a>
+                <a class="quick-btn" href="./pin.html?redirect=cockpit">Voir l’espace</a>
+              </div>
+            </article>
+
+            <article class="quick">
+              <div class="quick-main">
+                <div class="quick-ico">📊</div>
+                <div>
+                  <strong>Lire mon argent</strong>
+                  <p>Voir ce qui entre, ce qui sort, ce qui reste, sans noyer le pro.</p>
+                </div>
+              </div>
+              <div class="quick-actions">
+                <a class="quick-btn primary" href="./pin.html?redirect=cockpit">Ouvrir</a>
+              </div>
+            </article>
+
+            <article class="quick">
+              <div class="quick-main">
+                <div class="quick-ico">💳</div>
+                <div>
+                  <strong>Carte de paiement</strong>
+                  <p>Le moyen de paiement peut être public seulement si le pro l’a choisi.</p>
+                </div>
+              </div>
+              <div class="quick-actions">
+                <a class="quick-btn" href="./pin.html?redirect=cockpit">Gérer</a>
+              </div>
+            </article>
           </div>
 
-          <div class="rule">
-            <div class="rule-ico">4</div>
-            <div>
-              <strong>Vision écosystème</strong>
-              <span>PAY aide à voir quelles activités nourrissent réellement la dynamique DIGIY.</span>
+          <details>
+            <summary>Conseil DIGIY</summary>
+            <div class="details-body">
+              Le client paie directement le professionnel. DIGIY ne prend pas l’argent.
+              PAY garde la trace, aide à confirmer et prépare les relances propres.
             </div>
-          </div>
+          </details>
+        </aside>
+      </section>
+
+      <section class="safe-row" aria-label="Règles PAY">
+        <div class="safe">
+          <b>Argent direct</b>
+          <span>Le paiement reste entre le client et le professionnel.</span>
         </div>
-      </div>
-    </section>
 
-    <div class="footer">
-      MON ARGENT by DIGIY ♾️ — lecture financière terrain • 0% commission • paiement direct au professionnel •
-      <a href="./pin.html">Entrée sécurisée</a> •
-      <a href="./pin.html?redirect=cockpit">Mon espace</a> •
-      <a href="./pin.html?redirect=admin">Saisie</a> •
-      <a href="https://pro-espace.digiylyfe.com/" target="_blank" rel="noopener noreferrer">Espace pro</a>
-    </div>
-  </main>
+        <div class="safe">
+          <b>Preuve claire</b>
+          <span>Capture, reçu, message ou note deviennent une trace à valider.</span>
+        </div>
 
+        <div class="safe">
+          <b>Pro protégé</b>
+          <span>Le code ouvre la session. Les identifiants ne circulent pas dans l’URL.</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Navigation basse">
+    <a class="active" href="./index.html"><b>◎</b>Actions</a>
+    <a href="./pin.html?redirect=admin"><b>＋</b>Ajouter</a>
+    <a href="./pin.html?redirect=admin"><b>🧾</b>Preuves</a>
+    <a href="./pin.html?redirect=cockpit"><b>📊</b>Espace</a>
+    <a href="./pin.html"><b>🔒</b>Code</a>
+  </nav>
+
+  <button id="digiyPayAudioBtn" type="button" aria-label="Écouter DIGIY PAY" aria-pressed="false">
+    <span>🎧</span>
+    <strong>Écouter DIGIY</strong>
+  </button>
 
   <script>
-    (function(){
+    (() => {
       "use strict";
-      try{
-        const url = new URL(window.location.href);
-        let changed = false;
-        [
-          "phone",
-          "tel",
-          "owner_phone",
-          "owner_id",
-          "slug",
-          "pay_slug",
-          "subscription_slug",
-          "business_phone",
-          "wave_phone",
-          "wallet_phone",
-          "pay_phone",
-          "access_note",
-          "keybox_code",
-          "keybox_location"
-        ].forEach(function(key){
-          if(url.searchParams.has(key)){
-            url.searchParams.delete(key);
-            changed = true;
+
+      const SENSITIVE_KEYS = [
+        "phone",
+        "tel",
+        "owner_phone",
+        "owner_id",
+        "slug",
+        "pay_slug",
+        "subscription_slug",
+        "business_phone",
+        "wave_phone",
+        "wallet_phone",
+        "pay_phone",
+        "access_note",
+        "keybox_code",
+        "keybox_location",
+        "module",
+        "return",
+        "from"
+      ];
+
+      function cleanVisibleUrl() {
+        try {
+          const url = new URL(window.location.href);
+          let changed = false;
+
+          SENSITIVE_KEYS.forEach((key) => {
+            if (url.searchParams.has(key)) {
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          if (changed) {
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
           }
+        } catch (_) {}
+      }
+
+      function cleanInternalLinks() {
+        document.querySelectorAll("a[href]").forEach((link) => {
+          try {
+            const href = link.getAttribute("href") || "";
+            if (
+              !href ||
+              href.startsWith("#") ||
+              href.startsWith("mailto:") ||
+              href.startsWith("tel:")
+            ) {
+              return;
+            }
+
+            const url = new URL(href, window.location.href);
+
+            if (url.origin !== window.location.origin) return;
+
+            SENSITIVE_KEYS.forEach((key) => url.searchParams.delete(key));
+
+            const file = url.pathname.split("/").pop() || "index.html";
+            link.setAttribute("href", `./${file}${url.search || ""}${url.hash || ""}`);
+          } catch (_) {}
         });
-        if(changed){
-          history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-        }
-      }catch(_){}
+      }
+
+      cleanVisibleUrl();
+      cleanInternalLinks();
+
+      window.DIGIY_PAY_INDEX = {
+        cleanVisibleUrl,
+        cleanInternalLinks,
+        doctrine:
+          "PAY ne touche pas l’argent. PAY organise la preuve, la trace et la confiance."
+      };
     })();
   </script>
 
   <script>
-    (function(){
+    (() => {
       "use strict";
 
-      const audioText =
-        "Bienvenue dans Mon argent by DIGIY. Si tu découvres cet outil, pense à un carnet d’argent moderne, simple, lisible sur téléphone. " +
-        "Ce n’est pas une banque. Ce n’est pas Wave. Ce n’est pas une caisse qui garde ton argent. L’argent reste chez toi, chez le professionnel, dans tes moyens habituels : Wave, espèces, Orange Money, banque ou autre. " +
-        "Mon argent sert à comprendre ton activité. Il te montre ce qui entre, ce qui sort, et ce qu’il reste vraiment à la fin. " +
-        "Ce qui entre, ce sont les recettes : une vente boutique, une course chauffeur, une réservation, une prestation, un acompte ou un paiement client. " +
-        "Ce qui sort, ce sont les dépenses : stock, carburant, livraison, réparation, ménage, électricité, transport, matériel ou petite charge du jour. " +
-        "Ce qui reste, c’est le net : la lecture qui aide à savoir si ton activité avance, fatigue ou doit être corrigée. " +
-        "Les notes rapides sont très importantes. Tu écris comme tu parles : vente sac quinze mille Wave, carburant cinq mille cash, client Awa doit trois mille. DIGIY prépare la trace, puis tu confirmes. " +
-        "Petit à petit, Mon argent devient ton tableau de bord : tu vois les recettes, les dépenses, l’épargne, les modules qui rapportent, et les gestes du quotidien qui ne doivent plus disparaître dans la mémoire. " +
-        "Mon argent ne remplace pas ton jugement. Il t’aide à voir clair pour décider vite et garder la main.";
+      const AUDIO_TEXT =
+        "Bienvenue dans Mon argent by DIGIY. Ici, PAY ne touche pas l’argent du client. Le client paie directement le professionnel, par ses moyens habituels : Wave, espèces, Orange Money, banque ou autre. PAY sert à organiser la preuve, confirmer proprement et garder une trace claire. Sur cette page, tu choisis une action. Encaisser si l’argent est reçu. Preuve si le client a envoyé une capture ou un reçu. Confirmer si le paiement est vérifié. Vérifier si le montant ou le canal n’est pas encore sûr. Relancer si le client doit être rappelé. Ajouter si tu veux noter une entrée, une dépense, une épargne ou une note rapide. Le pro clique plus qu’il n’écrit. DIGIY prépare le geste, le terrain valide avec sa vérité.";
 
-      let playing = false;
-      let timer = null;
-      let startedAt = 0;
-      const duration = 118000;
+      const CFG = {
+        rate: 0.86,
+        pitch: 1.04,
+        volume: 1
+      };
 
-      function $(id){ return document.getElementById(id); }
+      const btn = document.getElementById("digiyPayAudioBtn");
+      const inlineBtn = document.getElementById("digiyPayAudioInline");
 
-      function progress(v){
-        const bar = $("payProAudioProgress");
-        if(bar) bar.style.width = Math.max(0, Math.min(100, v)) + "%";
+      function canSpeak() {
+        return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
       }
 
-      function startProgress(){
-        clearInterval(timer);
-        startedAt = Date.now();
-        progress(0);
-        timer = setInterval(() => {
-          progress(((Date.now() - startedAt) / duration) * 100);
-        }, 180);
+      function updateButton(isPlaying) {
+        if (btn) {
+          btn.setAttribute("aria-pressed", isPlaying ? "true" : "false");
+          btn.innerHTML = isPlaying
+            ? "<span>⏹</span><strong>Stop</strong>"
+            : "<span>🎧</span><strong>Écouter DIGIY</strong>";
+        }
+
+        if (inlineBtn) {
+          inlineBtn.textContent = isPlaying ? "Stop" : "Écouter";
+        }
       }
 
-      function pickFrenchVoice(){
-        try{
-          const voices = window.speechSynthesis.getVoices() || [];
-          return voices.find(v => /fr[-_ ]?FR/i.test(v.lang || "")) ||
-                 voices.find(v => /^fr/i.test(v.lang || "")) ||
-                 null;
-        }catch(_){ return null; }
+      function getFrenchVoice() {
+        const voices = window.speechSynthesis.getVoices() || [];
+
+        return (
+          voices.find((v) => /fr[-_]?fr/i.test(v.lang || "")) ||
+          voices.find((v) => /^fr/i.test(v.lang || "")) ||
+          voices[0] ||
+          null
+        );
       }
 
-      function stop(){
-        try{ window.speechSynthesis.cancel(); }catch(_){}
-        clearInterval(timer);
-        timer = null;
-        playing = false;
-        progress(0);
-        const btn = $("btnPayProAudio");
-        if(btn) btn.textContent = "🎧 Écouter DIGIY";
+      function loadVoices() {
+        return new Promise((resolve) => {
+          if (!canSpeak()) {
+            resolve([]);
+            return;
+          }
+
+          const ready = window.speechSynthesis.getVoices();
+
+          if (ready && ready.length) {
+            resolve(ready);
+            return;
+          }
+
+          let done = false;
+
+          const finish = () => {
+            if (done) return;
+            done = true;
+            resolve(window.speechSynthesis.getVoices() || []);
+          };
+
+          window.speechSynthesis.onvoiceschanged = finish;
+          setTimeout(finish, 700);
+        });
       }
 
-      function play(){
-        if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
-          alert("Audio non disponible sur ce navigateur.");
+      function stop() {
+        if (!canSpeak()) return;
+        window.speechSynthesis.cancel();
+        updateButton(false);
+      }
+
+      async function speak() {
+        if (!canSpeak()) {
+          alert("La lecture vocale n’est pas disponible sur ce navigateur.");
           return;
         }
-        if(playing){ stop(); return; }
-        stop();
 
-        const utter = new SpeechSynthesisUtterance(audioText);
-        utter.lang = "fr-FR";
-        utter.rate = 0.84;
-        utter.pitch = 1.02;
-        utter.volume = 1;
-        const voice = pickFrenchVoice();
-        if(voice) utter.voice = voice;
+        await loadVoices();
 
-        utter.onstart = () => {
-          playing = true;
-          const btn = $("btnPayProAudio");
-          if(btn) btn.textContent = "⏸️ Lecture en cours";
-          startProgress();
-        };
-        utter.onend = () => {
-          clearInterval(timer);
-          timer = null;
-          progress(100);
-          setTimeout(stop, 500);
-        };
-        utter.onerror = stop;
+        window.speechSynthesis.cancel();
 
-        window.speechSynthesis.speak(utter);
+        const utterance = new SpeechSynthesisUtterance(AUDIO_TEXT);
+        const voice = getFrenchVoice();
+
+        if (voice) utterance.voice = voice;
+
+        utterance.lang = voice?.lang || "fr-FR";
+        utterance.rate = CFG.rate;
+        utterance.pitch = CFG.pitch;
+        utterance.volume = CFG.volume;
+
+        utterance.onstart = () => updateButton(true);
+        utterance.onend = () => updateButton(false);
+        utterance.onerror = () => updateButton(false);
+
+        window.speechSynthesis.speak(utterance);
       }
 
-      $("btnPayProAudio")?.addEventListener("click", play);
-      $("btnPayProAudioStop")?.addEventListener("click", stop);
-      window.addEventListener("beforeunload", stop);
-      document.addEventListener("visibilitychange", () => { if(document.hidden) stop(); });
-      if("speechSynthesis" in window){ window.speechSynthesis.onvoiceschanged = () => {}; }
+      function toggle() {
+        if (canSpeak() && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          stop();
+          return;
+        }
+
+        speak();
+      }
+
+      btn?.addEventListener("click", toggle);
+      inlineBtn?.addEventListener("click", toggle);
+      window.addEventListener("pagehide", stop);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop();
+      });
+
+      window.DIGIY_PAY_AUDIO = {
+        speak,
+        stop,
+        text: AUDIO_TEXT
+      };
     })();
   </script>
-
 </body>
 </html>
 
