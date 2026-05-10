@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Plus</title>
+  <title>MON ARGENT — Plus · Réglages utiles PAY</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
@@ -11,6 +11,7 @@
   />
 
   <script src="./session.js"></script>
+  <script src="./pay-tools.js"></script>
 
   <style>
     :root{
@@ -556,6 +557,286 @@
       .section-grid,.item-grid,.hero-grid{grid-template-columns:1fr}
       .wrap,.topbar-in{width:min(var(--max), calc(100% - 16px))}
     }
+
+    /* =========================================================
+       DIGIY PAY — PLUS / RÉGLAGES UTILES
+       Moins de configuration, plus de clics guidés.
+       Lecture anciens : beige, gras, lisible.
+       ========================================================= */
+
+    .preset-panel{
+      border:2px solid rgba(250,204,21,.26);
+      border-radius:28px;
+      background:
+        radial-gradient(circle at right top,rgba(250,204,21,.18),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:0 12px 28px rgba(77,52,22,.14);
+      padding:18px;
+      display:grid;
+      gap:14px;
+      margin-bottom:16px;
+      color:#1f2a1f;
+    }
+
+    .preset-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .preset-title{
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#6b4e09;
+    }
+
+    .preset-help{
+      margin-top:6px;
+      color:#3d3324;
+      font-size:16px;
+      line-height:1.5;
+      font-weight:950;
+      max-width:72ch;
+    }
+
+    .preset-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .preset-btn{
+      min-height:96px;
+      border-radius:22px;
+      border:2px solid rgba(83,58,26,.18);
+      background:rgba(255,255,255,.66);
+      color:#1f2a1f;
+      padding:14px;
+      cursor:pointer;
+      text-align:left;
+      display:grid;
+      gap:6px;
+      box-shadow:0 8px 18px rgba(77,52,22,.08);
+    }
+
+    .preset-btn:hover,
+    .preset-btn.active{
+      background:rgba(250,204,21,.28);
+      border-color:rgba(121,83,12,.36);
+      transform:translateY(-1px);
+    }
+
+    .preset-btn strong{
+      display:block;
+      color:#241a0d;
+      font-size:18px;
+      line-height:1.15;
+      font-weight:1000;
+    }
+
+    .preset-btn span{
+      display:block;
+      color:#3d3324;
+      font-size:14px;
+      line-height:1.4;
+      font-weight:900;
+    }
+
+    .preset-note{
+      display:none;
+      padding:13px;
+      border-radius:18px;
+      border:2px solid rgba(22,101,52,.22);
+      background:rgba(220,252,231,.86);
+      color:#14532d;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:950;
+    }
+
+    .preset-note strong{
+      color:#052e16;
+    }
+
+    .small-presets{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:0 0 14px;
+    }
+
+    .small-preset{
+      border:1px solid rgba(83,58,26,.22);
+      border-radius:999px;
+      background:rgba(255,255,255,.68);
+      color:#1f2a1f;
+      padding:10px 13px;
+      font-size:14px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    .small-preset:hover{
+      background:rgba(250,204,21,.24);
+    }
+
+    body{
+      background:
+        radial-gradient(circle at 10% 0%,rgba(250,204,21,.18),transparent 34%),
+        radial-gradient(circle at 100% 100%,rgba(22,101,52,.08),transparent 30%),
+        linear-gradient(180deg,#f6edd8,#ead9b7 58%,#dfc99c) !important;
+      color:#1f2a1f !important;
+      font-size:17px;
+      font-weight:850;
+    }
+
+    .topbar,
+    .bottomNav{
+      background:rgba(246,237,216,.97) !important;
+      border-color:rgba(83,58,26,.28) !important;
+    }
+
+    .hero,
+    .card,
+    .mini,
+    .item,
+    .item-box,
+    .status,
+    .preview{
+      background:
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      border:2px solid rgba(83,58,26,.24) !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+      color:#1f2a1f !important;
+    }
+
+    .brand-title,
+    h1,
+    .mini-v,
+    .item-title,
+    .item-v{
+      color:#241a0d !important;
+      font-weight:1000 !important;
+      text-shadow:none !important;
+    }
+
+    .brand-sub,
+    .hero p,
+    .mini-s,
+    .hint,
+    .label,
+    .status,
+    .item-v,
+    .preview{
+      color:#3d3324 !important;
+      font-size:15px !important;
+      font-weight:950 !important;
+      line-height:1.55 !important;
+    }
+
+    .eyebrow,
+    .mini-k,
+    .card-title,
+    .item-k{
+      color:#5f4308 !important;
+      font-size:13px !important;
+      font-weight:1000 !important;
+      letter-spacing:.06em !important;
+    }
+
+    .input,
+    .textarea,
+    .select{
+      background:rgba(255,255,255,.78) !important;
+      color:#1f2a1f !important;
+      border:2px solid rgba(83,58,26,.24) !important;
+      font-size:18px !important;
+      font-weight:950 !important;
+    }
+
+    .input::placeholder,
+    .textarea::placeholder{
+      color:rgba(31,42,31,.54) !important;
+      font-weight:900 !important;
+    }
+
+    .select option{
+      background:#fff7e6 !important;
+      color:#1f2a1f !important;
+    }
+
+    .pill,
+    .btn,
+    .bottomNav a,
+    .mobileFastRow a,
+    .badge{
+      color:#1f2a1f !important;
+      background:rgba(255,255,255,.66) !important;
+      border:1px solid rgba(83,58,26,.24) !important;
+      font-size:15px !important;
+      font-weight:1000 !important;
+    }
+
+    .pill.primary,
+    .btn.green,
+    .btn.gold,
+    .btn.blue,
+    .bottomNav a.active,
+    .mobileFastRow a.primary{
+      color:#1f2a1f !important;
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      border:1px solid rgba(121,83,12,.28) !important;
+    }
+
+    .btn.red{
+      color:#fff !important;
+      background:linear-gradient(135deg,#9f1239,#e11d48) !important;
+    }
+
+    .badge.ok{
+      color:#14532d !important;
+      background:rgba(220,252,231,.92) !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .badge.warn{
+      color:#6b4e09 !important;
+      background:rgba(254,243,199,.92) !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .badge.bad{
+      color:#9f1239 !important;
+      background:rgba(254,226,226,.92) !important;
+      border-color:rgba(159,18,57,.28) !important;
+    }
+
+    .preview{
+      max-height:260px !important;
+      color:#3d3324 !important;
+    }
+
+    @media(max-width:900px){
+      .preset-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:700px){
+      body{font-size:18px}
+      .brand-title{font-size:22px !important}
+      h1{font-size:34px !important}
+      .preset-btn strong{font-size:19px}
+      .bottomNav a{
+        min-height:64px !important;
+        font-size:13px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -564,8 +845,8 @@
       <div class="brand">
         <div class="mark">₣</div>
         <div>
-          <div class="brand-title">MON ARGENT — Plus</div>
-          <div class="brand-sub" id="brainMeta">Session protégée et éléments gardés sur cet appareil</div>
+          <div class="brand-title">MON ARGENT — Réglages utiles</div>
+          <div class="brand-sub" id="brainMeta">Session protégée · réglages gardés sur cet appareil</div>
         </div>
       </div>
 
@@ -582,12 +863,11 @@
 
   <main class="wrap">
     <section class="hero">
-      <div class="eyebrow">💼 MON ARGENT — base argent</div>
-      <h1>Pose tes références.<br>Ta lecture restera juste.</h1>
+      <div class="eyebrow">⚙️ PAY PRO — réglages utiles</div>
+      <h1>Choisis ton terrain.<br>DIGIY prépare les réglages.</h1>
       <p>
-        Ici tu poses les références qui protègent ton mois : réserve, charges fixes, remboursements, dettes et projets.
-        Tout reste d’abord sur cet appareil. Ensuite tu peux télécharger ton fichier
-        ou préparer une version à partager.
+        Ici, le pro ne règle pas comme un technicien. Il choisit un modèle simple :
+        commerce, chauffeur, location, réserve ou projet. DIGIY prépare, le terrain ajuste.
       </p>
 
       <div class="hero-grid">
@@ -621,6 +901,54 @@
       </div>
     </section>
 
+
+    <section class="preset-panel" id="brainPresetPanel" aria-label="Réglages rapides PAY">
+      <div class="preset-head">
+        <div>
+          <div class="preset-title">⚡ Réglages rapides PAY</div>
+          <div class="preset-help">
+            Le pro choisit le terrain. DIGIY prépare la réserve, les charges, les règles et les priorités.
+            Ensuite le pro ajuste avec sa vérité.
+          </div>
+        </div>
+      </div>
+
+      <div class="preset-grid">
+        <button class="preset-btn" type="button" data-brain-preset="commerce">
+          <strong>🛒 Petit commerce</strong>
+          <span>Boutique, stock, caisse, charges et réserve terrain.</span>
+        </button>
+
+        <button class="preset-btn" type="button" data-brain-preset="driver">
+          <strong>🚕 Chauffeur</strong>
+          <span>Carburant, entretien, réserve réparation, pression du mois.</span>
+        </button>
+
+        <button class="preset-btn" type="button" data-brain-preset="loc">
+          <strong>🏠 Location</strong>
+          <span>Entretien logement, charges, réserve travaux, projet à financer.</span>
+        </button>
+
+        <button class="preset-btn" type="button" data-brain-preset="resto">
+          <strong>🍽️ Resto / service</strong>
+          <span>Stock, personnel, livraisons, petits imprévus du terrain.</span>
+        </button>
+
+        <button class="preset-btn" type="button" data-brain-preset="prudence">
+          <strong>🛟 Prudence</strong>
+          <span>Priorité sécurité : on protège avant d’accélérer.</span>
+        </button>
+
+        <button class="preset-btn" type="button" data-brain-preset="empty">
+          <strong>🧹 Base simple</strong>
+          <span>On repart propre, sans effacer l’esprit de la page.</span>
+        </button>
+      </div>
+
+      <div class="preset-note" id="brainPresetNote"></div>
+    </section>
+
+
     <div class="grid">
       <section class="stack">
         <article class="card">
@@ -632,6 +960,12 @@
           </div>
 
           <div class="card-body">
+
+            <div class="small-presets" aria-label="Crédits rapides">
+              <button class="small-preset" type="button" data-credit-preset="stock">Stock boutique</button>
+              <button class="small-preset" type="button" data-credit-preset="materiel">Matériel</button>
+              <button class="small-preset" type="button" data-credit-preset="vehicule">Véhicule</button>
+            </div>
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="currency">Devise</label>
@@ -725,6 +1059,12 @@
           </div>
 
           <div class="card-body">
+
+            <div class="small-presets" aria-label="Dettes rapides">
+              <button class="small-preset" type="button" data-debt-preset="fournisseur">Fournisseur</button>
+              <button class="small-preset" type="button" data-debt-preset="famille">Famille</button>
+              <button class="small-preset" type="button" data-debt-preset="loyer">Loyer / charge</button>
+            </div>
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="debtLabel">Nom de la dette</label>
@@ -767,6 +1107,12 @@
           </div>
 
           <div class="card-body">
+
+            <div class="small-presets" aria-label="Projets rapides">
+              <button class="small-preset" type="button" data-project-preset="stock">Renforcer stock</button>
+              <button class="small-preset" type="button" data-project-preset="frigo">Frigo / matériel froid</button>
+              <button class="small-preset" type="button" data-project-preset="visibilite">Visibilité / panneau</button>
+            </div>
             <div class="section-grid">
               <div class="field">
                 <label class="label" for="projectLabel">Nom du projet</label>
@@ -1791,6 +2137,235 @@
       );
     }
 
+
+
+    const BRAIN_PRESETS = {
+      commerce: {
+        title: "Petit commerce préparé",
+        note: "Réserve stock, charges terrain et épargne réaliste posées. Ajuste selon ta boutique.",
+        values: {
+          safety_reserve_xof: 80000,
+          monthly_fixed_costs_xof: 35000,
+          rules: {
+            danger_debt_ratio_pct: 35,
+            minimum_cash_after_commitments_xof: 50000,
+            recommended_savings_pct: 12
+          }
+        }
+      },
+      driver: {
+        title: "Chauffeur préparé",
+        note: "Carburant, entretien et réserve réparation sont anticipés. Ajuste selon ton véhicule.",
+        values: {
+          safety_reserve_xof: 60000,
+          monthly_fixed_costs_xof: 45000,
+          rules: {
+            danger_debt_ratio_pct: 30,
+            minimum_cash_after_commitments_xof: 40000,
+            recommended_savings_pct: 10
+          }
+        }
+      },
+      loc: {
+        title: "Location préparée",
+        note: "Entretien, charges et réserve travaux sont posés. Ajuste selon ton logement.",
+        values: {
+          safety_reserve_xof: 150000,
+          monthly_fixed_costs_xof: 60000,
+          rules: {
+            danger_debt_ratio_pct: 35,
+            minimum_cash_after_commitments_xof: 100000,
+            recommended_savings_pct: 18
+          }
+        }
+      },
+      resto: {
+        title: "Resto / service préparé",
+        note: "Stock, équipe, livraison et imprévus sont anticipés. Ajuste selon ton rythme.",
+        values: {
+          safety_reserve_xof: 100000,
+          monthly_fixed_costs_xof: 75000,
+          rules: {
+            danger_debt_ratio_pct: 35,
+            minimum_cash_after_commitments_xof: 70000,
+            recommended_savings_pct: 12
+          }
+        }
+      },
+      prudence: {
+        title: "Mode prudence activé",
+        note: "On protège d’abord. Moins de risque, plus de respiration.",
+        values: {
+          safety_reserve_xof: 100000,
+          monthly_fixed_costs_xof: brain.monthly_fixed_costs_xof || 0,
+          rules: {
+            danger_debt_ratio_pct: 25,
+            minimum_cash_after_commitments_xof: 80000,
+            recommended_savings_pct: 20
+          }
+        }
+      },
+      empty: {
+        title: "Base simple posée",
+        note: "La page repart sur une base propre. Tu peux ajuster doucement.",
+        values: {
+          safety_reserve_xof: 50000,
+          monthly_fixed_costs_xof: 0,
+          rules: {
+            danger_debt_ratio_pct: 35,
+            minimum_cash_after_commitments_xof: 50000,
+            recommended_savings_pct: 15
+          }
+        }
+      }
+    };
+
+    const CREDIT_PRESETS = {
+      stock: {
+        creditLabel: "Crédit stock boutique",
+        creditAmountLeft: 100000,
+        creditMonthly: 25000,
+        creditPriority: "1",
+        creditNotes: "Crédit lié au stock. Priorité : rembourser sans casser la caisse."
+      },
+      materiel: {
+        creditLabel: "Crédit matériel",
+        creditAmountLeft: 150000,
+        creditMonthly: 30000,
+        creditPriority: "2",
+        creditNotes: "Matériel utile au travail. Vérifier si le matériel rapporte plus qu’il ne coûte."
+      },
+      vehicule: {
+        creditLabel: "Crédit véhicule",
+        creditAmountLeft: 300000,
+        creditMonthly: 60000,
+        creditPriority: "1",
+        creditNotes: "Véhicule outil de travail. Priorité entretien + mensualité."
+      }
+    };
+
+    const DEBT_PRESETS = {
+      fournisseur: {
+        debtLabel: "Dette fournisseur",
+        debtAmount: 50000,
+        debtDueDays: 14,
+        debtPriority: "1",
+        debtNotes: "Dette fournisseur à suivre pour garder la confiance et le stock."
+      },
+      famille: {
+        debtLabel: "Dette famille",
+        debtAmount: 30000,
+        debtDueDays: 30,
+        debtPriority: "2",
+        debtNotes: "Dette familiale à honorer sans casser l’activité."
+      },
+      loyer: {
+        debtLabel: "Loyer ou charge à payer",
+        debtAmount: 75000,
+        debtDueDays: 7,
+        debtPriority: "1",
+        debtNotes: "Charge proche. À sécuriser avant les dépenses secondaires."
+      }
+    };
+
+    const PROJECT_PRESETS = {
+      stock: {
+        projectLabel: "Renforcer le stock",
+        projectTarget: 150000,
+        projectDeadline: 30,
+        projectPriority: "1",
+        projectNotes: "Projet utile si le stock tourne vite et rapporte."
+      },
+      frigo: {
+        projectLabel: "Frigo / matériel froid",
+        projectTarget: 250000,
+        projectDeadline: 60,
+        projectPriority: "2",
+        projectNotes: "Matériel utile pour conserver les produits et limiter les pertes."
+      },
+      visibilite: {
+        projectLabel: "Visibilité / panneau / QR",
+        projectTarget: 50000,
+        projectDeadline: 21,
+        projectPriority: "2",
+        projectNotes: "Projet visibilité : signalétique, QR, photo, présence client."
+      }
+    };
+
+    function setInputValue(id, value){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.value = value == null ? "" : String(value);
+      el.dispatchEvent(new Event("input", { bubbles:true }));
+    }
+
+    function applyBrainPreset(name){
+      const preset = BRAIN_PRESETS[name];
+      if(!preset) return;
+
+      brain = normalizeBrain({
+        ...brain,
+        ...preset.values,
+        rules: {
+          ...(brain.rules || {}),
+          ...(preset.values.rules || {})
+        }
+      });
+
+      document.querySelectorAll("[data-brain-preset]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-brain-preset") === name);
+      });
+
+      const note = document.getElementById("brainPresetNote");
+      if(note){
+        note.style.display = "block";
+        note.innerHTML = `<strong>${esc(preset.title)}</strong><br>${esc(preset.note)}`;
+      }
+
+      renderAll();
+      saveDraft(true, "preset_" + name);
+    }
+
+    function applyCreditPreset(name){
+      const p = CREDIT_PRESETS[name];
+      if(!p) return;
+      Object.entries(p).forEach(([id,value]) => setInputValue(id, value));
+      setStatus("ok", "Crédit préparé. Ajuste le montant puis clique sur L’ajouter.");
+    }
+
+    function applyDebtPreset(name){
+      const p = DEBT_PRESETS[name];
+      if(!p) return;
+      Object.entries(p).forEach(([id,value]) => setInputValue(id, value));
+      setStatus("ok", "Dette préparée. Ajuste puis clique sur L’ajouter.");
+    }
+
+    function applyProjectPreset(name){
+      const p = PROJECT_PRESETS[name];
+      if(!p) return;
+      Object.entries(p).forEach(([id,value]) => setInputValue(id, value));
+      setStatus("ok", "Projet préparé. Ajuste puis clique sur L’ajouter.");
+    }
+
+    function bindPresets(){
+      document.querySelectorAll("[data-brain-preset]").forEach(btn => {
+        btn.addEventListener("click", () => applyBrainPreset(btn.getAttribute("data-brain-preset") || ""));
+      });
+
+      document.querySelectorAll("[data-credit-preset]").forEach(btn => {
+        btn.addEventListener("click", () => applyCreditPreset(btn.getAttribute("data-credit-preset") || ""));
+      });
+
+      document.querySelectorAll("[data-debt-preset]").forEach(btn => {
+        btn.addEventListener("click", () => applyDebtPreset(btn.getAttribute("data-debt-preset") || ""));
+      });
+
+      document.querySelectorAll("[data-project-preset]").forEach(btn => {
+        btn.addEventListener("click", () => applyProjectPreset(btn.getAttribute("data-project-preset") || ""));
+      });
+    }
+
+
     function bindActions(){
       document.getElementById("btnAddCredit").addEventListener("click", addCredit);
       document.getElementById("btnAddDebt").addEventListener("click", addDebt);
@@ -1867,6 +2442,7 @@
     if(requireSlugOrRedirect()){
       bindBaseFields();
       bindActions();
+      bindPresets();
       renderAll();
 
       setStatus(
