@@ -1,8 +1,8 @@
-// pay-tools.js — DIGIY PAY / v1 coffre d’actions
+// pay-tools.js — DIGIY PAY / coffre d’actions propre
 // Doctrine : le pro clique plus qu’il n’écrit.
 // DIGIY prépare le geste, le terrain valide avec sa vérité.
 //
-// Règle importante : ce helper ne remet jamais phone, tel, slug ou wave_phone
+// Règle : ce helper ne remet jamais phone, tel, slug, wave_phone
 // dans l’URL visible. Le contexte reste dans session.js + stockage local sécurisé.
 
 (() => {
@@ -40,13 +40,7 @@
       LAST_SLUG: "digiy_pay_last_slug"
     },
 
-    CHANNELS: [
-      "wave",
-      "cash",
-      "orange_money",
-      "bank",
-      "other"
-    ],
+    CHANNELS: ["wave", "cash", "orange_money", "bank", "other"],
 
     SOURCE_MODULES: [
       "PAY",
@@ -90,7 +84,8 @@
     "keybox_location",
     "module",
     "return",
-    "from"
+    "from",
+    "v"
   ];
 
   const CACHE = {
@@ -299,6 +294,25 @@
     );
   }
 
+  function buildPinUrl(redirect = "") {
+    const safe = String(redirect || "").trim().toLowerCase();
+
+    const allowed = {
+      cockpit: "cockpit",
+      "cockpit.html": "cockpit",
+      admin: "admin",
+      "admin.html": "admin",
+      brain: "brain",
+      "brain-admin": "brain",
+      "brain-admin.html": "brain"
+    };
+
+    const key = allowed[safe] || "";
+    const suffix = key ? `?redirect=${encodeURIComponent(key)}` : "";
+
+    return cleanInternalUrl(`./pin.html${suffix}`, "./pin.html");
+  }
+
   function getContextSync() {
     const session = getSession() || {};
 
@@ -359,24 +373,6 @@
     return ctx;
   }
 
-  function buildPinUrl(redirect = "") {
-    const safe = String(redirect || "").trim().toLowerCase();
-    const allowed = {
-      cockpit: "cockpit",
-      "cockpit.html": "cockpit",
-      admin: "admin",
-      "admin.html": "admin",
-      brain: "brain",
-      "brain-admin": "brain",
-      "brain-admin.html": "brain"
-    };
-
-    const key = allowed[safe] || "";
-    const suffix = key ? `?redirect=${encodeURIComponent(key)}` : "";
-
-    return cleanInternalUrl(`./pin.html${suffix}`, "./pin.html");
-  }
-
   function go(path, mode = "href") {
     const url = cleanInternalUrl(path, CFG.PATHS.cockpit);
 
@@ -404,8 +400,14 @@
   function getSupabaseClient() {
     if (CACHE.sb) return CACHE.sb;
 
+    if (window.DIGIY_PAY_SB && typeof window.DIGIY_PAY_SB.rpc === "function") {
+      CACHE.sb = window.DIGIY_PAY_SB;
+      return CACHE.sb;
+    }
+
     if (window.sb && typeof window.sb.rpc === "function") {
       CACHE.sb = window.sb;
+      window.DIGIY_PAY_SB = CACHE.sb;
       return CACHE.sb;
     }
 
@@ -418,6 +420,7 @@
       CFG.SUPABASE_ANON_KEY,
       {
         auth: {
+          storageKey: "digiy-pay-tools-auth-token",
           persistSession: false,
           autoRefreshToken: false,
           detectSessionInUrl: false,
@@ -429,6 +432,9 @@
         }
       }
     );
+
+    window.DIGIY_PAY_SB = CACHE.sb;
+    window.sb = CACHE.sb;
 
     return CACHE.sb;
   }
@@ -508,8 +514,8 @@
     const v = String(value || "").toLowerCase();
 
     if (CFG.CHANNELS.includes(v)) return v;
-    if (v === "bank_transfer") return "bank";
-    if (v === "manual" || v === "unknown") return "other";
+    if (v === "bank_transfer" || v === "virement") return "bank";
+    if (v === "manual" || v === "unknown" || v === "card") return "other";
 
     return "other";
   }
@@ -533,6 +539,58 @@
     return "out";
   }
 
+  function categoryLabel(value) {
+    const map = {
+      payment_received: "Paiement reçu",
+      payment_proof: "Preuve reçue",
+      payment_confirmed: "Paiement confirmé",
+      payment_to_verify: "Paiement à vérifier",
+      client_relaunch: "Client à relancer",
+      daily_supplies: "Courses / ravitaillement journalier",
+      monthly_supplies: "Courses / ravitaillement mensuel",
+      food_home: "Nourriture maison",
+      stock_purchase: "Achat stock boutique",
+      restaurant_supplies: "Ravitaillement restaurant",
+      fuel: "Carburant",
+      vehicle_repair: "Panne / réparation véhicule",
+      maintenance: "Entretien / maintenance",
+      delivery: "Livraison / transport",
+      rent_business: "Loyer activité",
+      electricity: "Électricité",
+      internet_phone: "Internet / téléphone",
+      staff_payment: "Paiement équipe",
+      supplier_payment: "Fournisseur",
+      medicine: "Médicaments",
+      hospitalization: "Hospitalisation",
+      school_fees: "Frais scolaires",
+      family_support: "Aide famille",
+      emergency: "Imprévu / urgence",
+      saving: "Mise de côté",
+      opening_balance: "Fond de caisse de départ",
+      salary_received: "Salaire reçu",
+      owner_salary: "Salaire versé au pro",
+      debt_repayment: "Remboursement dette",
+      bill_due: "Facture à régler",
+      business_expense: "Dépense activité",
+      quick_note: "Note rapide",
+      other: "Autre"
+    };
+
+    return map[String(value || "")] || String(value || "");
+  }
+
+  function frequencyLabel(value) {
+    const map = {
+      one_time: "Ponctuel",
+      daily: "Journalier",
+      weekly: "Hebdomadaire",
+      monthly: "Mensuel",
+      unexpected: "Imprévu"
+    };
+
+    return map[String(value || "")] || String(value || "");
+  }
+
   function buildMovementPayload(input = {}, ctx = {}) {
     const scope = normalizeScope(input.scope || input.ui_scope || "pro");
     const kind = normalizeKind(input.kind || "other", scope);
@@ -542,10 +600,18 @@
     const sourceModule = normalizeSourceModule(input.source_module || input.sourceModule || "PAY");
     const channel = normalizeChannel(input.channel || "other");
 
-    const label = String(input.label || input.labelText || input.complement || "Mouvement PAY").trim();
-    const note = String(input.note_text || input.note || input.noteText || "").trim();
     const category = String(input.category || "").trim();
+    const label = String(
+      input.label ||
+      input.labelText ||
+      input.complement ||
+      categoryLabel(category) ||
+      "Mouvement PAY"
+    ).trim();
+
+    const note = String(input.note_text || input.note || input.noteText || "").trim();
     const sourceId = String(input.source_id || input.sourceId || "").trim();
+    const frequency = String(input.frequency || input.movement_frequency || "one_time").trim();
 
     return {
       slug: normSlug(ctx.slug || input.slug || ""),
@@ -570,6 +636,10 @@
         complement: input.complement || null,
         source_slug: input.source_slug || null,
         draft_source_module: input.draft_source_module || input.source_module || null,
+        frequency,
+        frequency_label: frequencyLabel(frequency),
+        category_label: categoryLabel(category),
+        doctrine_note: "Catégorie guidée par PAY pour réduire l’écriture du pro.",
         ...(input.meta && typeof input.meta === "object" ? input.meta : {})
       }
     };
@@ -579,10 +649,14 @@
     if (!payload.slug) return asError("Repère PAY manquant.", { code: "missing_slug" });
     if (!payload.phone) return asError("Téléphone PAY manquant.", { code: "missing_phone" });
     if (!payload.label) return asError("Libellé manquant.", { code: "missing_label" });
+
     if (!payload.amount_xof || payload.amount_xof <= 0) {
       return asError("Montant invalide.", { code: "invalid_amount" });
     }
-    if (!payload.movement_date) return asError("Date manquante.", { code: "missing_date" });
+
+    if (!payload.movement_date) {
+      return asError("Date manquante.", { code: "missing_date" });
+    }
 
     return { ok: true };
   }
@@ -699,6 +773,7 @@
 
     if (input.amount_xof || input.amount) params.set("amount_xof", String(input.amount_xof || input.amount));
     if (input.category) params.set("category", String(input.category));
+    if (input.frequency || input.movement_frequency) params.set("frequency", String(input.frequency || input.movement_frequency));
     if (input.movement_date || input.movementDate) params.set("movement_date", String(input.movement_date || input.movementDate));
     if (input.source_id || input.sourceId) params.set("source_id", String(input.source_id || input.sourceId));
     if (input.label || input.labelText) params.set("label", String(input.label || input.labelText));
@@ -724,7 +799,7 @@
         scope: "pro",
         kind: "sale",
         channel: "wave",
-        category: "income",
+        category: "payment_received",
         intent: "income"
       },
       proof: {
@@ -778,8 +853,28 @@
         scope: "pro",
         kind: "expense",
         channel: "cash",
-        category: "expense",
+        category: "business_expense",
         intent: "expense"
+      },
+      opening_balance: {
+        label: "Fond de caisse de départ",
+        direction: "in",
+        scope: "pro",
+        kind: "other",
+        channel: "cash",
+        category: "opening_balance",
+        frequency: "one_time",
+        intent: "opening_balance"
+      },
+      salary_received: {
+        label: "Salaire reçu",
+        direction: "in",
+        scope: "perso",
+        kind: "other",
+        channel: "bank",
+        category: "salary_received",
+        frequency: "monthly",
+        intent: "salary_received"
       }
     };
 
@@ -910,6 +1005,9 @@
     normalizeChannel,
     normalizeSourceModule,
     normalizeDirection,
+
+    categoryLabel,
+    frequencyLabel,
 
     buildMovementPayload,
     validateMovementPayload,
