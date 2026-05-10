@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Plus · Notice audio PAY</title>
+  <title>MON ARGENT — Plus · Notice audio et procédure PAY</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
@@ -942,6 +942,91 @@
       }
     }
 
+
+    /* =========================================================
+       DIGIY PAY — PROCÉDURE UTILISATEUR
+       Mode d’emploi concret : quoi remplir et où poser la base.
+       ========================================================= */
+    .procedure-notice{
+      border:2px solid rgba(121,83,12,.26);
+      border-radius:28px;
+      background:
+        radial-gradient(circle at left top,rgba(250,204,21,.18),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:0 12px 28px rgba(77,52,22,.13);
+      padding:18px;
+      display:grid;
+      gap:14px;
+      margin-bottom:16px;
+      color:#1f2a1f;
+    }
+
+    .procedure-title{
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#6b4e09;
+    }
+
+    .procedure-text{
+      color:#3d3324;
+      font-size:16px;
+      line-height:1.55;
+      font-weight:950;
+      max-width:78ch;
+    }
+
+    .procedure-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .procedure-card{
+      border:1px solid rgba(83,58,26,.22);
+      border-radius:20px;
+      background:rgba(255,255,255,.66);
+      padding:14px;
+      display:grid;
+      gap:6px;
+    }
+
+    .procedure-card strong{
+      color:#241a0d;
+      font-size:17px;
+      font-weight:1000;
+      line-height:1.2;
+    }
+
+    .procedure-card span{
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.45;
+      font-weight:950;
+    }
+
+    .procedure-warning{
+      border:2px solid rgba(22,101,52,.22);
+      border-radius:20px;
+      background:rgba(220,252,231,.86);
+      color:#14532d;
+      padding:14px;
+      font-size:15px;
+      line-height:1.55;
+      font-weight:950;
+    }
+
+    .procedure-warning strong{
+      color:#052e16;
+    }
+
+    @media(max-width:800px){
+      .procedure-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1084,6 +1169,46 @@
           <strong>3 · Sauvegarder</strong>
           <span>La base reste sur ton appareil et peut être exportée.</span>
         </div>
+      </div>
+    </section>
+
+
+
+    <section class="procedure-notice" id="payProcedureNotice" aria-label="Procédure utilisateur PAY">
+      <div>
+        <div class="procedure-title">🧭 Procédure simple — quoi remplir ?</div>
+        <div class="procedure-text">
+          Cette page règle les repères du mois. Les mouvements réels — fond de caisse, salaire,
+          encaissements, dépenses — se posent dans la page <strong>Ajouter</strong>, pour que le cockpit les lise.
+        </div>
+      </div>
+
+      <div class="procedure-grid">
+        <div class="procedure-card">
+          <strong>1 · Ici : poser les repères</strong>
+          <span>Réserve à protéger, charges fixes, crédits, dettes et projets. Ce sont les règles du mois.</span>
+        </div>
+
+        <div class="procedure-card">
+          <strong>2 · Ajouter : poser l’argent réel</strong>
+          <span>Fond de caisse, encaissement, salaire, dépense, épargne. Ce sont les mouvements du terrain.</span>
+        </div>
+
+        <div class="procedure-card">
+          <strong>3 · Fond de caisse de départ</strong>
+          <span>À inscrire dans Ajouter comme entrée PAY : “Fond de caisse de départ”, catégorie opening_balance.</span>
+        </div>
+
+        <div class="procedure-card">
+          <strong>4 · Salaire</strong>
+          <span>Si c’est un salaire reçu : entrée perso. Si c’est l’argent que tu te verses depuis l’activité : sortie activité.</span>
+        </div>
+      </div>
+
+      <div class="procedure-warning">
+        <strong>Règle DIGIY :</strong>
+        la page Plus fixe les repères. La page Ajouter enregistre les mouvements.
+        Comme ça, le cockpit ne mélange pas les objectifs avec l’argent réellement entré ou sorti.
       </div>
     </section>
 
@@ -2507,7 +2632,7 @@
 
 
     const PAY_BRAIN_AUDIO_TEXT =
-      "Bienvenue dans les réglages utiles de MON ARGENT by DIGIY. Cette page n’est pas faite pour compliquer la vie du professionnel. Elle sert à poser les repères qui protègent son mois. D’abord, la réserve de sécurité : c’est le coussin à ne pas brûler trop vite. Ensuite, les charges fixes : loyer, internet, équipe, abonnement, carburant, entretien ou tout ce qui revient chaque mois. Ensuite, les crédits, les dettes et les projets. Un crédit, c’est ce qui se rembourse doucement. Une dette, c’est ce qu’il faut suivre pour ne pas perdre la confiance. Un projet, c’est ce qu’on veut financer, mais seulement quand le terrain respire. Ici, le professionnel peut choisir un modèle rapide : petit commerce, chauffeur, location, resto ou prudence. DIGIY prépare les réglages, puis le terrain ajuste avec sa vérité. Les montants restent en FCFA pour le terrain. L’euro peut aider à lire ou comparer, mais il ne mélange pas la caisse. Cette page garde les références sur l’appareil, et permet aussi de télécharger ou copier un fichier JSON. Ce fichier est la mémoire des réglages : réserve, charges, crédits, dettes, projets et règles de prudence. Le pro clique plus qu’il n’écrit. DIGIY formule et prépare. Le professionnel valide.";
+      "Bienvenue dans les réglages utiles de MON ARGENT by DIGIY. Cette page n’est pas faite pour compliquer la vie du professionnel. Elle sert à poser les repères qui protègent son mois. La procédure est simple. Ici, dans la page Plus, tu poses les règles : réserve de sécurité, charges fixes, crédits, dettes et projets. Ensuite, dans la page Ajouter, tu poses les vrais mouvements d’argent : fond de caisse, salaire, encaissement, dépense, épargne ou preuve de paiement. Le fond de caisse de départ ne doit pas être mis comme une réserve abstraite. Il doit être enregistré dans Ajouter comme une entrée PAY, avec le libellé fond de caisse de départ, la catégorie opening balance, et le montant réel disponible au début. Si tu reçois un salaire venant de l’extérieur de ton activité, tu peux l’inscrire comme entrée perso. Si tu te verses un salaire depuis ton activité, tu l’inscris comme sortie activité, pour que le business reste lu proprement. La réserve de sécurité, elle, n’est pas forcément l’argent déjà disponible. C’est le montant à protéger. Les charges fixes sont ce qui revient chaque mois : loyer, internet, équipe, carburant, entretien ou abonnement. Un crédit, c’est ce qui se rembourse doucement. Une dette, c’est ce qu’il faut suivre pour ne pas perdre la confiance. Un projet, c’est ce qu’on veut financer, mais seulement quand le terrain respire. Ici, le professionnel peut choisir un modèle rapide : petit commerce, chauffeur, location, resto ou prudence. DIGIY prépare les réglages, puis le terrain ajuste avec sa vérité. Les montants restent en FCFA pour le terrain. L’euro peut aider à lire ou comparer, mais il ne mélange pas la caisse. Le fichier JSON est la mémoire des réglages : réserve, charges, crédits, dettes, projets et règles de prudence. Le pro clique plus qu’il n’écrit. DIGIY formule et prépare. Le professionnel valide.";
 
     function stopBrainAudio(){
       try{
