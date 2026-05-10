@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>MON ARGENT — Ajouter</title>
+  <title>MON ARGENT — Ajouter · Actions rapides PAY</title>
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
@@ -19,6 +19,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./session.js"></script>
+  <script src="./pay-tools.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -891,6 +892,310 @@
         justify-content:flex-start;
       }
     }
+
+    /* =========================================================
+       DIGIY PAY — ACTIONS ANTICIPÉES + LECTURE ANCIENS
+       Le pro clique plus qu’il n’écrit.
+       ========================================================= */
+    .quick-presets{
+      margin-bottom:16px;
+      padding:16px;
+      border-radius:24px;
+      border:2px solid rgba(250,204,21,.24);
+      background:
+        radial-gradient(circle at right top,rgba(250,204,21,.16),transparent 34%),
+        linear-gradient(160deg,rgba(255,247,230,.98),rgba(245,230,200,.94));
+      color:#1f2a1f;
+      box-shadow:0 14px 34px rgba(77,52,22,.14);
+    }
+
+    .quick-presets-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .quick-presets-title{
+      font-size:15px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#6b4e09;
+    }
+
+    .quick-presets-help{
+      margin-top:5px;
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:950;
+      max-width:64ch;
+    }
+
+    .quick-presets-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .quick-preset{
+      min-height:88px;
+      border-radius:20px;
+      border:2px solid rgba(83,58,26,.18);
+      background:rgba(255,255,255,.64);
+      color:#1f2a1f;
+      padding:13px;
+      cursor:pointer;
+      display:grid;
+      gap:5px;
+      text-align:left;
+      transition:.16s ease;
+      box-shadow:0 8px 18px rgba(77,52,22,.08);
+    }
+
+    .quick-preset:hover,
+    .quick-preset.active{
+      background:rgba(250,204,21,.28);
+      border-color:rgba(121,83,12,.35);
+      transform:translateY(-1px);
+    }
+
+    .quick-preset strong{
+      display:block;
+      font-size:17px;
+      line-height:1.18;
+      font-weight:1000;
+      color:#241a0d;
+    }
+
+    .quick-preset span{
+      display:block;
+      color:#3d3324;
+      font-size:14px;
+      line-height:1.38;
+      font-weight:900;
+    }
+
+    .quick-preview{
+      display:none;
+      margin-top:12px;
+      padding:13px;
+      border-radius:18px;
+      border:2px solid rgba(22,101,52,.22);
+      background:rgba(220,252,231,.82);
+      color:#14532d;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:950;
+    }
+
+    .quick-preview strong{
+      color:#052e16;
+    }
+
+    .quick-helper-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .quick-chip{
+      min-height:42px;
+      border-radius:999px;
+      border:1px solid rgba(83,58,26,.22);
+      background:rgba(255,255,255,.66);
+      color:#1f2a1f;
+      padding:9px 12px;
+      font-size:14px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    .quick-chip:hover{
+      background:rgba(250,204,21,.25);
+    }
+
+    /* Fond beige lisible pour cette page admin */
+    body{
+      background:
+        radial-gradient(circle at 10% 0%,rgba(250,204,21,.18),transparent 34%),
+        radial-gradient(circle at 100% 100%,rgba(22,101,52,.08),transparent 30%),
+        linear-gradient(180deg,#f6edd8,#ead9b7 58%,#dfc99c) !important;
+      color:#1f2a1f !important;
+      font-size:17px;
+      font-weight:850;
+    }
+
+    .topbar,
+    .bottomNav{
+      background:rgba(246,237,216,.97) !important;
+      border-color:rgba(83,58,26,.28) !important;
+    }
+
+    .hero-card,
+    .hud-focus,
+    .card,
+    .focus-box,
+    .state,
+    .stat,
+    .mini,
+    .hud-link,
+    .draft-prefill{
+      background:
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      border:2px solid rgba(83,58,26,.24) !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+      color:#1f2a1f !important;
+    }
+
+    .brand-title,
+    .hero-title,
+    .hud-big,
+    .focus-main,
+    .mini-v,
+    .stat-v,
+    .item-title,
+    .item-amount{
+      color:#241a0d !important;
+      font-weight:1000 !important;
+      text-shadow:none !important;
+    }
+
+    .brand-sub,
+    .hero-text,
+    .hud-sub,
+    .mini-s,
+    .hud-link .s,
+    .state-txt,
+    .focus-sub,
+    .helper,
+    .empty,
+    .loader,
+    .item-meta{
+      color:#3d3324 !important;
+      font-size:15px !important;
+      font-weight:950 !important;
+      line-height:1.55 !important;
+    }
+
+    .eyebrow,
+    .hud-title,
+    .mini-k,
+    .state-title,
+    .card-title,
+    .focus-top,
+    .label,
+    .stat-k{
+      color:#5f4308 !important;
+      font-size:13px !important;
+      font-weight:1000 !important;
+      letter-spacing:.06em !important;
+    }
+
+    input,
+    select,
+    textarea{
+      background:rgba(255,255,255,.78) !important;
+      color:#1f2a1f !important;
+      border:2px solid rgba(83,58,26,.24) !important;
+      font-size:18px !important;
+      font-weight:950 !important;
+    }
+
+    textarea{
+      min-height:120px !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder{
+      color:rgba(31,42,31,.54) !important;
+      font-weight:900 !important;
+    }
+
+    select option{
+      background:#fff7e6 !important;
+      color:#1f2a1f !important;
+    }
+
+    .pill,
+    .btn,
+    .mobileFastRow a,
+    .bottomNav a,
+    .btn-del{
+      font-size:15px !important;
+      font-weight:1000 !important;
+      color:#1f2a1f !important;
+      background:rgba(255,255,255,.64) !important;
+      border:1px solid rgba(83,58,26,.24) !important;
+    }
+
+    .pill.primary,
+    .btn.primary,
+    .mobileFastRow a.primary,
+    .bottomNav a.active{
+      color:#1f2a1f !important;
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      border:1px solid rgba(121,83,12,.28) !important;
+    }
+
+    .item-ico.in,
+    .item-ico.out,
+    .item-ico.sav{
+      background:rgba(250,204,21,.22) !important;
+      border-color:rgba(83,58,26,.22) !important;
+      color:#1f2a1f !important;
+    }
+
+    .stat-v.green,
+    .item-amount.in{
+      color:#14532d !important;
+    }
+
+    .stat-v.danger,
+    .item-amount.out{
+      color:#9f1239 !important;
+    }
+
+    .stat-v.gold,
+    .item-amount.sav{
+      color:#6b4e09 !important;
+    }
+
+    @media(max-width:760px){
+      .quick-presets-grid{
+        grid-template-columns:1fr;
+      }
+
+      body{
+        font-size:18px;
+      }
+
+      .brand-title{
+        font-size:22px !important;
+      }
+
+      .hero-title{
+        font-size:34px !important;
+      }
+
+      .quick-preset{
+        min-height:82px;
+      }
+
+      .quick-preset strong{
+        font-size:18px;
+      }
+
+      .bottomNav a{
+        min-height:64px !important;
+        font-size:13px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1012,6 +1317,70 @@
               Vérifie le brouillon reçu, ou ajoute une trace simple avec canal, activité source et note utile.
             </div>
           </div>
+
+
+          
+          <section class="quick-presets" id="payQuickPresets" aria-label="Actions rapides PAY">
+            <div class="quick-presets-head">
+              <div>
+                <div class="quick-presets-title">⚡ Actions rapides PAY</div>
+                <div class="quick-presets-help">
+                  Choisis le geste. DIGIY remplit les mots. Toi, tu ajustes le montant et tu valides.
+                </div>
+              </div>
+            </div>
+
+            <div class="quick-presets-grid">
+              <button class="quick-preset" type="button" data-pay-preset="income">
+                <strong>💰 J’ai encaissé</strong>
+                <span>Argent reçu client, vente, course, service ou réservation.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="proof">
+                <strong>🧾 Preuve reçue</strong>
+                <span>Capture Wave, reçu, message client ou preuve à contrôler.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="confirm">
+                <strong>✅ Paiement confirmé</strong>
+                <span>Montant vérifié, paiement propre, trace à garder.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="verify">
+                <strong>⏳ À vérifier</strong>
+                <span>Paiement annoncé, mais montant ou canal pas encore sûr.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="relaunch">
+                <strong>📤 Client à relancer</strong>
+                <span>Demander preuve, complément ou confirmation au client.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="expense">
+                <strong>📉 J’ai payé une dépense</strong>
+                <span>Carburant, stock, livraison, réparation, charge terrain.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="saving">
+                <strong>🛟 Je mets de côté</strong>
+                <span>Réserve, sécurité, stock futur, famille ou projet.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="note">
+                <strong>🗣️ Note rapide</strong>
+                <span>Trace terrain à ranger maintenant, même si tout n’est pas clair.</span>
+              </button>
+            </div>
+
+            <div class="quick-helper-row" aria-label="Canaux rapides">
+              <button class="quick-chip" type="button" data-pay-channel="wave">Wave</button>
+              <button class="quick-chip" type="button" data-pay-channel="cash">Cash</button>
+              <button class="quick-chip" type="button" data-pay-channel="orange_money">Orange Money</button>
+              <button class="quick-chip" type="button" data-pay-channel="bank">Banque</button>
+            </div>
+
+            <div class="quick-preview" id="quickPresetPreview"></div>
+          </section>
 
 
           <div class="draft-prefill" id="draftPrefillBox">
@@ -1734,6 +2103,152 @@
     }
 
 
+
+
+    const PAY_QUICK_PRESETS = {
+      income: {
+        direction: "in",
+        scope: "pro",
+        kind: "sale",
+        channel: "wave",
+        category: "payment_received",
+        sourceModule: "PAY",
+        label: "Encaissement client reçu",
+        note: "Paiement client reçu. Vérifie le montant et le canal si besoin.",
+        preview: "Encaissement préparé : ajoute le montant, précise le client si besoin, puis enregistre."
+      },
+      proof: {
+        direction: "in",
+        scope: "pro",
+        kind: "sale",
+        channel: "wave",
+        category: "payment_proof",
+        sourceModule: "PAY",
+        label: "Preuve de paiement client reçue",
+        note: "Le client a envoyé une preuve. Vérifie le montant avant confirmation.",
+        preview: "Preuve préparée : contrôle le montant, puis confirme ou garde à vérifier."
+      },
+      confirm: {
+        direction: "in",
+        scope: "pro",
+        kind: "sale",
+        channel: "wave",
+        category: "payment_confirmed",
+        sourceModule: "PAY",
+        label: "Paiement confirmé",
+        note: "Paiement vérifié et confirmé par le professionnel.",
+        preview: "Confirmation préparée : indique le montant confirmé et enregistre la trace."
+      },
+      verify: {
+        direction: "in",
+        scope: "pro",
+        kind: "sale",
+        channel: "wave",
+        category: "payment_to_verify",
+        sourceModule: "PAY",
+        label: "Paiement à vérifier",
+        note: "Paiement annoncé. Vérifier le compte ou la preuve avant validation.",
+        preview: "Vérification préparée : la trace existe, mais elle n’est pas encore confirmée."
+      },
+      relaunch: {
+        direction: "in",
+        scope: "pro",
+        kind: "other",
+        channel: "other",
+        category: "client_relaunch",
+        sourceModule: "PAY",
+        label: "Client à relancer",
+        note: "Relancer le client pour confirmation, preuve ou règlement.",
+        preview: "Relance préparée : note le client et ce qu’il doit confirmer."
+      },
+      expense: {
+        direction: "out",
+        scope: "pro",
+        kind: "expense",
+        channel: "cash",
+        category: "business_expense",
+        sourceModule: "PAY",
+        label: "Dépense activité",
+        note: "Dépense utile à l’activité. Précise carburant, stock, livraison ou autre.",
+        preview: "Dépense préparée : indique le montant et la nature exacte."
+      },
+      saving: {
+        direction: "in",
+        scope: "savings",
+        kind: "saving",
+        channel: "cash",
+        category: "saving",
+        sourceModule: "PAY",
+        label: "Mise de côté",
+        note: "Montant mis de côté pour protéger l’activité, le stock, la famille ou un projet.",
+        preview: "Réserve préparée : indique le montant mis de côté."
+      },
+      note: {
+        direction: "in",
+        scope: "pro",
+        kind: "other",
+        channel: "other",
+        category: "quick_note",
+        sourceModule: "PAY",
+        label: "Note rapide PAY",
+        note: "Note terrain à vérifier et ranger proprement.",
+        preview: "Note rapide préparée : écris ce qui s’est passé, DIGIY garde la trace."
+      }
+    };
+
+    function applyQuickPreset(name){
+      const preset = PAY_QUICK_PRESETS[name];
+      if(!preset) return;
+
+      setFieldValue("direction", preset.direction);
+      setFieldValue("scope", preset.scope);
+      setFieldValue("kind", preset.kind);
+      setFieldValue("channel", preset.channel);
+      setFieldValue("category", preset.category);
+      setFieldValue("sourceModule", preset.sourceModule);
+      setFieldValue("labelText", preset.label);
+      setFieldValue("noteText", preset.note);
+      setFieldValue("movementDate", todayStr());
+
+      syncKindByScope();
+
+      document.querySelectorAll("[data-pay-preset]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-pay-preset") === name);
+      });
+
+      const preview = $("quickPresetPreview");
+      if(preview){
+        preview.style.display = "block";
+        preview.innerHTML = `<strong>${esc(preset.label)}</strong><br>${esc(preset.preview)}`;
+      }
+
+      toast("✅ Geste PAY préparé");
+      const amount = $("amount");
+      if(amount){
+        setTimeout(() => amount.focus(), 80);
+      }
+    }
+
+    function applyQuickChannel(channel){
+      setFieldValue("channel", channel || "other");
+      toast("Canal choisi : " + String(channel || "other"));
+    }
+
+    function bindQuickPresets(){
+      document.querySelectorAll("[data-pay-preset]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          applyQuickPreset(btn.getAttribute("data-pay-preset") || "");
+        });
+      });
+
+      document.querySelectorAll("[data-pay-channel]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          applyQuickChannel(btn.getAttribute("data-pay-channel") || "other");
+        });
+      });
+    }
+
+
     function bindAnchorLinks(){
       ["fastMovements","bottomMovements","fastAdd","bottomAdd","fastDrafts","bottomDrafts"].forEach(id => {
         const el = $(id);
@@ -1825,6 +2340,7 @@
     });
 
     bindAnchorLinks();
+    bindQuickPresets();
     resetForm();
     boot();
   </script>
