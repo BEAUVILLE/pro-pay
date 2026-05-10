@@ -2,19 +2,30 @@
   "currency": "XOF",
   "safety_reserve_xof": 0,
   "monthly_fixed_costs_xof": 0,
-
   "credits": [],
-
   "debts": [],
-
   "projects": [],
-
   "rules": {
     "danger_debt_ratio_pct": 35,
     "minimum_cash_after_commitments_xof": 50000,
-    "recommended_savings_pct": 15
+    "recommended_savings_pct": 15,
+    "verify_before_confirming": true,
+    "never_auto_post_real_signal": true,
+    "payment_money_path": "direct_to_professional",
+    "digiy_role": "proof_trace_trust_only",
+    "minimum_cash_after_commitments": {
+      "xof": 50000,
+      "eur": 76.22,
+      "xof_label": "50 000 FCFA",
+      "eur_label": "76,22 €"
+    }
   },
-
+  "doctrine": {
+    "main": "Le pro clique plus qu’il n’écrit. DIGIY formule pour lui, le terrain valide avec sa vérité.",
+    "pay": "PAY ne touche pas l’argent. PAY organise la preuve, la trace et la confiance.",
+    "security": "Ce qui sert à payer peut être public si le pro l’a choisi. Ce qui sert à identifier, administrer ou sécuriser le compte ne doit jamais être exposé.",
+    "human_confirmation": "DIGIY prépare le geste. Le professionnel valide toujours."
+  },
   "real_signal": {
     "enabled": true,
     "public_label": "Dire ce qui se passe",
@@ -27,9 +38,228 @@
       "voice",
       "text"
     ],
-    "fallback_if_voice_unavailable": "text"
+    "fallback_if_voice_unavailable": "text",
+    "confirm_button_label": "✅ Confirmer et remplir la saisie",
+    "draft_button_label": "Préparer"
   },
-
+  "statuses": [
+    {
+      "code": "draft",
+      "label": "Brouillon",
+      "public_text": "DIGIY a préparé. Le pro doit vérifier."
+    },
+    {
+      "code": "payment_to_verify",
+      "label": "Paiement à vérifier",
+      "public_text": "Le paiement est annoncé, mais pas encore confirmé."
+    },
+    {
+      "code": "payment_proof",
+      "label": "Preuve reçue",
+      "public_text": "Une preuve existe. Le pro vérifie le montant et le canal."
+    },
+    {
+      "code": "payment_confirmed",
+      "label": "Paiement confirmé",
+      "public_text": "Le pro a vérifié et confirmé."
+    },
+    {
+      "code": "client_relaunch",
+      "label": "Client à relancer",
+      "public_text": "Une relance propre est nécessaire."
+    },
+    {
+      "code": "posted",
+      "label": "Enregistré",
+      "public_text": "La trace est enregistrée dans PAY."
+    }
+  ],
+  "quick_actions": [
+    {
+      "code": "income",
+      "label": "J’ai encaissé",
+      "emoji": "💰",
+      "short_help": "Argent reçu client, vente, course, service ou réservation.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_received",
+        "source_module": "PAY",
+        "label": "Encaissement client reçu",
+        "note_text": "Paiement client reçu. Vérifie le montant et le canal si besoin."
+      },
+      "confirmation_template": "J’ai compris : encaissement client de {amount_xof} FCFA par {channel}. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "proof",
+      "label": "Preuve reçue",
+      "emoji": "🧾",
+      "short_help": "Capture Wave, reçu, message client ou preuve à contrôler.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_proof",
+        "source_module": "PAY",
+        "label": "Preuve de paiement client reçue",
+        "note_text": "Le client a envoyé une preuve. Vérifie le montant avant confirmation."
+      },
+      "confirmation_template": "J’ai compris : preuve de paiement de {amount_xof} FCFA reçue par {channel}. Vérifier avant confirmation ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "confirm",
+      "label": "Paiement confirmé",
+      "emoji": "✅",
+      "short_help": "Montant vérifié, paiement propre, trace à garder.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_confirmed",
+        "source_module": "PAY",
+        "label": "Paiement confirmé",
+        "note_text": "Paiement vérifié et confirmé par le professionnel."
+      },
+      "confirmation_template": "J’ai compris : paiement confirmé de {amount_xof} FCFA. Enregistrer la trace ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "verify",
+      "label": "À vérifier",
+      "emoji": "⏳",
+      "short_help": "Paiement annoncé, mais montant ou canal pas encore sûr.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_to_verify",
+        "source_module": "PAY",
+        "label": "Paiement à vérifier",
+        "note_text": "Paiement annoncé. Vérifier le compte ou la preuve avant validation."
+      },
+      "confirmation_template": "J’ai compris : paiement annoncé de {amount_xof} FCFA. Il reste à vérifier.",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "relaunch",
+      "label": "Client à relancer",
+      "emoji": "📤",
+      "short_help": "Demander preuve, complément ou confirmation au client.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "other",
+        "channel": "other",
+        "category": "client_relaunch",
+        "source_module": "PAY",
+        "label": "Client à relancer",
+        "note_text": "Relancer le client pour confirmation, preuve ou règlement."
+      },
+      "confirmation_template": "J’ai compris : client à relancer. Ajouter une trace de suivi ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "expense",
+      "label": "J’ai payé une dépense",
+      "emoji": "📉",
+      "short_help": "Carburant, stock, livraison, réparation, charge terrain.",
+      "form_defaults": {
+        "direction": "out",
+        "scope": "pro",
+        "kind": "expense",
+        "channel": "cash",
+        "category": "business_expense",
+        "source_module": "PAY",
+        "label": "Dépense activité",
+        "note_text": "Dépense utile à l’activité. Précise carburant, stock, livraison ou autre."
+      },
+      "confirmation_template": "J’ai compris : dépense activité de {amount_xof} FCFA par {channel}. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "saving",
+      "label": "Je mets de côté",
+      "emoji": "🛟",
+      "short_help": "Réserve, sécurité, stock futur, famille ou projet.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "savings",
+        "kind": "saving",
+        "channel": "cash",
+        "category": "saving",
+        "source_module": "PAY",
+        "label": "Mise de côté",
+        "note_text": "Montant mis de côté pour protéger l’activité, le stock, la famille ou un projet."
+      },
+      "confirmation_template": "J’ai compris : {amount_xof} FCFA mis de côté. Valider la réserve ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "note",
+      "label": "Note rapide",
+      "emoji": "🗣️",
+      "short_help": "Trace terrain à ranger maintenant, même si tout n’est pas clair.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "other",
+        "channel": "other",
+        "category": "quick_note",
+        "source_module": "PAY",
+        "label": "Note rapide PAY",
+        "note_text": "Note terrain à vérifier et ranger proprement."
+      },
+      "confirmation_template": "J’ai compris : note rapide PAY. Préparer la saisie ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    }
+  ],
   "intentions": [
     {
       "code": "income",
@@ -37,6 +267,7 @@
       "direction": "in",
       "default_scope": "pro",
       "default_kind": "sale",
+      "default_status": "posted",
       "examples": [
         "J’ai encaissé 28000 cash course chauffeur",
         "J’ai reçu 15000 Wave pour une vente",
@@ -50,11 +281,88 @@
       "confirmation_template": "J’ai compris : entrée de {amount_xof} FCFA, canal {channel}. Valider ?"
     },
     {
+      "code": "proof",
+      "label": "Preuve reçue",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "default_status": "payment_proof",
+      "examples": [
+        "Le client a envoyé une capture Wave de 15000",
+        "Preuve reçue pour réservation 30000",
+        "Capture paiement Astou 25000",
+        "Reçu envoyé par WhatsApp"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : preuve reçue pour {amount_xof} FCFA. Vérifier avant confirmation ?"
+    },
+    {
+      "code": "confirm",
+      "label": "Paiement confirmé",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "default_status": "payment_confirmed",
+      "examples": [
+        "Paiement confirmé 15000 Wave",
+        "J’ai vérifié, client a bien payé 30000",
+        "Montant reçu confirmé",
+        "Réservation payée et confirmée"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "confirmation_template": "J’ai compris : paiement confirmé de {amount_xof} FCFA. Enregistrer ?"
+    },
+    {
+      "code": "verify",
+      "label": "Paiement à vérifier",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "default_status": "payment_to_verify",
+      "examples": [
+        "Client dit avoir payé 15000 Wave",
+        "Paiement annoncé mais pas encore vu",
+        "Montant à vérifier",
+        "Capture pas claire"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : paiement de {amount_xof} FCFA à vérifier."
+    },
+    {
+      "code": "relaunch",
+      "label": "Client à relancer",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "other",
+      "default_status": "client_relaunch",
+      "examples": [
+        "Relancer client pour preuve",
+        "Client doit envoyer capture",
+        "Demander confirmation du paiement",
+        "Rappeler client pour complément"
+      ],
+      "required_fields": [],
+      "confirmation_template": "J’ai compris : client à relancer. Ajouter une trace ?"
+    },
+    {
       "code": "expense",
       "label": "J’ai dépensé",
       "direction": "out",
       "default_scope": "pro",
       "default_kind": "expense",
+      "default_status": "posted",
       "examples": [
         "J’ai dépensé 5000 carburant en espèces",
         "J’ai payé 12000 fournisseur par Wave",
@@ -68,11 +376,30 @@
       "confirmation_template": "J’ai compris : sortie de {amount_xof} FCFA, canal {channel}. Valider ?"
     },
     {
+      "code": "saving",
+      "label": "Je mets de côté",
+      "direction": "in",
+      "default_scope": "savings",
+      "default_kind": "saving",
+      "default_status": "posted",
+      "examples": [
+        "Je mets 10000 de côté pour mon projet",
+        "Je réserve 25000 pour la sécurité",
+        "Je mets 50000 de côté pour acheter du stock",
+        "Réserve famille 20000 cash"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "confirmation_template": "J’ai compris : {amount_xof} FCFA mis de côté. Valider ?"
+    },
+    {
       "code": "debt_repayment",
       "label": "J’ai remboursé",
       "direction": "out",
       "default_scope": "perso",
       "default_kind": "debt_repayment",
+      "default_status": "posted",
       "examples": [
         "J’ai remboursé 20000 à Moussa en espèces",
         "Dette fournisseur 50000 payée par Wave",
@@ -87,23 +414,6 @@
         "channel"
       ],
       "confirmation_template": "J’ai compris : remboursement de dette de {amount_xof} FCFA. C’est pro ou perso ?"
-    },
-    {
-      "code": "saving",
-      "label": "Je mets de côté",
-      "direction": "out",
-      "default_scope": "perso",
-      "default_kind": "saving",
-      "examples": [
-        "Je mets 10000 de côté pour mon projet",
-        "Objectif épargne 800000 dans trois mois",
-        "Je réserve 25000 pour la sécurité",
-        "Je mets 50000 de côté pour acheter du stock"
-      ],
-      "required_fields": [
-        "amount_xof"
-      ],
-      "confirmation_template": "J’ai compris : {amount_xof} FCFA mis de côté. Valider ?"
     },
     {
       "code": "bill_due",
@@ -134,6 +444,7 @@
       "direction": "out",
       "default_scope": "perso",
       "default_kind": "emergency",
+      "default_status": "posted",
       "examples": [
         "J’ai dépensé 18000 pour médicaments perso",
         "Hospitalisation 75000 à payer demain",
@@ -146,22 +457,244 @@
       "confirmation_template": "J’ai compris : imprévu de {amount_xof} FCFA. Valider ?"
     }
   ],
-
   "channels": [
-    "cash",
-    "wave",
-    "orange_money",
-    "card",
-    "bank_transfer",
-    "other",
-    "unknown"
+    {
+      "code": "wave",
+      "label": "Wave",
+      "public": true
+    },
+    {
+      "code": "cash",
+      "label": "Cash",
+      "public": true
+    },
+    {
+      "code": "orange_money",
+      "label": "Orange Money",
+      "public": true
+    },
+    {
+      "code": "bank",
+      "label": "Banque",
+      "public": true,
+      "aliases": [
+        "bank_transfer",
+        "virement"
+      ]
+    },
+    {
+      "code": "other",
+      "label": "Autre",
+      "public": true,
+      "aliases": [
+        "card",
+        "unknown",
+        "manual"
+      ]
+    }
   ],
-
   "scopes": [
-    "pro",
-    "perso"
+    {
+      "code": "pro",
+      "label": "Activité"
+    },
+    {
+      "code": "perso",
+      "label": "Perso",
+      "aliases": [
+        "personal"
+      ]
+    },
+    {
+      "code": "savings",
+      "label": "Épargne",
+      "aliases": [
+        "saving",
+        "epargne",
+        "épargne"
+      ]
+    }
   ],
-
+  "source_modules": [
+    "PAY",
+    "DRIVER",
+    "COMMERCE",
+    "POS",
+    "LOC",
+    "MARKET",
+    "BUILD",
+    "RESA",
+    "EXPLORE",
+    "JOBS",
+    "QR_PRO",
+    "OTHER"
+  ],
+  "terrain_presets": {
+    "commerce": {
+      "label": "Petit commerce",
+      "safety_reserve_xof": 80000,
+      "monthly_fixed_costs_xof": 35000,
+      "rules": {
+        "danger_debt_ratio_pct": 35,
+        "minimum_cash_after_commitments_xof": 50000,
+        "recommended_savings_pct": 12,
+        "minimum_cash_after_commitments": {
+          "xof": 50000,
+          "eur": 76.22,
+          "xof_label": "50 000 FCFA",
+          "eur_label": "76,22 €"
+        }
+      },
+      "quick_categories": [
+        "payment_received",
+        "business_expense",
+        "stock",
+        "supplier",
+        "saving"
+      ],
+      "safety_reserve": {
+        "xof": 80000,
+        "eur": 121.96,
+        "xof_label": "80 000 FCFA",
+        "eur_label": "121,96 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 35000,
+        "eur": 53.36,
+        "xof_label": "35 000 FCFA",
+        "eur_label": "53,36 €"
+      }
+    },
+    "driver": {
+      "label": "Chauffeur",
+      "safety_reserve_xof": 60000,
+      "monthly_fixed_costs_xof": 45000,
+      "rules": {
+        "danger_debt_ratio_pct": 30,
+        "minimum_cash_after_commitments_xof": 40000,
+        "recommended_savings_pct": 10,
+        "minimum_cash_after_commitments": {
+          "xof": 40000,
+          "eur": 60.98,
+          "xof_label": "40 000 FCFA",
+          "eur_label": "60,98 €"
+        }
+      },
+      "quick_categories": [
+        "ride_income",
+        "fuel",
+        "repair",
+        "saving"
+      ],
+      "safety_reserve": {
+        "xof": 60000,
+        "eur": 91.47,
+        "xof_label": "60 000 FCFA",
+        "eur_label": "91,47 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 45000,
+        "eur": 68.6,
+        "xof_label": "45 000 FCFA",
+        "eur_label": "68,60 €"
+      }
+    },
+    "loc": {
+      "label": "Location",
+      "safety_reserve_xof": 150000,
+      "monthly_fixed_costs_xof": 60000,
+      "rules": {
+        "danger_debt_ratio_pct": 35,
+        "minimum_cash_after_commitments_xof": 100000,
+        "recommended_savings_pct": 18,
+        "minimum_cash_after_commitments": {
+          "xof": 100000,
+          "eur": 152.45,
+          "xof_label": "100 000 FCFA",
+          "eur_label": "152,45 €"
+        }
+      },
+      "quick_categories": [
+        "booking_payment",
+        "maintenance",
+        "cleaning",
+        "saving"
+      ],
+      "safety_reserve": {
+        "xof": 150000,
+        "eur": 228.67,
+        "xof_label": "150 000 FCFA",
+        "eur_label": "228,67 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 60000,
+        "eur": 91.47,
+        "xof_label": "60 000 FCFA",
+        "eur_label": "91,47 €"
+      }
+    },
+    "resto": {
+      "label": "Resto / service",
+      "safety_reserve_xof": 100000,
+      "monthly_fixed_costs_xof": 75000,
+      "rules": {
+        "danger_debt_ratio_pct": 35,
+        "minimum_cash_after_commitments_xof": 70000,
+        "recommended_savings_pct": 12,
+        "minimum_cash_after_commitments": {
+          "xof": 70000,
+          "eur": 106.71,
+          "xof_label": "70 000 FCFA",
+          "eur_label": "106,71 €"
+        }
+      },
+      "quick_categories": [
+        "daily_sales",
+        "stock",
+        "delivery",
+        "staff",
+        "saving"
+      ],
+      "safety_reserve": {
+        "xof": 100000,
+        "eur": 152.45,
+        "xof_label": "100 000 FCFA",
+        "eur_label": "152,45 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 75000,
+        "eur": 114.34,
+        "xof_label": "75 000 FCFA",
+        "eur_label": "114,34 €"
+      }
+    },
+    "prudence": {
+      "label": "Prudence",
+      "safety_reserve_xof": 100000,
+      "rules": {
+        "danger_debt_ratio_pct": 25,
+        "minimum_cash_after_commitments_xof": 80000,
+        "recommended_savings_pct": 20,
+        "minimum_cash_after_commitments": {
+          "xof": 80000,
+          "eur": 121.96,
+          "xof_label": "80 000 FCFA",
+          "eur_label": "121,96 €"
+        }
+      },
+      "quick_categories": [
+        "saving",
+        "debt_repayment",
+        "business_expense"
+      ],
+      "safety_reserve": {
+        "xof": 100000,
+        "eur": 152.45,
+        "xof_label": "100 000 FCFA",
+        "eur_label": "152,45 €"
+      }
+    }
+  },
   "analysis_rules": {
     "objective_tracking": {
       "enabled": true,
@@ -180,9 +713,91 @@
       "include_debts": true,
       "message": "Ton solde visible doit être lu avec les factures et dettes à venir."
     },
+    "payment_proof": {
+      "enabled": true,
+      "principle": "Une preuve reçue n’est pas encore un paiement confirmé.",
+      "message": "Vérifie le montant et le canal avant de confirmer."
+    },
+    "client_relaunch": {
+      "enabled": true,
+      "message": "Relance proprement : demande la preuve, le complément ou la confirmation."
+    },
     "emergency_adjustment": {
       "enabled": true,
       "message": "Cette urgence peut modifier ton rythme. DIGIY l’intègre sans jugement."
+    }
+  },
+  "audio_guidance": {
+    "enabled": true,
+    "intro": "Bienvenue dans MON ARGENT by DIGIY. Ici, PAY ne touche pas l’argent. Le client paie directement le professionnel. PAY aide à garder la preuve, la trace et la confiance.",
+    "admin": "Choisis le geste. DIGIY remplit les mots. Toi, tu ajustes le montant et tu valides.",
+    "cockpit": "Le chef de passe lit derrière et remonte seulement ce qui mérite ton action.",
+    "brain_admin": "Choisis ton terrain. DIGIY prépare les réglages. Le professionnel ajuste avec sa vérité.",
+    "currency": "Les montants du terrain restent en FCFA. DIGIY peut afficher l’équivalent en euro pour comprendre vite, sans mélanger les caisses."
+  },
+  "currency_display": {
+    "primary": {
+      "code": "XOF",
+      "label": "FCFA",
+      "symbol": "FCFA"
+    },
+    "secondary": {
+      "code": "EUR",
+      "label": "Euro",
+      "symbol": "€"
+    },
+    "dual_display_enabled": true,
+    "display_order": [
+      "XOF",
+      "EUR"
+    ],
+    "doctrine": "Le terrain travaille en FCFA. L’euro sert à lire, comparer ou préparer la France/Europe sans mélanger la caisse."
+  },
+  "exchange_rates": {
+    "base": "EUR",
+    "target": "XOF",
+    "eur_to_xof": 655.957,
+    "xof_to_eur": 0.00152449,
+    "source": "BCEAO",
+    "mode": "reference_rate",
+    "note": "Taux de lecture pour affichage double. Les opérations terrain restent en XOF sauf choix explicite du professionnel."
+  },
+  "safety_reserve": {
+    "xof": 0,
+    "eur": 0.0,
+    "xof_label": "0 FCFA",
+    "eur_label": "0,00 €"
+  },
+  "monthly_fixed_costs": {
+    "xof": 0,
+    "eur": 0.0,
+    "xof_label": "0 FCFA",
+    "eur_label": "0,00 €"
+  },
+  "dual_currency_examples": {
+    "10000_xof": {
+      "xof": 10000,
+      "eur": 15.24,
+      "xof_label": "10 000 FCFA",
+      "eur_label": "15,24 €"
+    },
+    "50000_xof": {
+      "xof": 50000,
+      "eur": 76.22,
+      "xof_label": "50 000 FCFA",
+      "eur_label": "76,22 €"
+    },
+    "100000_xof": {
+      "xof": 100000,
+      "eur": 152.45,
+      "xof_label": "100 000 FCFA",
+      "eur_label": "152,45 €"
+    },
+    "150000_xof": {
+      "xof": 150000,
+      "eur": 228.67,
+      "xof_label": "150 000 FCFA",
+      "eur_label": "228,67 €"
     }
   }
 }
