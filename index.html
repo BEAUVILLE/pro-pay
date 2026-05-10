@@ -1,250 +1,259 @@
-<!-- DIGIY EXPLORE PUBLIC — PATCH DOCTRINE FINAL
-À coller juste avant </body> dans BEAUVILLE/digiy-explore/index.html
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>MON ARGENT by DIGIY — PAY PRO</title>
+  <meta name="theme-color" content="#f4ead2" />
+  <meta
+    name="description"
+    content="PAY PRO by DIGIY — entrée sécurisée vers le cockpit Mon Argent, sans exposer la session dans l’adresse."
+  />
 
-Public = découvrir / comprendre / partager.
-PRO = cockpit / lieux / ajouter / PIN.
-Camembert = pilotage PRO.
-Audio = lecteur séparé.
--->
+  <script>
+    window.DIGIY_MODULE = "PAY";
+  </script>
 
-<style>
-  body.digiy-place-not-found .pro-band,
-  body.digiy-place-not-found #proSection{display:none!important}
+  <style>
+    :root{
+      --bg:#f4ead2;
+      --bg2:#ead9b7;
+      --text:#1f2a1f;
+      --muted:rgba(31,42,31,.74);
+      --line:rgba(83,58,26,.22);
+      --gold:#facc15;
+      --green:#16a34a;
+      --card:#fff7e6;
+      --shadow:0 14px 34px rgba(77,52,22,.16);
+      --ff:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    }
 
-  #digiyPublicAudioReader{
-    position:fixed;right:14px;bottom:calc(86px + env(safe-area-inset-bottom,0px));
-    z-index:99998;display:flex;align-items:center;gap:8px;
-    max-width:min(340px,calc(100vw - 118px));padding:9px 10px;
-    border-radius:999px;border:1px solid rgba(242,204,120,.24);
-    background:rgba(6,19,15,.94);box-shadow:0 18px 44px rgba(0,0,0,.34);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    font-family:Outfit,Inter,system-ui,sans-serif
-  }
-  #digiyPublicAudioReader .audioText{
-    min-width:0;color:rgba(247,251,248,.76);font-size:12px;font-weight:900;
-    line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
-  }
-  #digiyPublicAudioReader button{
-    min-height:40px;border:none;border-radius:999px;padding:0 13px;cursor:pointer;
-    font-family:inherit;font-size:12px;font-weight:1000;white-space:nowrap
-  }
-  #digiyPublicAudioReader .listenBtn{color:#062414;background:linear-gradient(135deg,#dcb45a,#f2cc78)}
-  #digiyPublicAudioReader .stopBtn{
-    color:#fecaca;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.22);display:none
-  }
-  #digiyPublicAudioReader.playing .listenBtn{display:none}
-  #digiyPublicAudioReader.playing .stopBtn{display:inline-flex;align-items:center}
+    *{box-sizing:border-box}
 
-  #digiyPublicActionCamembert{
-    position:fixed;left:14px;bottom:calc(86px + env(safe-area-inset-bottom,0px));
-    width:84px;height:84px;z-index:99999;font-family:Outfit,Inter,system-ui,sans-serif
-  }
-  #digiyPublicActionCamembert .digiyPublicCenter{
-    position:absolute;inset:0;width:84px;height:84px;border:none;border-radius:50%;
-    cursor:pointer;color:#fff;box-shadow:0 18px 40px rgba(0,0,0,.34);
-    background:radial-gradient(circle at center,rgba(6,19,15,.95) 0 42%,transparent 43%),
-      conic-gradient(from -90deg,rgba(220,180,90,.96) 0 25%,rgba(18,183,106,.90) 25% 50%,rgba(56,189,248,.88) 50% 75%,rgba(168,85,247,.82) 75% 100%);
-    overflow:hidden
-  }
-  #digiyPublicActionCamembert .digiyPublicCenter::before{
-    content:"";position:absolute;inset:13px;border-radius:50%;background:rgba(6,19,15,.97);border:1px solid rgba(255,255,255,.10)
-  }
-  #digiyPublicActionCamembert .digiyPublicCenter span,
-  #digiyPublicActionCamembert .digiyPublicCenter strong{position:relative;z-index:2;display:block;text-align:center}
-  #digiyPublicActionCamembert .digiyPublicCenter span{font-size:20px;line-height:1;margin-bottom:2px}
-  #digiyPublicActionCamembert .digiyPublicCenter strong{font-size:10.5px;font-weight:1000}
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+    }
 
-  #digiyPublicActionCamembert .digiyPublicMenu{
-    position:absolute;left:94px;bottom:4px;width:248px;display:grid;grid-template-columns:1fr 1fr;gap:8px;
-    padding:10px;border-radius:22px;border:1px solid rgba(255,255,255,.12);
-    background:rgba(6,19,15,.94);box-shadow:0 18px 48px rgba(0,0,0,.32);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    opacity:0;transform:translateX(-8px) scale(.96);pointer-events:none;transition:.18s ease
-  }
-  #digiyPublicActionCamembert.open .digiyPublicMenu{opacity:1;transform:translateX(0) scale(1);pointer-events:auto}
-  #digiyPublicActionCamembert .digiyPublicMenu a{
-    min-height:44px;border:none;border-radius:15px;background:rgba(255,255,255,.07);color:#f7fbf8;
-    padding:9px 10px;font-size:12px;font-weight:1000;text-decoration:none;display:inline-flex;
-    align-items:center;justify-content:center;text-align:center;font-family:inherit
-  }
-  #digiyPublicActionCamembert .gold{background:linear-gradient(135deg,#dcb45a,#f2cc78)!important;color:#062414!important}
-  #digiyPublicActionCamembert .green{background:rgba(18,183,106,.16)!important;color:#dffcea!important;border:1px solid rgba(18,183,106,.25)!important}
-  #digiyPublicActionCamembert .blue{background:rgba(56,189,248,.14)!important;color:#d9f4ff!important;border:1px solid rgba(56,189,248,.24)!important}
-  #digiyPublicActionCamembert .violet{background:rgba(168,85,247,.14)!important;color:#eadcff!important;border:1px solid rgba(168,85,247,.24)!important}
+    body{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:22px;
+      font-family:var(--ff);
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 0%,rgba(250,204,21,.22),transparent 34%),
+        radial-gradient(circle at 100% 100%,rgba(22,101,52,.10),transparent 30%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
 
-  @media(max-width:640px){
-    #digiyPublicActionCamembert{left:10px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:76px;height:76px}
-    #digiyPublicActionCamembert .digiyPublicCenter{width:76px;height:76px}
-    #digiyPublicActionCamembert .digiyPublicCenter::before{inset:12px}
-    #digiyPublicActionCamembert .digiyPublicMenu{left:0;bottom:86px;width:min(265px,calc(100vw - 20px))}
-    #digiyPublicAudioReader{right:10px;left:96px;bottom:calc(92px + env(safe-area-inset-bottom,0px));max-width:none;justify-content:space-between}
-    #digiyPublicAudioReader .audioText{font-size:11.5px}
-  }
-</style>
+    .card{
+      width:min(100%,520px);
+      border:2px solid var(--line);
+      border-radius:30px;
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:var(--shadow);
+      padding:24px;
+      display:grid;
+      gap:18px;
+      text-align:center;
+    }
 
-<script>
-(function(){
-  "use strict";
+    .mark{
+      width:70px;
+      height:70px;
+      margin:0 auto;
+      border-radius:24px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,var(--green),var(--gold));
+      color:#102014;
+      font-size:34px;
+      font-weight:1000;
+      box-shadow:0 12px 28px rgba(77,52,22,.16);
+    }
 
-  const PRO = {
-    cockpit:"https://pro-explore.digiylyfe.com/cockpit.html",
-    lieux:"https://pro-explore.digiylyfe.com/lieux.html",
-    submit:"https://pro-explore.digiylyfe.com/submit.html",
-    pin:"https://pro-explore.digiylyfe.com/pin.html"
-  };
+    .kicker{
+      margin:0;
+      color:#6b4e09;
+      font-size:13px;
+      font-weight:1000;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
 
-  const AUDIO_TEXT =
-    "Bienvenue dans DIGIY EXPLORE. Ici, on découvre le coin. Le public regarde, comprend vite, partage et contacte. Le professionnel pilote son lieu dans le cockpit sécurisé. Pas de téléphone dans la barre. Pas de repère interne dehors. Si tu veux gérer ton lieu, ouvre le cockpit. Si tu veux découvrir, reste sur la vitrine. Le terrain garde la main.";
+    h1{
+      margin:0;
+      font-size:clamp(34px,8vw,50px);
+      line-height:1.02;
+      letter-spacing:-.04em;
+      font-weight:1000;
+      color:#241a0d;
+    }
 
-  function cleanText(value){
-    return String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
-  }
+    p{
+      margin:0;
+      color:var(--muted);
+      font-size:18px;
+      line-height:1.55;
+      font-weight:900;
+    }
 
-  function setLink(node, href){
-    if(!node) return;
-    node.setAttribute("href", href);
-    node.removeAttribute("target");
-    node.removeAttribute("rel");
-  }
+    .btn{
+      min-height:58px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px 20px;
+      text-decoration:none;
+      background:linear-gradient(135deg,var(--gold),#fff3c4);
+      color:#1f2a1f;
+      border:1px solid rgba(121,83,12,.28);
+      font-size:17px;
+      font-weight:1000;
+      box-shadow:0 10px 22px rgba(77,52,22,.13);
+    }
 
-  function removeOld(){
-    ["#digiyExploreProCamembert","#digiyExploreAudioReader","#digiyPublicActionCamembert","#digiyPublicAudioReader"].forEach(function(sel){
-      document.querySelectorAll(sel).forEach(function(n){n.remove()});
-    });
-  }
+    .small{
+      color:rgba(31,42,31,.62);
+      font-size:14px;
+      font-weight:850;
+      line-height:1.45;
+    }
 
-  function patchProLinks(){
-    document.querySelectorAll('a[href="#proSection"], a[href*="#proSection"]').forEach(function(a){
-      setLink(a, PRO.cockpit);
-    });
+    .loader{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      color:#14532d;
+      font-size:15px;
+      font-weight:1000;
+    }
 
-    document.querySelectorAll("a,button").forEach(function(node){
-      const t = cleanText(node.textContent);
-      const cockpit = t.includes("mon lieu") || t.includes("ma fiche") || t.includes("espace pro") || t.includes("je veux montrer mon lieu") || t.includes("mon acces") || t.includes("cockpit");
-      const lieux = t.includes("voir mes lieux") || t === "lieux" || t.includes("mes lieux");
-      const add = t.includes("ajouter un lieu") || t === "ajouter";
+    .spinner{
+      width:18px;
+      height:18px;
+      border:3px solid rgba(20,83,45,.18);
+      border-top-color:#14532d;
+      border-radius:50%;
+      animation:spin .75s linear infinite;
+    }
 
-      if(node.tagName === "A"){
-        if(add) setLink(node, PRO.submit);
-        else if(lieux) setLink(node, PRO.lieux);
-        else if(cockpit) setLink(node, PRO.cockpit);
-      }else if(node.tagName === "BUTTON" && (add || lieux || cockpit)){
-        node.addEventListener("click", function(e){
-          e.preventDefault();
-          window.location.href = add ? PRO.submit : lieux ? PRO.lieux : PRO.cockpit;
-        });
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card" aria-label="Entrée PAY PRO">
+    <div class="mark">₣</div>
+
+    <p class="kicker">PAY PRO · MON ARGENT by DIGIY</p>
+
+    <h1>Ouverture du cockpit.</h1>
+
+    <p>
+      DIGIY prépare ton espace PAY.
+      La session reste protégée, rien de sensible ne reste dans l’adresse.
+    </p>
+
+    <div class="loader" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Direction cockpit…</span>
+    </div>
+
+    <a class="btn" href="./cockpit.html" id="manualLink">Ouvrir le cockpit</a>
+
+    <div class="small">
+      Si la page ne s’ouvre pas automatiquement, touche le bouton.
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const TARGET = "./cockpit.html";
+
+      const SENSITIVE_KEYS = [
+        "phone",
+        "tel",
+        "owner_phone",
+        "owner_id",
+        "slug",
+        "pay_slug",
+        "subscription_slug",
+        "business_phone",
+        "wave_phone",
+        "wallet_phone",
+        "pay_phone",
+        "access_note",
+        "keybox_code",
+        "keybox_location",
+        "module",
+        "return",
+        "from"
+      ];
+
+      function cleanVisibleUrl() {
+        try {
+          const url = new URL(window.location.href);
+          let changed = false;
+
+          SENSITIVE_KEYS.forEach((key) => {
+            if (url.searchParams.has(key)) {
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          if (changed) {
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        } catch (_) {}
       }
-    });
-  }
 
-  function markNotFound(){
-    const t = cleanText(document.body.textContent);
-    if(t.includes("lieu introuvable") || t.includes("aucun lieu public trouve")){
-      document.body.classList.add("digiy-place-not-found");
-    }
-  }
+      function cleanTarget() {
+        try {
+          const url = new URL(TARGET, window.location.href);
 
-  function cleanProHash(){
-    try{
-      const url = new URL(window.location.href);
-      if(url.hash === "#proSection") history.replaceState({}, document.title, url.pathname + url.search);
-    }catch(_){}
-  }
+          SENSITIVE_KEYS.forEach((key) => {
+            url.searchParams.delete(key);
+          });
 
-  function make(html){
-    const tpl = document.createElement("template");
-    tpl.innerHTML = html.trim();
-    return tpl.content.firstElementChild;
-  }
+          if (url.origin !== window.location.origin) {
+            return "./cockpit.html";
+          }
 
-  function installCamembert(){
-    const root = make(`
-      <div id="digiyPublicActionCamembert" aria-label="Actions DIGIY EXPLORE">
-        <button class="digiyPublicCenter" id="digiyPublicCenter" type="button" aria-expanded="false">
-          <span>🧭</span><strong>PRO</strong>
-        </button>
-        <div class="digiyPublicMenu">
-          <a class="gold" href="${PRO.cockpit}">Cockpit</a>
-          <a class="green" href="${PRO.lieux}">Mes lieux</a>
-          <a class="blue" href="${PRO.submit}">Ajouter</a>
-          <a class="violet" href="${PRO.pin}">PIN</a>
-        </div>
-      </div>
-    `);
-    document.body.appendChild(root);
-    const center = document.getElementById("digiyPublicCenter");
-    center && center.addEventListener("click", function(e){
-      e.preventDefault();
-      root.classList.toggle("open");
-      center.setAttribute("aria-expanded", root.classList.contains("open") ? "true" : "false");
-    });
-    document.addEventListener("click", function(e){
-      if(root && !root.contains(e.target)){
-        root.classList.remove("open");
-        center && center.setAttribute("aria-expanded","false");
+          const file = url.pathname.split("/").pop() || "cockpit.html";
+          return "./" + file + (url.search || "") + (url.hash || "");
+        } catch (_) {
+          return "./cockpit.html";
+        }
       }
-    });
-  }
 
-  function installAudio(){
-    const reader = make(`
-      <div id="digiyPublicAudioReader" aria-label="Lecteur audio DIGIY EXPLORE">
-        <span class="audioText">Écouter DIGIY expliquer EXPLORE</span>
-        <button class="listenBtn" id="digiyPublicAudioListen" type="button">🎧 Écouter</button>
-        <button class="stopBtn" id="digiyPublicAudioStop" type="button">⏹ Stop</button>
-      </div>
-    `);
-    document.body.appendChild(reader);
+      function goCockpit() {
+        const target = cleanTarget();
 
-    const listen = document.getElementById("digiyPublicAudioListen");
-    const stopBtn = document.getElementById("digiyPublicAudioStop");
-    let playing = false;
+        const manual = document.getElementById("manualLink");
+        if (manual) manual.setAttribute("href", target);
 
-    function setPlaying(v){ playing = !!v; reader.classList.toggle("playing", playing); }
-    function stop(){ try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(_){} setPlaying(false); }
-    function getVoice(){
-      const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-      return voices.find(v => /^fr/i.test(v.lang || "")) || null;
-    }
-    function speak(){
-      if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
-        alert("Audio indisponible sur ce navigateur."); return;
+        window.setTimeout(() => {
+          window.location.replace(target);
+        }, 450);
       }
-      if(playing){ stop(); return; }
-      stop();
-      const u = new SpeechSynthesisUtterance(AUDIO_TEXT);
-      u.lang = "fr-FR"; u.rate = 0.86; u.pitch = 1.04; u.volume = 1;
-      const v = getVoice(); if(v) u.voice = v;
-      u.onstart = () => setPlaying(true);
-      u.onend = () => setTimeout(stop,120);
-      u.onerror = stop;
-      window.speechSynthesis.speak(u);
-    }
 
-    listen && listen.addEventListener("click", speak);
-    stopBtn && stopBtn.addEventListener("click", stop);
-    if(window.speechSynthesis && typeof window.speechSynthesis.onvoiceschanged !== "undefined"){
-      window.speechSynthesis.onvoiceschanged = getVoice;
-    }
-    window.addEventListener("beforeunload", stop);
-    document.addEventListener("visibilitychange", function(){ if(document.hidden) stop(); });
-  }
-
-  function boot(){
-    cleanProHash();
-    removeOld();
-    installCamembert();
-    installAudio();
-    patchProLinks();
-    markNotFound();
-    setTimeout(patchProLinks,500);
-    setTimeout(patchProLinks,1500);
-    setTimeout(markNotFound,800);
-  }
-
-  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
-})();
-</script>
-
+      cleanVisibleUrl();
+      goCockpit();
+    })();
+  </script>
+</body>
+</html>
 
