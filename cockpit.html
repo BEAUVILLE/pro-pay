@@ -11,9 +11,9 @@
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="digiy-build" content="pay-cockpit-20260510-v6-audio-guide" />
+  <meta name="digiy-build" content="pay-cockpit-20260514-temperature-terrain" />
   <script>
-    window.DIGIY_BUILD_ID = "pay-cockpit-20260510-v6-audio-guide";
+    window.DIGIY_BUILD_ID = "pay-cockpit-20260514-temperature-terrain";
     window.DIGIY_CACHE_GUARD = true;
   </script>
 
@@ -28,9 +28,9 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./session.js?v=pay-cockpit-20260510-v6-audio-guide"></script>
-  <script src="./pay-tools.js?v=pay-cockpit-20260510-v6-audio-guide"></script>
-  <script src="./pay-alerts.js?v=pay-cockpit-20260510-v6-audio-guide"></script>
+  <script src="./session.js?v=pay-cockpit-20260514-temperature-terrain"></script>
+  <script src="./pay-tools.js?v=pay-cockpit-20260514-temperature-terrain"></script>
+  <script src="./pay-alerts.js?v=pay-cockpit-20260514-temperature-terrain"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1022,6 +1022,119 @@
       }
     }
 
+    /* =========================================================
+       DIGIY PAY — TEMPÉRATURE TERRAIN
+       Lecture claire des traces maison, dettes, crédits, emprunts.
+       ========================================================= */
+    .temperature-strip{
+      display:block;
+      padding:16px;
+      margin-bottom:16px;
+      border:2px solid rgba(83,58,26,.24);
+      border-radius:28px;
+      background:
+        radial-gradient(circle at right top,rgba(250,204,21,.18),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:0 10px 24px rgba(77,52,22,.12);
+      color:#1f2a1f;
+    }
+
+    .temperature-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .temperature-title{
+      font-size:13px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#5f4308;
+    }
+
+    .temperature-sub{
+      margin-top:5px;
+      font-size:15px;
+      line-height:1.45;
+      color:#3d3324;
+      font-weight:950;
+      max-width:72ch;
+    }
+
+    .temperature-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .temperature-card{
+      min-height:132px;
+      padding:15px;
+      border-radius:22px;
+      border:1px solid rgba(83,58,26,.22);
+      background:rgba(255,255,255,.60);
+      display:grid;
+      gap:7px;
+      align-content:start;
+    }
+
+    .temperature-label{
+      font-size:11px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#6b4e09;
+    }
+
+    .temperature-main{
+      font-family:var(--ff-title);
+      font-size:27px;
+      line-height:1.02;
+      font-weight:900;
+      color:#241a0d;
+      word-break:break-word;
+    }
+
+    .temperature-main.green{color:#14532d!important}
+    .temperature-main.gold{color:#6b4e09!important}
+    .temperature-main.red{color:#9f1239!important}
+    .temperature-main.violet{color:#4c1d95!important}
+
+    .temperature-text{
+      font-size:13px;
+      line-height:1.45;
+      color:#3d3324;
+      font-weight:900;
+    }
+
+    .temperature-chip{
+      width:max-content;
+      max-width:100%;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(83,58,26,.22);
+      background:rgba(255,255,255,.64);
+      color:#241a0d;
+      font-size:11px;
+      font-weight:1000;
+    }
+
+    @media(max-width:980px){
+      .temperature-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media(max-width:620px){
+      .temperature-grid{grid-template-columns:1fr}
+      .temperature-main{font-size:30px}
+    }
+
   </style>
 </head>
 <body>
@@ -1030,7 +1143,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "pay-cockpit-20260510-v6-audio-guide";
+      const BUILD_ID = "pay-cockpit-20260514-temperature-terrain";
       const BUILD_KEY = "digiy_pay_cockpit_build_id";
       const CLEAN_KEY = "digiy_pay_cockpit_cache_cleaned";
 
@@ -1250,6 +1363,22 @@
         </div>
         <div class="module-strip-grid" id="topModulesStrip"><div class="empty">Chargement des meilleurs modules…</div></div>
       </section>
+
+      <section class="temperature-strip" id="payTemperatureStrip" aria-label="Température terrain PAY">
+        <div class="temperature-head">
+          <div>
+            <div class="temperature-title">🌡️ Température terrain PAY</div>
+            <div class="temperature-sub" id="tempMonthLabel">
+              PAY lit aussi la maison, les dettes, les crédits, les emprunts et les imprévus.
+            </div>
+          </div>
+          <div class="decision-chip" id="tempVerdict">Lecture…</div>
+        </div>
+        <div class="temperature-grid" id="payTemperatureGrid">
+          <div class="empty">Chargement de la température terrain…</div>
+        </div>
+      </section>
+
 
       <div class="state" id="stateBox">
         <div class="state-title">Chargement</div>
@@ -2594,6 +2723,173 @@
       </div>`).join("");
   }
 
+
+  /* ═══════════════════════════════════════════════════
+     TEMPÉRATURE TERRAIN — PAY lit la vraie vie
+  ═══════════════════════════════════════════════════ */
+  function rowBlob(row){
+    return [
+      row?.category,
+      row?.kind,
+      row?.label,
+      row?.note_text,
+      row?.source_module,
+      row?.channel,
+      row?.scope
+    ].map(x=>String(x||"").toLowerCase()).join(" ");
+  }
+
+  function rowHas(row,tokens){
+    const blob=rowBlob(row);
+    return (Array.isArray(tokens)?tokens:[]).some(token=>blob.includes(String(token||"").toLowerCase()));
+  }
+
+  function isCurrentMonthRow(row){
+    const raw=String(row?.movement_date||row?.created_at||"").slice(0,7);
+    const d=new Date();
+    const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+    return raw===key;
+  }
+
+  function sumRows(rows){
+    return (Array.isArray(rows)?rows:[]).reduce((s,row)=>s+num(row.amount_xof),0);
+  }
+
+  function buildTerrainTemperature(calc){
+    const monthRows=(Array.isArray(ALL_ROWS)?ALL_ROWS:[]).filter(isCurrentMonthRow);
+
+    const houseRows=monthRows.filter(row =>
+      row.direction==="out" && (
+        row.scope==="perso" ||
+        row.scope==="personal" ||
+        rowHas(row,["home_expense","maison","famille","école","ecole","repas","santé","sante","vie privée","vie privee"])
+      )
+    );
+
+    const debtPaidRows=monthRows.filter(row =>
+      row.direction==="out" && rowHas(row,["debt_repayment","dette remboursée","dette remboursee","j’ai remboursé","j'ai remboursé","remboursé","remboursee","tontine"])
+    );
+
+    const debtReceivedRows=monthRows.filter(row =>
+      row.direction==="in" && rowHas(row,["debt_received","remboursement reçu","remboursement recu","on m’a remboursé","on m'a remboursé"])
+    );
+
+    const creditPaidRows=monthRows.filter(row =>
+      row.direction==="out" && rowHas(row,["credit_repayment","crédit","credit","échéance crédit","echeance credit","emprunt remboursé","emprunt rembourse"])
+    );
+
+    const loanReceivedRows=monthRows.filter(row =>
+      row.direction==="in" && rowHas(row,["loan_received","emprunt reçu","emprunt recu","j’ai emprunté","j'ai emprunté","prêt reçu","pret recu"])
+    );
+
+    const billDueRows=monthRows.filter(row =>
+      rowHas(row,["bill_due","facture ou échéance","facture","à payer bientôt","a payer bientot","loyer","fournisseur à payer","fournisseur a payer"])
+    );
+
+    const emergencyRows=monthRows.filter(row =>
+      row.direction==="out" && rowHas(row,["emergency","urgence","imprévu","imprevu","panne","santé urgente","sante urgente"])
+    );
+
+    const savingRows=monthRows.filter(row =>
+      row.scope==="savings" || rowHas(row,["saving","epargne","épargne","mise de côté","mise de cote"])
+    );
+
+    const house=sumRows(houseRows);
+    const debtPaid=sumRows(debtPaidRows);
+    const debtReceived=sumRows(debtReceivedRows);
+    const creditPaid=sumRows(creditPaidRows);
+    const loanReceived=sumRows(loanReceivedRows);
+    const billDue=sumRows(billDueRows);
+    const emergency=sumRows(emergencyRows);
+    const saving=sumRows(savingRows);
+    const debtCreditPressure=Math.max(0,debtPaid+creditPaid+billDue-debtReceived);
+    const riskPressure=house+debtCreditPressure+loanReceived+emergency;
+    const after=num(calc?.afterCommitments);
+
+    let verdict={text:"🟢 Température calme",cls:"ok"};
+    if(after<0 || emergency>0 || riskPressure>num(calc?.monthIn)*0.55){
+      verdict={text:"🔴 Attention terrain",cls:"bad"};
+    } else if(loanReceived>0 || billDue>0 || debtCreditPressure>0 || riskPressure>num(calc?.monthIn)*0.30){
+      verdict={text:"🟠 Pression visible",cls:"orange"};
+    } else if(house>0 || saving>0){
+      verdict={text:"🟡 À suivre",cls:"warn"};
+    }
+
+    return {
+      monthRows,
+      house,
+      debtPaid,
+      debtReceived,
+      creditPaid,
+      loanReceived,
+      billDue,
+      emergency,
+      saving,
+      debtCreditPressure,
+      riskPressure,
+      verdict
+    };
+  }
+
+  function tempCardHtml(opts){
+    return `
+      <div class="temperature-card">
+        <div class="temperature-label">${esc(opts.label||"—")}</div>
+        <div class="temperature-main ${esc(opts.cls||"gold")}">${esc(opts.amount||"—")}</div>
+        <div class="temperature-text">${esc(opts.text||"")}</div>
+        <div class="temperature-chip">${esc(opts.chip||"")}</div>
+      </div>`;
+  }
+
+  function renderTerrainTemperature(calc){
+    const grid=document.getElementById("payTemperatureGrid");
+    if(!grid) return;
+
+    const temp=buildTerrainTemperature(calc);
+    const label=document.getElementById("tempMonthLabel");
+    if(label){
+      label.textContent="Lecture du mois : maison, dettes, crédits, emprunts, imprévus et réserve. Le cockpit ne regarde pas seulement le business, il lit la vraie température.";
+    }
+
+    const badge=document.getElementById("tempVerdict");
+    if(badge){
+      badge.textContent=temp.verdict.text;
+      badge.className="decision-chip "+temp.verdict.cls;
+    }
+
+    grid.innerHTML=[
+      tempCardHtml({
+        label:"🏠 Maison / perso",
+        amount:money(temp.house),
+        cls:temp.house>0?"gold":"green",
+        text:"Dépenses privées visibles ce mois : famille, maison, repas, école, santé.",
+        chip:temp.house>0?"Vie privée séparée":"Calme"
+      }),
+      tempCardHtml({
+        label:"🤝 Dettes & crédits",
+        amount:money(temp.debtCreditPressure),
+        cls:temp.debtCreditPressure>0?"red":"green",
+        text:"Remboursements, crédits, factures et échéances moins ce qu’on t’a rendu.",
+        chip:temp.debtCreditPressure>0?"Pression à suivre":"Pas de pression"
+      }),
+      tempCardHtml({
+        label:"🏦 Emprunts reçus",
+        amount:money(temp.loanReceived),
+        cls:temp.loanReceived>0?"violet":"green",
+        text:"Argent entré mais à rendre plus tard. Ce n’est pas un gain libre.",
+        chip:temp.loanReceived>0?"À rembourser":"Aucun emprunt"
+      }),
+      tempCardHtml({
+        label:"🚨 Imprévus",
+        amount:money(temp.emergency),
+        cls:temp.emergency>0?"red":"green",
+        text:"Urgences, pannes, santé, réparation surprise : ce qui bouscule le mois.",
+        chip:temp.emergency>0?"Priorité prudence":"Rien d’urgent"
+      })
+    ].join("");
+  }
+
+
   // FIX: renderHUD — mis à jour du bloc HUD 2 secondes
   function renderHUD(calc,strategic){
     const hudCap=document.getElementById("hudCap");
@@ -2942,6 +3238,7 @@
     renderHUD(calc,strategic);
     renderModules(modules);
     renderTopModulesStrip(modules);
+    renderTerrainTemperature(calc);
     renderChannels(channels);
     renderChannelBars(channels);
 
