@@ -1330,6 +1330,10 @@
               </div>
             </div>
 
+            <div style="margin:14px 0 10px;font-weight:1000;color:#6b4e09;text-transform:uppercase;letter-spacing:.06em;">
+              📥 Argent qui entre
+            </div>
+
             <div class="quick-presets-grid">
               <button class="quick-preset" type="button" data-pay-preset="income">
                 <strong>💰 J’ai encaissé</strong>
@@ -1346,6 +1350,63 @@
                 <span>Montant vérifié, paiement propre, trace à garder.</span>
               </button>
 
+              <button class="quick-preset" type="button" data-pay-preset="debt_received">
+                <strong>🤲 On m’a remboursé</strong>
+                <span>Argent rendu par client, ami, famille ou partenaire.</span>
+              </button>
+            </div>
+
+            <div style="margin:18px 0 10px;font-weight:1000;color:#6b4e09;text-transform:uppercase;letter-spacing:.06em;">
+              📤 Argent qui sort
+            </div>
+
+            <div class="quick-presets-grid">
+              <button class="quick-preset" type="button" data-pay-preset="expense">
+                <strong>📉 Dépense activité</strong>
+                <span>Carburant, stock, livraison, outil, réparation, charge terrain.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="home_expense">
+                <strong>🏠 Dépense maison</strong>
+                <span>Famille, repas, école, santé, transport privé, vie quotidienne.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="debt_paid">
+                <strong>🤝 J’ai remboursé</strong>
+                <span>Dette, avance, tontine, fournisseur ou prêt rendu.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="credit_paid">
+                <strong>💳 Crédit payé</strong>
+                <span>Échéance crédit, emprunt, banque, téléphone ou matériel.</span>
+              </button>
+            </div>
+
+            <div style="margin:18px 0 10px;font-weight:1000;color:#6b4e09;text-transform:uppercase;letter-spacing:.06em;">
+              🛟 Protection, dette & mémoire
+            </div>
+
+            <div class="quick-presets-grid">
+              <button class="quick-preset" type="button" data-pay-preset="saving">
+                <strong>🛟 Je mets de côté</strong>
+                <span>Réserve sécurité, stock futur, famille ou projet.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="loan_received">
+                <strong>🏦 J’ai emprunté</strong>
+                <span>Argent reçu aujourd’hui, mais à rembourser plus tard.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="bill_due">
+                <strong>📅 À payer bientôt</strong>
+                <span>Facture, échéance, loyer, fournisseur ou charge à prévoir.</span>
+              </button>
+
+              <button class="quick-preset" type="button" data-pay-preset="emergency">
+                <strong>🚨 Imprévu / urgence</strong>
+                <span>Santé, famille, panne, réparation urgente ou dépense surprise.</span>
+              </button>
+
               <button class="quick-preset" type="button" data-pay-preset="verify">
                 <strong>⏳ À vérifier</strong>
                 <span>Paiement annoncé, mais montant ou canal pas encore sûr.</span>
@@ -1354,16 +1415,6 @@
               <button class="quick-preset" type="button" data-pay-preset="relaunch">
                 <strong>📤 Client à relancer</strong>
                 <span>Demander preuve, complément ou confirmation au client.</span>
-              </button>
-
-              <button class="quick-preset" type="button" data-pay-preset="expense">
-                <strong>📉 J’ai payé une dépense</strong>
-                <span>Carburant, stock, livraison, réparation, charge terrain.</span>
-              </button>
-
-              <button class="quick-preset" type="button" data-pay-preset="saving">
-                <strong>🛟 Je mets de côté</strong>
-                <span>Réserve, sécurité, stock futur, famille ou projet.</span>
               </button>
 
               <button class="quick-preset" type="button" data-pay-preset="note">
@@ -1377,6 +1428,7 @@
               <button class="quick-chip" type="button" data-pay-channel="cash">Cash</button>
               <button class="quick-chip" type="button" data-pay-channel="orange_money">Orange Money</button>
               <button class="quick-chip" type="button" data-pay-channel="bank">Banque</button>
+              <button class="quick-chip" type="button" data-pay-channel="other">Autre</button>
             </div>
 
             <div class="quick-preview" id="quickPresetPreview"></div>
@@ -2117,6 +2169,7 @@
         note: "Paiement client reçu. Vérifie le montant et le canal si besoin.",
         preview: "Encaissement préparé : ajoute le montant, précise le client si besoin, puis enregistre."
       },
+
       proof: {
         direction: "in",
         scope: "pro",
@@ -2128,6 +2181,7 @@
         note: "Le client a envoyé une preuve. Vérifie le montant avant confirmation.",
         preview: "Preuve préparée : contrôle le montant, puis confirme ou garde à vérifier."
       },
+
       confirm: {
         direction: "in",
         scope: "pro",
@@ -2139,6 +2193,115 @@
         note: "Paiement vérifié et confirmé par le professionnel.",
         preview: "Confirmation préparée : indique le montant confirmé et enregistre la trace."
       },
+
+      debt_received: {
+        direction: "in",
+        scope: "personal",
+        kind: "other",
+        channel: "cash",
+        category: "debt_received",
+        sourceModule: "PAY",
+        label: "Remboursement reçu",
+        note: "Quelqu’un m’a remboursé. Préciser le nom, la dette ou la raison si utile.",
+        preview: "Remboursement reçu préparé : PAY garde la mémoire de l’argent revenu."
+      },
+
+      expense: {
+        direction: "out",
+        scope: "pro",
+        kind: "expense",
+        channel: "cash",
+        category: "business_expense",
+        sourceModule: "PAY",
+        label: "Dépense activité",
+        note: "Dépense utile à l’activité. Précise carburant, stock, livraison, outil ou réparation.",
+        preview: "Dépense activité préparée : indique le montant et la nature exacte."
+      },
+
+      home_expense: {
+        direction: "out",
+        scope: "personal",
+        kind: "expense",
+        channel: "cash",
+        category: "home_expense",
+        sourceModule: "PAY",
+        label: "Dépense maison",
+        note: "Dépense de vie privée : famille, repas, école, santé, transport ou maison.",
+        preview: "Dépense maison préparée : PAY sépare la vie privée de l’activité."
+      },
+
+      debt_paid: {
+        direction: "out",
+        scope: "personal",
+        kind: "expense",
+        channel: "cash",
+        category: "debt_repayment",
+        sourceModule: "PAY",
+        label: "Dette remboursée",
+        note: "Dette, avance, tontine, fournisseur ou prêt remboursé. Préciser à qui si utile.",
+        preview: "Remboursement préparé : la trace montre ce qui ne pèse plus."
+      },
+
+      credit_paid: {
+        direction: "out",
+        scope: "personal",
+        kind: "expense",
+        channel: "bank",
+        category: "credit_repayment",
+        sourceModule: "PAY",
+        label: "Crédit ou emprunt remboursé",
+        note: "Échéance crédit, emprunt, banque, téléphone ou matériel payée.",
+        preview: "Crédit payé : PAY garde la mémoire de l’échéance réglée."
+      },
+
+      saving: {
+        direction: "in",
+        scope: "savings",
+        kind: "saving",
+        channel: "cash",
+        category: "saving",
+        sourceModule: "PAY",
+        label: "Mise de côté",
+        note: "Montant mis de côté pour protéger l’activité, le stock, la famille ou un projet.",
+        preview: "Réserve préparée : ce n’est pas une dépense, c’est une protection."
+      },
+
+      loan_received: {
+        direction: "in",
+        scope: "personal",
+        kind: "other",
+        channel: "cash",
+        category: "loan_received",
+        sourceModule: "PAY",
+        label: "Emprunt reçu",
+        note: "Argent emprunté. À rembourser plus tard. Préciser à qui si utile.",
+        preview: "Emprunt reçu : l’argent entre, mais PAY rappelle que ce n’est pas un gain libre."
+      },
+
+      bill_due: {
+        direction: "out",
+        scope: "pro",
+        kind: "expense",
+        channel: "other",
+        category: "bill_due",
+        sourceModule: "PAY",
+        label: "Facture ou échéance à payer",
+        note: "Facture, loyer, fournisseur, charge ou échéance à prévoir. Préciser la date si utile.",
+        preview: "À payer bientôt : PAY garde la mémoire pour éviter la surprise."
+      },
+
+      emergency: {
+        direction: "out",
+        scope: "personal",
+        kind: "expense",
+        channel: "cash",
+        category: "emergency",
+        sourceModule: "PAY",
+        label: "Imprévu ou urgence",
+        note: "Dépense imprévue : santé, famille, panne, réparation urgente ou situation exceptionnelle.",
+        preview: "Imprévu préparé : PAY montre ce qui a bousculé la température."
+      },
+
       verify: {
         direction: "in",
         scope: "pro",
@@ -2150,6 +2313,7 @@
         note: "Paiement annoncé. Vérifier le compte ou la preuve avant validation.",
         preview: "Vérification préparée : la trace existe, mais elle n’est pas encore confirmée."
       },
+
       relaunch: {
         direction: "in",
         scope: "pro",
@@ -2161,28 +2325,7 @@
         note: "Relancer le client pour confirmation, preuve ou règlement.",
         preview: "Relance préparée : note le client et ce qu’il doit confirmer."
       },
-      expense: {
-        direction: "out",
-        scope: "pro",
-        kind: "expense",
-        channel: "cash",
-        category: "business_expense",
-        sourceModule: "PAY",
-        label: "Dépense activité",
-        note: "Dépense utile à l’activité. Précise carburant, stock, livraison ou autre.",
-        preview: "Dépense préparée : indique le montant et la nature exacte."
-      },
-      saving: {
-        direction: "in",
-        scope: "savings",
-        kind: "saving",
-        channel: "cash",
-        category: "saving",
-        sourceModule: "PAY",
-        label: "Mise de côté",
-        note: "Montant mis de côté pour protéger l’activité, le stock, la famille ou un projet.",
-        preview: "Réserve préparée : indique le montant mis de côté."
-      },
+
       note: {
         direction: "in",
         scope: "pro",
@@ -2192,7 +2335,7 @@
         sourceModule: "PAY",
         label: "Note rapide PAY",
         note: "Note terrain à vérifier et ranger proprement.",
-        preview: "Note rapide préparée : écris ce qui s’est passé, DIGIY garde la trace."
+        preview: "Note rapide préparée : écris le minimum, DIGIY garde la trace."
       }
     };
 
@@ -2346,3 +2489,4 @@
   </script>
 </body>
 </html>
+
