@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT — Plus · Notice audio et procédure PAY</title>
   <meta name="theme-color" content="#04110d" />
+  <meta name="digiy-build" content="pay-brain-admin-20260514-temperature-terrain" />
   <meta
     name="description"
     content="Mon argent — Plus : base argent, réserve, charges, crédits, dettes, projets et export JSON sans exposer la session dans l’adresse."
@@ -1027,6 +1028,123 @@
       }
     }
 
+    /* =========================================================
+       DIGIY PAY — PLUS / TEMPÉRATURE TERRAIN
+       Ici on règle les repères, on ne note pas les mouvements.
+       ========================================================= */
+    .terrain-settings{
+      border:2px solid rgba(121,83,12,.26);
+      border-radius:28px;
+      background:
+        radial-gradient(circle at right top,rgba(250,204,21,.20),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:0 12px 28px rgba(77,52,22,.13);
+      padding:18px;
+      display:grid;
+      gap:14px;
+      margin-bottom:16px;
+      color:#1f2a1f;
+    }
+
+    .terrain-settings-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .terrain-settings-title{
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#6b4e09;
+    }
+
+    .terrain-settings-text{
+      margin-top:6px;
+      color:#3d3324;
+      font-size:16px;
+      line-height:1.55;
+      font-weight:950;
+      max-width:78ch;
+    }
+
+    .terrain-settings-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .terrain-settings-card{
+      border:1px solid rgba(83,58,26,.22);
+      border-radius:22px;
+      background:rgba(255,255,255,.66);
+      padding:14px;
+      display:grid;
+      gap:8px;
+    }
+
+    .terrain-settings-card strong{
+      color:#241a0d;
+      font-size:17px;
+      font-weight:1000;
+      line-height:1.2;
+    }
+
+    .terrain-settings-card span{
+      color:#3d3324;
+      font-size:14px;
+      line-height:1.45;
+      font-weight:900;
+    }
+
+    .terrain-presets{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .terrain-preset{
+      border:1px solid rgba(83,58,26,.22);
+      border-radius:999px;
+      background:rgba(255,255,255,.70);
+      color:#1f2a1f;
+      padding:10px 13px;
+      font-size:14px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    .terrain-preset:hover,
+    .terrain-preset.active{
+      background:rgba(250,204,21,.28);
+      border-color:rgba(121,83,12,.36);
+    }
+
+    .terrain-note-box{
+      display:none;
+      padding:13px;
+      border-radius:18px;
+      border:2px solid rgba(22,101,52,.22);
+      background:rgba(220,252,231,.86);
+      color:#14532d;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:950;
+    }
+
+    .terrain-note-box strong{
+      color:#052e16;
+    }
+
+    @media(max-width:800px){
+      .terrain-settings-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1210,6 +1328,60 @@
         la page Plus fixe les repères. La page Ajouter enregistre les mouvements.
         Comme ça, le cockpit ne mélange pas les objectifs avec l’argent réellement entré ou sorti.
       </div>
+    </section>
+
+
+    <section class="terrain-settings" id="terrainSettingsPanel" aria-label="Réglages température terrain PAY">
+      <div class="terrain-settings-head">
+        <div>
+          <div class="terrain-settings-title">🌡️ Repères température terrain</div>
+          <div class="terrain-settings-text">
+            Cette zone ne remplace pas la page Ajouter. Elle pose seulement les repères du mois :
+            maison, imprévus, emprunts reçus et factures à prévoir. Le cockpit compare ensuite ces repères avec les vrais mouvements.
+          </div>
+        </div>
+      </div>
+
+      <div class="terrain-presets" aria-label="Profils rapides de température">
+        <button class="terrain-preset" type="button" data-terrain-preset="calme">🟢 Mois calme</button>
+        <button class="terrain-preset" type="button" data-terrain-preset="famille">🏠 Maison active</button>
+        <button class="terrain-preset" type="button" data-terrain-preset="pression">🟠 Pression visible</button>
+        <button class="terrain-preset" type="button" data-terrain-preset="urgence">🚨 Prudence urgence</button>
+      </div>
+
+      <div class="terrain-settings-grid">
+        <div class="terrain-settings-card">
+          <strong>🏠 Budget maison à surveiller</strong>
+          <span>Repas, école, santé, famille, transport privé. Ce n’est pas l’activité, mais ça pèse sur le mois.</span>
+          <input class="input" id="terrainHomeBudget" type="number" min="0" step="1000" placeholder="Ex. 80000" />
+        </div>
+
+        <div class="terrain-settings-card">
+          <strong>🚨 Réserve imprévu</strong>
+          <span>Petit coussin contre panne, santé, urgence famille ou réparation surprise.</span>
+          <input class="input" id="terrainEmergencyReserve" type="number" min="0" step="1000" placeholder="Ex. 50000" />
+        </div>
+
+        <div class="terrain-settings-card">
+          <strong>🏦 Emprunts reçus à surveiller</strong>
+          <span>Argent entré mais à rendre plus tard. PAY ne doit pas le confondre avec un gain libre.</span>
+          <input class="input" id="terrainLoanWatch" type="number" min="0" step="1000" placeholder="Ex. 100000" />
+        </div>
+
+        <div class="terrain-settings-card">
+          <strong>📅 Factures à prévoir</strong>
+          <span>Loyer, fournisseur, internet, échéance ou charge déjà connue avant qu’elle ne tombe.</span>
+          <input class="input" id="terrainBillDueBuffer" type="number" min="0" step="1000" placeholder="Ex. 75000" />
+        </div>
+
+        <div class="terrain-settings-card" style="grid-column:1 / -1;">
+          <strong>🗣️ Note terrain du mois</strong>
+          <span>Une phrase simple pour expliquer la pression du mois : rentrée scolaire, travaux, stock, santé, dette familiale…</span>
+          <textarea class="textarea" id="terrainTemperatureNotes" placeholder="Ex. Ce mois-ci, attention aux factures et à l’école des enfants."></textarea>
+        </div>
+      </div>
+
+      <div class="terrain-note-box" id="terrainPresetNote"></div>
     </section>
 
 
@@ -1482,6 +1654,24 @@
                 </div>
               </div>
 
+
+              <div class="item">
+                <div class="item-top">
+                  <div class="item-title">Température terrain</div>
+                  <div class="badge warn" id="badgeTerrain">À régler</div>
+                </div>
+                <div class="item-grid">
+                  <div class="item-box">
+                    <div class="item-k">Maison + imprévus</div>
+                    <div class="item-v" id="sumTerrainLife">0 F CFA</div>
+                  </div>
+                  <div class="item-box">
+                    <div class="item-k">Emprunts + factures prévues</div>
+                    <div class="item-v" id="sumTerrainPressure">0 F CFA</div>
+                  </div>
+                </div>
+              </div>
+
               <div class="item">
                 <div class="item-top">
                   <div class="item-title">Projets</div>
@@ -1706,6 +1896,13 @@
       currency: "XOF",
       safety_reserve_xof: 50000,
       monthly_fixed_costs_xof: 0,
+      terrain_temperature: {
+        home_budget_xof: 0,
+        emergency_buffer_xof: 0,
+        loan_watch_xof: 0,
+        bill_due_buffer_xof: 0,
+        notes: ""
+      },
       credits: [],
       debts: [],
       projects: [],
@@ -1728,7 +1925,8 @@
           "credits" in obj ||
           "debts" in obj ||
           "projects" in obj ||
-          "rules" in obj
+          "rules" in obj ||
+          "terrain_temperature" in obj
         )
       );
     }
@@ -1840,10 +2038,21 @@
 
     function normalizeBrain(data){
       const raw = (data && typeof data === "object") ? data : {};
+      const terrain = raw.terrain_temperature && typeof raw.terrain_temperature === "object"
+        ? raw.terrain_temperature
+        : {};
+
       return {
         currency: String(raw.currency || "XOF").trim() || "XOF",
         safety_reserve_xof: num(raw.safety_reserve_xof),
         monthly_fixed_costs_xof: num(raw.monthly_fixed_costs_xof),
+        terrain_temperature: {
+          home_budget_xof: num(terrain.home_budget_xof),
+          emergency_buffer_xof: num(terrain.emergency_buffer_xof),
+          loan_watch_xof: num(terrain.loan_watch_xof),
+          bill_due_buffer_xof: num(terrain.bill_due_buffer_xof),
+          notes: String(terrain.notes || "").trim()
+        },
         credits: Array.isArray(raw.credits) ? raw.credits.map(normalizeCredit) : [],
         debts: Array.isArray(raw.debts) ? raw.debts.map(normalizeDebt) : [],
         projects: Array.isArray(raw.projects) ? raw.projects.map(normalizeProject) : [],
@@ -2009,7 +2218,12 @@
         monthlyFixedCosts: "monthly_fixed_costs_xof",
         dangerDebtRatio: "rules.danger_debt_ratio_pct",
         minimumCash: "rules.minimum_cash_after_commitments_xof",
-        recommendedSavings: "rules.recommended_savings_pct"
+        recommendedSavings: "rules.recommended_savings_pct",
+        terrainHomeBudget: "terrain_temperature.home_budget_xof",
+        terrainEmergencyReserve: "terrain_temperature.emergency_buffer_xof",
+        terrainLoanWatch: "terrain_temperature.loan_watch_xof",
+        terrainBillDueBuffer: "terrain_temperature.bill_due_buffer_xof",
+        terrainTemperatureNotes: "terrain_temperature.notes"
       };
 
       Object.keys(map).forEach(id => {
@@ -2045,7 +2259,34 @@
       }
       if(path === "rules.recommended_savings_pct"){
         brain.rules.recommended_savings_pct = num(value);
+        return;
       }
+      if(path === "terrain_temperature.home_budget_xof"){
+        brain.terrain_temperature = brain.terrain_temperature || {};
+        brain.terrain_temperature.home_budget_xof = num(value);
+        return;
+      }
+      if(path === "terrain_temperature.emergency_buffer_xof"){
+        brain.terrain_temperature = brain.terrain_temperature || {};
+        brain.terrain_temperature.emergency_buffer_xof = num(value);
+        return;
+      }
+      if(path === "terrain_temperature.loan_watch_xof"){
+        brain.terrain_temperature = brain.terrain_temperature || {};
+        brain.terrain_temperature.loan_watch_xof = num(value);
+        return;
+      }
+      if(path === "terrain_temperature.bill_due_buffer_xof"){
+        brain.terrain_temperature = brain.terrain_temperature || {};
+        brain.terrain_temperature.bill_due_buffer_xof = num(value);
+        return;
+      }
+      if(path === "terrain_temperature.notes"){
+        brain.terrain_temperature = brain.terrain_temperature || {};
+        brain.terrain_temperature.notes = String(value || "").trim();
+        return;
+      }
+
     }
 
     function syncBaseFields(){
@@ -2055,6 +2296,18 @@
       document.getElementById("dangerDebtRatio").value = brain.rules?.danger_debt_ratio_pct ?? 35;
       document.getElementById("minimumCash").value = brain.rules?.minimum_cash_after_commitments_xof ?? 50000;
       document.getElementById("recommendedSavings").value = brain.rules?.recommended_savings_pct ?? 15;
+
+      const terrain = brain.terrain_temperature || {};
+      const setTerrain = (id, value) => {
+        const el = document.getElementById(id);
+        if(el) el.value = value == null ? "" : String(value);
+      };
+
+      setTerrain("terrainHomeBudget", terrain.home_budget_xof || 0);
+      setTerrain("terrainEmergencyReserve", terrain.emergency_buffer_xof || 0);
+      setTerrain("terrainLoanWatch", terrain.loan_watch_xof || 0);
+      setTerrain("terrainBillDueBuffer", terrain.bill_due_buffer_xof || 0);
+      setTerrain("terrainTemperatureNotes", terrain.notes || "");
     }
 
     function addCredit(){
@@ -2309,6 +2562,9 @@
         .reduce((s,x)=>s + num(x.amount_xof), 0);
       const projectsTotal = activeProjects.reduce((s,x)=>s + num(x.target_xof), 0);
       const topProject = sortProjectsForSummary(activeProjects)[0] || null;
+      const terrain = brain.terrain_temperature || {};
+      const terrainLife = num(terrain.home_budget_xof) + num(terrain.emergency_buffer_xof);
+      const terrainPressure = num(terrain.loan_watch_xof) + num(terrain.bill_due_buffer_xof);
 
       document.getElementById("sumReserve").textContent = money(brain.safety_reserve_xof);
       document.getElementById("sumFixed").textContent = money(brain.monthly_fixed_costs_xof);
@@ -2316,6 +2572,10 @@
       document.getElementById("sumDebtsSoon").textContent = money(debtsSoon);
       document.getElementById("sumTopProject").textContent = topProject ? topProject.label : "Aucun";
       document.getElementById("sumProjects").textContent = money(projectsTotal);
+      const sumTerrainLife = document.getElementById("sumTerrainLife");
+      const sumTerrainPressure = document.getElementById("sumTerrainPressure");
+      if(sumTerrainLife) sumTerrainLife.textContent = money(terrainLife);
+      if(sumTerrainPressure) sumTerrainPressure.textContent = money(terrainPressure);
 
       document.getElementById("badgeBase").textContent =
         brain.safety_reserve_xof > 0 || brain.monthly_fixed_costs_xof > 0 ? "Posée" : "À poser";
@@ -2331,6 +2591,13 @@
         activeProjects.length ? "Déclarés" : "Aucun";
       document.getElementById("badgeProjects").className =
         "badge " + (activeProjects.length ? "warn" : "ok");
+
+      const badgeTerrain = document.getElementById("badgeTerrain");
+      if(badgeTerrain){
+        const terrainTotal = terrainLife + terrainPressure;
+        badgeTerrain.textContent = terrainTotal > 0 ? "Repères posés" : "À régler";
+        badgeTerrain.className = "badge " + (terrainTotal > 0 ? "warn" : "ok");
+      }
     }
 
     function renderPreview(){
@@ -2410,6 +2677,7 @@
         values: {
           safety_reserve_xof: 80000,
           monthly_fixed_costs_xof: 35000,
+          terrain_temperature: { home_budget_xof: 70000, emergency_buffer_xof: 40000, loan_watch_xof: 0, bill_due_buffer_xof: 50000, notes: "Commerce : surveiller maison, fournisseur et stock." },
           rules: {
             danger_debt_ratio_pct: 35,
             minimum_cash_after_commitments_xof: 50000,
@@ -2423,6 +2691,7 @@
         values: {
           safety_reserve_xof: 60000,
           monthly_fixed_costs_xof: 45000,
+          terrain_temperature: { home_budget_xof: 60000, emergency_buffer_xof: 50000, loan_watch_xof: 0, bill_due_buffer_xof: 30000, notes: "Chauffeur : prévoir carburant, entretien et imprévu véhicule." },
           rules: {
             danger_debt_ratio_pct: 30,
             minimum_cash_after_commitments_xof: 40000,
@@ -2436,6 +2705,7 @@
         values: {
           safety_reserve_xof: 150000,
           monthly_fixed_costs_xof: 60000,
+          terrain_temperature: { home_budget_xof: 90000, emergency_buffer_xof: 80000, loan_watch_xof: 0, bill_due_buffer_xof: 70000, notes: "Location : anticiper entretien, facture et réserve travaux." },
           rules: {
             danger_debt_ratio_pct: 35,
             minimum_cash_after_commitments_xof: 100000,
@@ -2449,6 +2719,7 @@
         values: {
           safety_reserve_xof: 100000,
           monthly_fixed_costs_xof: 75000,
+          terrain_temperature: { home_budget_xof: 80000, emergency_buffer_xof: 60000, loan_watch_xof: 0, bill_due_buffer_xof: 60000, notes: "Resto/service : garder un œil sur stock, personnel et imprévus." },
           rules: {
             danger_debt_ratio_pct: 35,
             minimum_cash_after_commitments_xof: 70000,
@@ -2462,6 +2733,7 @@
         values: {
           safety_reserve_xof: 100000,
           monthly_fixed_costs_xof: brain.monthly_fixed_costs_xof || 0,
+          terrain_temperature: { home_budget_xof: 50000, emergency_buffer_xof: 100000, loan_watch_xof: 0, bill_due_buffer_xof: 50000, notes: "Prudence : protéger avant d’accélérer." },
           rules: {
             danger_debt_ratio_pct: 25,
             minimum_cash_after_commitments_xof: 80000,
@@ -2475,6 +2747,7 @@
         values: {
           safety_reserve_xof: 50000,
           monthly_fixed_costs_xof: 0,
+          terrain_temperature: { home_budget_xof: 0, emergency_buffer_xof: 0, loan_watch_xof: 0, bill_due_buffer_xof: 0, notes: "" },
           rules: {
             danger_debt_ratio_pct: 35,
             minimum_cash_after_commitments_xof: 50000,
@@ -2570,6 +2843,10 @@
       brain = normalizeBrain({
         ...brain,
         ...preset.values,
+        terrain_temperature: {
+          ...(brain.terrain_temperature || {}),
+          ...(preset.values.terrain_temperature || {})
+        },
         rules: {
           ...(brain.rules || {}),
           ...(preset.values.rules || {})
@@ -2627,12 +2904,64 @@
       document.querySelectorAll("[data-project-preset]").forEach(btn => {
         btn.addEventListener("click", () => applyProjectPreset(btn.getAttribute("data-project-preset") || ""));
       });
+
+      document.querySelectorAll("[data-terrain-preset]").forEach(btn => {
+        btn.addEventListener("click", () => applyTerrainPreset(btn.getAttribute("data-terrain-preset") || ""));
+      });
     }
 
 
 
+
+    const TERRAIN_PRESETS = {
+      calme: {
+        title: "Mois calme préparé",
+        note: "Repères légers : le cockpit garde un œil sans alourdir la lecture.",
+        values: { home_budget_xof: 40000, emergency_buffer_xof: 30000, loan_watch_xof: 0, bill_due_buffer_xof: 0, notes: "Mois calme : garder la réserve, noter les mouvements réels dans Ajouter." }
+      },
+      famille: {
+        title: "Maison active préparée",
+        note: "Maison et famille pèsent ce mois-ci. On le signale pour ne pas accuser le business à tort.",
+        values: { home_budget_xof: 100000, emergency_buffer_xof: 40000, loan_watch_xof: 0, bill_due_buffer_xof: 30000, notes: "Maison active : école, repas, santé ou famille à suivre." }
+      },
+      pression: {
+        title: "Pression visible préparée",
+        note: "Factures, dette ou emprunt à surveiller. Le cockpit doit lire le mois avec prudence.",
+        values: { home_budget_xof: 80000, emergency_buffer_xof: 50000, loan_watch_xof: 100000, bill_due_buffer_xof: 75000, notes: "Pression visible : dette, crédit, facture ou emprunt à ne pas confondre avec du bénéfice." }
+      },
+      urgence: {
+        title: "Prudence urgence préparée",
+        note: "Le mois peut être secoué. On protège d’abord la respiration.",
+        values: { home_budget_xof: 70000, emergency_buffer_xof: 120000, loan_watch_xof: 0, bill_due_buffer_xof: 50000, notes: "Urgence possible : panne, santé, famille ou réparation à anticiper." }
+      }
+    };
+
+    function applyTerrainPreset(name){
+      const preset = TERRAIN_PRESETS[name];
+      if(!preset) return;
+
+      brain.terrain_temperature = {
+        ...(brain.terrain_temperature || {}),
+        ...preset.values
+      };
+
+      document.querySelectorAll("[data-terrain-preset]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-terrain-preset") === name);
+      });
+
+      const note = document.getElementById("terrainPresetNote");
+      if(note){
+        note.style.display = "block";
+        note.innerHTML = `<strong>${esc(preset.title)}</strong><br>${esc(preset.note)}`;
+      }
+
+      renderAll();
+      saveDraft(true, "terrain_preset_" + name);
+    }
+
+
     const PAY_BRAIN_AUDIO_TEXT =
-      "Bienvenue dans les réglages utiles de MON ARGENT by DIGIY. Cette page n’est pas faite pour compliquer la vie du professionnel. Elle sert à poser les repères qui protègent son mois. La procédure est simple. Ici, dans la page Plus, tu poses les règles : réserve de sécurité, charges fixes, crédits, dettes et projets. Ensuite, dans la page Ajouter, tu poses les vrais mouvements d’argent : fond de caisse, salaire, encaissement, dépense, épargne ou preuve de paiement. Le fond de caisse de départ ne doit pas être mis comme une réserve abstraite. Il doit être enregistré dans Ajouter comme une entrée PAY, avec le libellé fond de caisse de départ, la catégorie opening balance, et le montant réel disponible au début. Si tu reçois un salaire venant de l’extérieur de ton activité, tu peux l’inscrire comme entrée perso. Si tu te verses un salaire depuis ton activité, tu l’inscris comme sortie activité, pour que le business reste lu proprement. La réserve de sécurité, elle, n’est pas forcément l’argent déjà disponible. C’est le montant à protéger. Les charges fixes sont ce qui revient chaque mois : loyer, internet, équipe, carburant, entretien ou abonnement. Un crédit, c’est ce qui se rembourse doucement. Une dette, c’est ce qu’il faut suivre pour ne pas perdre la confiance. Un projet, c’est ce qu’on veut financer, mais seulement quand le terrain respire. Ici, le professionnel peut choisir un modèle rapide : petit commerce, chauffeur, location, resto ou prudence. DIGIY prépare les réglages, puis le terrain ajuste avec sa vérité. Les montants restent en FCFA pour le terrain. L’euro peut aider à lire ou comparer, mais il ne mélange pas la caisse. Le fichier JSON est la mémoire des réglages : réserve, charges, crédits, dettes, projets et règles de prudence. Le pro clique plus qu’il n’écrit. DIGIY formule et prépare. Le professionnel valide.";
+      "Bienvenue dans les réglages utiles de MON ARGENT by DIGIY. Cette page n’est pas faite pour compliquer la vie du professionnel. Elle sert à poser les repères qui protègent son mois. La procédure est simple. Ici, dans la page Plus, tu poses les règles : réserve de sécurité, charges fixes, crédits, dettes et projets. Ensuite, dans la page Ajouter, tu poses les vrais mouvements d’argent : fond de caisse, salaire, encaissement, dépense, épargne ou preuve de paiement. Le fond de caisse de départ ne doit pas être mis comme une réserve abstraite. Il doit être enregistré dans Ajouter comme une entrée PAY, avec le libellé fond de caisse de départ, la catégorie opening balance, et le montant réel disponible au début. Si tu reçois un salaire venant de l’extérieur de ton activité, tu peux l’inscrire comme entrée perso. Si tu te verses un salaire depuis ton activité, tu l’inscris comme sortie activité, pour que le business reste lu proprement. La réserve de sécurité, elle, n’est pas forcément l’argent déjà disponible. C’est le montant à protéger. Les charges fixes sont ce qui revient chaque mois : loyer, internet, équipe, carburant, entretien ou abonnement. Un crédit, c’est ce qui se rembourse doucement. Une dette, c’est ce qu’il faut suivre pour ne pas perdre la confiance. Un projet, c’est ce qu’on veut financer, mais seulement quand le terrain respire. La température terrain ajoute les repères maison, imprévus, emprunts reçus et factures à prévoir. Ici, le professionnel peut choisir un modèle rapide : petit commerce, chauffeur, location, resto ou prudence. DIGIY prépare les réglages, puis le terrain ajuste avec sa vérité. Les montants restent en FCFA pour le terrain. L’euro peut aider à lire ou comparer, mais il ne mélange pas la caisse. Le fichier JSON est la mémoire des réglages : réserve, charges, crédits, dettes, projets et règles de prudence. Le pro clique plus qu’il n’écrit. DIGIY formule et prépare. Le professionnel valide.";
 
     function stopBrainAudio(){
       try{
@@ -2804,3 +3133,4 @@
   </script>
 </body>
 </html>
+
