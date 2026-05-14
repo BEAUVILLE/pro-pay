@@ -11,9 +11,9 @@
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="digiy-build" content="pay-cockpit-20260514-temperature-terrain" />
+  <meta name="digiy-build" content="pay-cockpit-20260514-temperature-terrain-modules-fix" />
   <script>
-    window.DIGIY_BUILD_ID = "pay-cockpit-20260514-temperature-terrain";
+    window.DIGIY_BUILD_ID = "pay-cockpit-20260514-temperature-terrain-modules-fix";
     window.DIGIY_CACHE_GUARD = true;
   </script>
 
@@ -28,9 +28,9 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./session.js?v=pay-cockpit-20260514-temperature-terrain"></script>
-  <script src="./pay-tools.js?v=pay-cockpit-20260514-temperature-terrain"></script>
-  <script src="./pay-alerts.js?v=pay-cockpit-20260514-temperature-terrain"></script>
+  <script src="./session.js?v=pay-cockpit-20260514-temperature-terrain-modules-fix"></script>
+  <script src="./pay-tools.js?v=pay-cockpit-20260514-temperature-terrain-modules-fix"></script>
+  <script src="./pay-alerts.js?v=pay-cockpit-20260514-temperature-terrain-modules-fix"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -86,7 +86,7 @@
     .hud2s-value{font-family:var(--ff-title);font-size:28px;line-height:1.02;color:#2a2114;font-weight:700;word-break:break-word;}
     .hud2s-value.green{color:var(--green)}.hud2s-value.gold{color:var(--gold)}.hud2s-value.red{color:var(--danger)}
     .hud2s-text{font-size:12px;color:var(--muted);font-weight:800;line-height:1.5;}
-    .module-strip{display:none;padding:16px;margin-bottom:16px;}
+    .module-strip{display:block;padding:16px;margin-bottom:16px;}
     .module-strip-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
     .module-strip-title{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#14532d;}
     .module-strip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -1143,7 +1143,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "pay-cockpit-20260514-temperature-terrain";
+      const BUILD_ID = "pay-cockpit-20260514-temperature-terrain-modules-fix";
       const BUILD_KEY = "digiy_pay_cockpit_build_id";
       const CLEAN_KEY = "digiy_pay_cockpit_cache_cleaned";
 
@@ -2699,11 +2699,74 @@
   // FIX: renderResultRows était appelée mais seule renderResultList existait
   function renderResultRows(calc,strategic){ renderResultList(calc,strategic); }
 
+
+  const PAY_MODULE_CATALOG = [
+    { source_module:"DRIVER", label:"DRIVER", emoji:"🚕", note:"Courses, transport, chauffeur." },
+    { source_module:"MARKET", label:"MARKET", emoji:"🛍️", note:"Ventes, boutiques, annonces." },
+    { source_module:"LOC", label:"LOC", emoji:"🏠", note:"Location, nuitées, logements." },
+    { source_module:"RESA", label:"RESA", emoji:"🍽️", note:"Réservations, tables, services." },
+    { source_module:"BUILD", label:"BUILD", emoji:"🛠️", note:"Chantier, artisans, intervention." },
+    { source_module:"EXPLORE", label:"EXPLORE", emoji:"🗺️", note:"Découverte, lieux, circuits." },
+    { source_module:"JOBS", label:"JOBS", emoji:"💼", note:"Travail, mission, service." },
+    { source_module:"PAY", label:"PAY", emoji:"₣", note:"Caisse centrale et traces." }
+  ];
+
+  function buildDisplayModules(modules){
+    const real = Array.isArray(modules) ? modules : [];
+    const map = new Map();
+
+    real.forEach(row => {
+      const code = String(row?.source_module || row?.module || "PAY").trim().toUpperCase() || "PAY";
+      const previous = map.get(code) || { source_module: code, amount_xof: 0, real: false };
+      previous.amount_xof = num(previous.amount_xof) + num(row?.amount_xof);
+      previous.real = true;
+      map.set(code, previous);
+    });
+
+    PAY_MODULE_CATALOG.forEach(item => {
+      if(!map.has(item.source_module)){
+        map.set(item.source_module, {
+          ...item,
+          amount_xof: 0,
+          real: false
+        });
+      } else {
+        map.set(item.source_module, {
+          ...item,
+          ...map.get(item.source_module),
+          label: item.label,
+          emoji: item.emoji,
+          note: item.note
+        });
+      }
+    });
+
+    return [...map.values()].sort((a,b)=>{
+      const diff = num(b.amount_xof) - num(a.amount_xof);
+      if(diff !== 0) return diff;
+      if(a.real !== b.real) return a.real ? -1 : 1;
+      return PAY_MODULE_CATALOG.findIndex(x=>x.source_module===a.source_module) -
+             PAY_MODULE_CATALOG.findIndex(x=>x.source_module===b.source_module);
+    });
+  }
+
   function renderModules(modules){
     const list=document.getElementById("modulesList"); if(!list) return;
-    if(!Array.isArray(modules)||!modules.length){ list.innerHTML=`<div class="empty">Aucune activité visible pour le moment.</div>`; return; }
-    list.innerHTML=modules.sort((a,b)=>num(b.amount_xof)-num(a.amount_xof))
-      .map((row,idx)=>rowHtml(idx===0?"green":"gold",idx===0?"🏆":"📦",String(row.source_module||"ACTIVITÉ").toUpperCase(),idx===0?"Activité la plus forte du mois":"Remontée visible ce mois",money(row.amount_xof||0),idx===0?"green":"gold"))
+    const displayModules = buildDisplayModules(modules);
+    if(!displayModules.length){ list.innerHTML=`<div class="empty">Aucun module configuré pour le moment.</div>`; return; }
+
+    list.innerHTML=displayModules
+      .map((row,idx)=>{
+        const active = num(row.amount_xof)>0;
+        const icon = row.emoji || (active ? "📦" : "▫️");
+        const title = String(row.label || row.source_module || "ACTIVITÉ").toUpperCase();
+        const meta = active
+          ? (idx===0 ? "Activité la plus forte du mois" : "Remontée visible ce mois")
+          : (row.note || "Module prêt — en attente de mouvement");
+        const tone = active ? (idx===0 ? "green" : "gold") : "blue";
+        const amount = active ? money(row.amount_xof||0) : "Prêt";
+        return rowHtml(tone, icon, title, meta, amount, tone);
+      })
       .join("");
   }
 
@@ -3243,7 +3306,7 @@
     renderChannelBars(channels);
 
     setText("kpiEcoTotal",money(monthIn));
-    setText("kpiModCount",modules.length);
+    setText("kpiModCount", modules.length ? modules.length : PAY_MODULE_CATALOG.length);
 
     if(PAY_BRAIN){
       renderEngagements(calc,PAY_BRAIN);
