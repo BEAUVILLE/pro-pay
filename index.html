@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT by DIGIY — PAY PRO</title>
   <meta name="theme-color" content="#f4ead2" />
+  <meta name="digiy-build" content="pay-index-20260515-porte-ajouter-voix" />
   <meta
     name="description"
-    content="PAY PRO by DIGIY — entrée sécurisée vers le cockpit Mon Argent, sans exposer la session dans l’adresse."
+    content="PAY PRO by DIGIY — porte sécurisée pour dire un mouvement, ajouter au clic, lire la température et régler les repères."
   />
 
   <script>
@@ -23,7 +24,7 @@
       --line:rgba(83,58,26,.22);
       --gold:#facc15;
       --green:#16a34a;
-      --card:#fff7e6;
+      --green2:#22c55e;
       --shadow:0 14px 34px rgba(77,52,22,.16);
       --ff:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
     }
@@ -40,7 +41,7 @@
       min-height:100vh;
       display:grid;
       place-items:center;
-      padding:22px;
+      padding:18px;
       font-family:var(--ff);
       color:var(--text);
       background:
@@ -52,9 +53,9 @@
     }
 
     .card{
-      width:min(100%,520px);
+      width:min(100%,780px);
       border:2px solid var(--line);
-      border-radius:30px;
+      border-radius:32px;
       background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
       box-shadow:var(--shadow);
       padding:24px;
@@ -64,15 +65,15 @@
     }
 
     .mark{
-      width:70px;
-      height:70px;
+      width:74px;
+      height:74px;
       margin:0 auto;
-      border-radius:24px;
+      border-radius:26px;
       display:grid;
       place-items:center;
       background:linear-gradient(135deg,var(--green),var(--gold));
       color:#102014;
-      font-size:34px;
+      font-size:36px;
       font-weight:1000;
       box-shadow:0 12px 28px rgba(77,52,22,.16);
     }
@@ -88,7 +89,7 @@
 
     h1{
       margin:0;
-      font-size:clamp(34px,8vw,50px);
+      font-size:clamp(34px,8vw,58px);
       line-height:1.02;
       letter-spacing:-.04em;
       font-weight:1000;
@@ -103,20 +104,121 @@
       font-weight:900;
     }
 
+    .doctrine{
+      border:1px solid rgba(22,101,52,.24);
+      border-radius:24px;
+      background:rgba(220,252,231,.62);
+      color:#14532d;
+      padding:14px;
+      font-size:16px;
+      line-height:1.5;
+      font-weight:1000;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:12px;
+      margin-top:2px;
+    }
+
     .btn{
-      min-height:58px;
-      border-radius:999px;
-      display:inline-flex;
+      min-height:70px;
+      border-radius:24px;
+      display:flex;
       align-items:center;
       justify-content:center;
-      padding:14px 20px;
+      flex-direction:column;
+      gap:4px;
+      padding:14px 16px;
       text-decoration:none;
-      background:linear-gradient(135deg,var(--gold),#fff3c4);
+      background:rgba(255,255,255,.70);
       color:#1f2a1f;
-      border:1px solid rgba(121,83,12,.28);
-      font-size:17px;
+      border:1px solid rgba(121,83,12,.22);
+      box-shadow:0 10px 22px rgba(77,52,22,.10);
+      text-align:center;
+    }
+
+    .btn strong{
+      font-size:18px;
       font-weight:1000;
-      box-shadow:0 10px 22px rgba(77,52,22,.13);
+      line-height:1.15;
+    }
+
+    .btn span{
+      color:rgba(31,42,31,.68);
+      font-size:13px;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .btn.primary{
+      min-height:92px;
+      grid-column:1 / -1;
+      background:linear-gradient(135deg,var(--green2),var(--gold));
+      border:1px solid rgba(22,101,52,.28);
+    }
+
+    .btn.primary strong{
+      font-size:25px;
+    }
+
+    .btn:hover{
+      filter:brightness(1.03);
+      transform:translateY(-1px);
+    }
+
+    .notice{
+      border:1px solid rgba(83,58,26,.18);
+      border-radius:24px;
+      background:rgba(255,255,255,.50);
+      padding:14px;
+      display:grid;
+      gap:8px;
+      text-align:left;
+    }
+
+    .notice-title{
+      color:#6b4e09;
+      font-size:13px;
+      font-weight:1000;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+    }
+
+    .notice-text{
+      color:rgba(31,42,31,.76);
+      font-size:15px;
+      line-height:1.5;
+      font-weight:900;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .mini{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:rgba(255,255,255,.52);
+      padding:12px;
+      display:grid;
+      gap:4px;
+    }
+
+    .mini b{
+      color:#241a0d;
+      font-size:15px;
+      font-weight:1000;
+    }
+
+    .mini span{
+      color:rgba(31,42,31,.68);
+      font-size:13px;
+      line-height:1.35;
+      font-weight:900;
     }
 
     .small{
@@ -126,27 +228,13 @@
       line-height:1.45;
     }
 
-    .loader{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      color:#14532d;
-      font-size:15px;
-      font-weight:1000;
-    }
-
-    .spinner{
-      width:18px;
-      height:18px;
-      border:3px solid rgba(20,83,45,.18);
-      border-top-color:#14532d;
-      border-radius:50%;
-      animation:spin .75s linear infinite;
-    }
-
-    @keyframes spin{
-      to{transform:rotate(360deg)}
+    @media(max-width:640px){
+      body{padding:12px}
+      .card{padding:18px;border-radius:28px}
+      .actions{grid-template-columns:1fr}
+      .btn.primary{grid-column:auto}
+      .mini-grid{grid-template-columns:1fr}
+      h1{font-size:40px}
     }
   </style>
 </head>
@@ -157,30 +245,75 @@
 
     <p class="kicker">PAY PRO · MON ARGENT by DIGIY</p>
 
-    <h1>Ouverture du cockpit.</h1>
+    <h1>Parle, clique,<br>PAY range.</h1>
 
     <p>
-      DIGIY prépare ton espace PAY.
-      La session reste protégée, rien de sensible ne reste dans l’adresse.
+      Ici, pas de tableau compliqué. Tu dis ou tu choisis le mouvement,
+      DIGIY prépare la ligne, puis tu valides.
     </p>
 
-    <div class="loader" aria-live="polite">
-      <span class="spinner" aria-hidden="true"></span>
-      <span>Direction cockpit…</span>
+    <div class="doctrine">
+      La voix prépare. Le clic confirme. PAY enregistre seulement quand le professionnel valide.
     </div>
 
-    <a class="btn" href="./cockpit.html" id="manualLink">Ouvrir le cockpit</a>
+    <section class="actions" aria-label="Portes PAY">
+      <a class="btn primary" href="./admin.html#payVoicePanel" id="voiceLink">
+        <strong>🎙️ Dire un mouvement</strong>
+        <span>Ex. “J’ai encaissé 15000 Wave pour POS”</span>
+      </a>
+
+      <a class="btn" href="./admin.html" id="addLink">
+        <strong>➕ Ajouter</strong>
+        <span>Entrée, dépense, dette, crédit ou réserve</span>
+      </a>
+
+      <a class="btn" href="./cockpit.html" id="temperatureLink">
+        <strong>🌡️ Ma température</strong>
+        <span>Voir ce qui entre, sort, reste et pèse</span>
+      </a>
+
+      <a class="btn" href="./brain-admin.html" id="settingsLink">
+        <strong>⚙️ Réglages utiles</strong>
+        <span>Réserve, dettes, projets, repères du mois</span>
+      </a>
+
+      <a class="btn" href="./pin.html" id="pinLink">
+        <strong>🔐 Code sécurisé</strong>
+        <span>Ouvrir ou renouveler la session PAY</span>
+      </a>
+    </section>
+
+    <section class="notice" aria-label="Clarification route technique">
+      <div class="notice-title">Nom humain d’abord</div>
+      <div class="notice-text">
+        Dans l’interface, on dit <strong>Ajouter</strong>. La route technique peut rester
+        <strong>admin.html</strong>, mais le professionnel ne voit pas “admin” : il ajoute simplement sa réalité terrain.
+      </div>
+    </section>
+
+    <section class="mini-grid" aria-label="Doctrine PAY">
+      <div class="mini">
+        <b>1 · Tu parles</b>
+        <span>DIGIY comprend le geste terrain.</span>
+      </div>
+      <div class="mini">
+        <b>2 · Tu vérifies</b>
+        <span>Montant, canal, libellé et module.</span>
+      </div>
+      <div class="mini">
+        <b>3 · Tu valides</b>
+        <span>PAY garde la trace propre.</span>
+      </div>
+    </section>
 
     <div class="small">
-      Si la page ne s’ouvre pas automatiquement, touche le bouton.
+      Rien de sensible ne reste dans l’adresse. Si une page demande le code, repasse par la porte sécurisée.
     </div>
   </main>
 
   <script>
     (() => {
       "use strict";
-
-      const TARGET = "./cockpit.html";
 
       const SENSITIVE_KEYS = [
         "phone",
@@ -199,7 +332,8 @@
         "keybox_location",
         "module",
         "return",
-        "from"
+        "from",
+        "v"
       ];
 
       function cleanVisibleUrl() {
@@ -220,38 +354,42 @@
         } catch (_) {}
       }
 
-      function cleanTarget() {
+      function cleanInternalHref(raw, fallback) {
         try {
-          const url = new URL(TARGET, window.location.href);
+          const url = new URL(raw || fallback || "./cockpit.html", window.location.href);
 
           SENSITIVE_KEYS.forEach((key) => {
             url.searchParams.delete(key);
           });
 
           if (url.origin !== window.location.origin) {
-            return "./cockpit.html";
+            return fallback || "./cockpit.html";
           }
 
           const file = url.pathname.split("/").pop() || "cockpit.html";
           return "./" + file + (url.search || "") + (url.hash || "");
         } catch (_) {
-          return "./cockpit.html";
+          return fallback || "./cockpit.html";
         }
       }
 
-      function goCockpit() {
-        const target = cleanTarget();
+      function protectLinks() {
+        const map = {
+          voiceLink: "./admin.html#payVoicePanel",
+          addLink: "./admin.html",
+          temperatureLink: "./cockpit.html",
+          settingsLink: "./brain-admin.html",
+          pinLink: "./pin.html"
+        };
 
-        const manual = document.getElementById("manualLink");
-        if (manual) manual.setAttribute("href", target);
-
-        window.setTimeout(() => {
-          window.location.replace(target);
-        }, 450);
+        Object.entries(map).forEach(([id, href]) => {
+          const el = document.getElementById(id);
+          if (el) el.setAttribute("href", cleanInternalHref(href, href));
+        });
       }
 
       cleanVisibleUrl();
-      goCockpit();
+      protectLinks();
     })();
   </script>
 </body>
