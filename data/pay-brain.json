@@ -272,6 +272,43 @@
         "secondary_display": "EUR",
         "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
       }
+      {
+  "department": "Dettes clients",
+  "subtitle": "Crédit vendeur · Argent à recevoir",
+  "fields": [
+    "Nom",
+    "Tel",
+    "Somme due",
+    "Date"
+  ],
+  "rule": "Ce montant est à recevoir. Il n’entre dans la caisse que quand le client paie.",
+  "count_as_cash": false,
+  "cash_entry_only_when_paid": true,
+  "statuses": [
+    {
+      "code": "open",
+      "label": "À recevoir"
+    },
+    {
+      "code": "partial",
+      "label": "Payé en partie"
+    },
+    {
+      "code": "late",
+      "label": "En retard"
+    },
+    {
+      "code": "settled",
+      "label": "Soldé"
+    }
+  ],
+  "voice_examples": [
+    "POS Fatou dette client 50000 date fin du mois tel 771234567",
+    "DRIVER Moussa doit 12000 course vendredi tel 776000000",
+    "MARKET Astou crédit vendeur 35000 date 30 mai tel 778000000"
+  ],
+  "updated_for": "pay-dettes-clients-20260515"
+}
     },
     {
       "code": "debt_received",
