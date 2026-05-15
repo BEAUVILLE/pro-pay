@@ -1,0 +1,1605 @@
+{
+  "currency": "XOF",
+  "safety_reserve_xof": 0,
+  "monthly_fixed_costs_xof": 0,
+  "credits": [],
+  "debts": [],
+  "projects": [],
+  "rules": {
+    "danger_debt_ratio_pct": 35,
+    "minimum_cash_after_commitments_xof": 50000,
+    "recommended_savings_pct": 15,
+    "verify_before_confirming": true,
+    "never_auto_post_real_signal": true,
+    "payment_money_path": "direct_to_professional",
+    "digiy_role": "proof_trace_trust_only",
+    "minimum_cash_after_commitments": {
+      "xof": 50000,
+      "eur": 76.22,
+      "xof_label": "50 000 FCFA",
+      "eur_label": "76,22 €"
+    }
+  },
+  "doctrine": {
+    "main": "Le pro clique plus qu’il n’écrit. DIGIY formule pour lui, le terrain valide avec sa vérité.",
+    "pay": "PAY ne touche pas l’argent. PAY organise la preuve, la trace et la confiance.",
+    "security": "Ce qui sert à payer peut être public si le pro l’a choisi. Ce qui sert à identifier, administrer ou sécuriser le compte ne doit jamais être exposé.",
+    "human_confirmation": "DIGIY prépare le geste. Le professionnel valide toujours.",
+    "pay_temperature": "PAY ne lit pas seulement le business. PAY lit aussi la maison, les dettes, les crédits, les emprunts, les imprévus et la réserve pour donner la température à l’instant T."
+  },
+  "real_signal": {
+    "enabled": true,
+    "public_label": "Dire ce qui se passe",
+    "public_helper": "Je parle ou j’écris. DIGIY range. Je valide.",
+    "doctrine": "Le téléphone capte le réel. PAY garde la mémoire. DIGIY éclaire. L’humain décide.",
+    "default_status": "draft",
+    "requires_human_confirmation": true,
+    "never_auto_post": true,
+    "input_modes": [
+      "voice",
+      "text"
+    ],
+    "fallback_if_voice_unavailable": "text",
+    "confirm_button_label": "✅ Confirmer et remplir la saisie",
+    "draft_button_label": "Préparer",
+    "micro_policy": {
+      "starts_only_on_click": true,
+      "visible_status_during_listening": "🎧 J’écoute…",
+      "auto_stop_after_one_phrase": true,
+      "fallback_text_always_available": true,
+      "privacy_text": "Le micro sert à capter une phrase volontaire. Rien n’est enregistré sans validation."
+    },
+    "recommended_button_label": "🎙️ Parler 1 phrase"
+  },
+  "statuses": [
+    {
+      "code": "draft",
+      "label": "Brouillon",
+      "public_text": "DIGIY a préparé. Le pro doit vérifier."
+    },
+    {
+      "code": "payment_to_verify",
+      "label": "Paiement à vérifier",
+      "public_text": "Le paiement est annoncé, mais pas encore confirmé."
+    },
+    {
+      "code": "payment_proof",
+      "label": "Preuve reçue",
+      "public_text": "Une preuve existe. Le pro vérifie le montant et le canal."
+    },
+    {
+      "code": "payment_confirmed",
+      "label": "Paiement confirmé",
+      "public_text": "Le pro a vérifié et confirmé."
+    },
+    {
+      "code": "client_relaunch",
+      "label": "Client à relancer",
+      "public_text": "Une relance propre est nécessaire."
+    },
+    {
+      "code": "posted",
+      "label": "Enregistré",
+      "public_text": "La trace est enregistrée dans PAY."
+    },
+    {
+      "code": "pending",
+      "label": "À prévoir",
+      "public_text": "Une facture, échéance ou pression arrive. Le pro doit la garder en vue."
+    }
+  ],
+  "quick_actions": [
+    {
+      "code": "income",
+      "label": "J’ai encaissé",
+      "emoji": "💰",
+      "short_help": "Argent reçu client, vente, course, service ou réservation.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_received",
+        "source_module": "PAY",
+        "label": "Encaissement client reçu",
+        "note_text": "Paiement client reçu. Vérifie le montant et le canal si besoin."
+      },
+      "confirmation_template": "J’ai compris : encaissement client de {amount_xof} FCFA par {channel}. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "proof",
+      "label": "Preuve reçue",
+      "emoji": "🧾",
+      "short_help": "Capture Wave, reçu, message client ou preuve à contrôler.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_proof",
+        "source_module": "PAY",
+        "label": "Preuve de paiement client reçue",
+        "note_text": "Le client a envoyé une preuve. Vérifie le montant avant confirmation."
+      },
+      "confirmation_template": "J’ai compris : preuve de paiement de {amount_xof} FCFA reçue par {channel}. Vérifier avant confirmation ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "confirm",
+      "label": "Paiement confirmé",
+      "emoji": "✅",
+      "short_help": "Montant vérifié, paiement propre, trace à garder.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_confirmed",
+        "source_module": "PAY",
+        "label": "Paiement confirmé",
+        "note_text": "Paiement vérifié et confirmé par le professionnel."
+      },
+      "confirmation_template": "J’ai compris : paiement confirmé de {amount_xof} FCFA. Enregistrer la trace ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "verify",
+      "label": "À vérifier",
+      "emoji": "⏳",
+      "short_help": "Paiement annoncé, mais montant ou canal pas encore sûr.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "sale",
+        "channel": "wave",
+        "category": "payment_to_verify",
+        "source_module": "PAY",
+        "label": "Paiement à vérifier",
+        "note_text": "Paiement annoncé. Vérifier le compte ou la preuve avant validation."
+      },
+      "confirmation_template": "J’ai compris : paiement annoncé de {amount_xof} FCFA. Il reste à vérifier.",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "relaunch",
+      "label": "Client à relancer",
+      "emoji": "📤",
+      "short_help": "Demander preuve, complément ou confirmation au client.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "other",
+        "channel": "other",
+        "category": "client_relaunch",
+        "source_module": "PAY",
+        "label": "Client à relancer",
+        "note_text": "Relancer le client pour confirmation, preuve ou règlement."
+      },
+      "confirmation_template": "J’ai compris : client à relancer. Ajouter une trace de suivi ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "expense",
+      "label": "J’ai payé une dépense",
+      "emoji": "📉",
+      "short_help": "Carburant, stock, livraison, réparation, charge terrain.",
+      "form_defaults": {
+        "direction": "out",
+        "scope": "pro",
+        "kind": "expense",
+        "channel": "cash",
+        "category": "business_expense",
+        "source_module": "PAY",
+        "label": "Dépense activité",
+        "note_text": "Dépense utile à l’activité. Précise carburant, stock, livraison ou autre."
+      },
+      "confirmation_template": "J’ai compris : dépense activité de {amount_xof} FCFA par {channel}. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "saving",
+      "label": "Je mets de côté",
+      "emoji": "🛟",
+      "short_help": "Réserve, sécurité, stock futur, famille ou projet.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "savings",
+        "kind": "saving",
+        "channel": "cash",
+        "category": "saving",
+        "source_module": "PAY",
+        "label": "Mise de côté",
+        "note_text": "Montant mis de côté pour protéger l’activité, le stock, la famille ou un projet."
+      },
+      "confirmation_template": "J’ai compris : {amount_xof} FCFA mis de côté. Valider la réserve ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "note",
+      "label": "Note rapide",
+      "emoji": "🗣️",
+      "short_help": "Trace terrain à ranger maintenant, même si tout n’est pas clair.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "pro",
+        "kind": "other",
+        "channel": "other",
+        "category": "quick_note",
+        "source_module": "PAY",
+        "label": "Note rapide PAY",
+        "note_text": "Note terrain à vérifier et ranger proprement."
+      },
+      "confirmation_template": "J’ai compris : note rapide PAY. Préparer la saisie ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "debt_received",
+      "label": "On m’a remboursé",
+      "emoji": "🤲",
+      "short_help": "Argent rendu par client, ami, famille ou partenaire.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "perso",
+        "kind": "other",
+        "channel": "cash",
+        "category": "debt_received",
+        "source_module": "PAY",
+        "label": "Remboursement reçu",
+        "note_text": "Quelqu’un m’a remboursé. Préciser le nom, la dette ou la raison si utile."
+      },
+      "confirmation_template": "J’ai compris : remboursement reçu de {amount_xof} FCFA par {channel}. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "home_expense",
+      "label": "Dépense maison",
+      "emoji": "🏠",
+      "short_help": "Famille, repas, école, santé, transport privé, vie quotidienne.",
+      "form_defaults": {
+        "direction": "out",
+        "scope": "perso",
+        "kind": "expense",
+        "channel": "cash",
+        "category": "home_expense",
+        "source_module": "PAY",
+        "label": "Dépense maison",
+        "note_text": "Dépense de vie privée : famille, repas, école, santé, transport ou maison."
+      },
+      "confirmation_template": "J’ai compris : dépense maison de {amount_xof} FCFA par {channel}. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "debt_paid",
+      "label": "J’ai remboursé",
+      "emoji": "🤝",
+      "short_help": "Dette, avance, tontine, fournisseur ou prêt rendu.",
+      "form_defaults": {
+        "direction": "out",
+        "scope": "perso",
+        "kind": "expense",
+        "channel": "cash",
+        "category": "debt_repayment",
+        "source_module": "PAY",
+        "label": "Dette remboursée",
+        "note_text": "Dette, avance, tontine, fournisseur ou prêt remboursé. Préciser à qui si utile."
+      },
+      "confirmation_template": "J’ai compris : dette remboursée de {amount_xof} FCFA par {channel}. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "credit_paid",
+      "label": "Crédit payé",
+      "emoji": "💳",
+      "short_help": "Échéance crédit, emprunt, banque, téléphone ou matériel.",
+      "form_defaults": {
+        "direction": "out",
+        "scope": "perso",
+        "kind": "expense",
+        "channel": "bank",
+        "category": "credit_repayment",
+        "source_module": "PAY",
+        "label": "Crédit ou emprunt remboursé",
+        "note_text": "Échéance crédit, emprunt, banque, téléphone ou matériel payée."
+      },
+      "confirmation_template": "J’ai compris : crédit ou emprunt remboursé de {amount_xof} FCFA. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "loan_received",
+      "label": "J’ai emprunté",
+      "emoji": "🏦",
+      "short_help": "Argent reçu aujourd’hui, mais à rembourser plus tard.",
+      "form_defaults": {
+        "direction": "in",
+        "scope": "perso",
+        "kind": "other",
+        "channel": "cash",
+        "category": "loan_received",
+        "source_module": "PAY",
+        "label": "Emprunt reçu",
+        "note_text": "Argent emprunté. À rembourser plus tard. Préciser à qui si utile."
+      },
+      "confirmation_template": "J’ai compris : emprunt reçu de {amount_xof} FCFA. Attention, ce n’est pas un gain libre. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "bill_due",
+      "label": "À payer bientôt",
+      "emoji": "📅",
+      "short_help": "Facture, échéance, loyer, fournisseur ou charge à prévoir.",
+      "form_defaults": {
+        "direction": "out",
+        "scope": "pro",
+        "kind": "expense",
+        "channel": "other",
+        "category": "bill_due",
+        "source_module": "PAY",
+        "label": "Facture ou échéance à payer",
+        "note_text": "Facture, loyer, fournisseur, charge ou échéance à prévoir. Préciser la date si utile."
+      },
+      "confirmation_template": "J’ai compris : facture ou échéance de {amount_xof} FCFA à prévoir. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    },
+    {
+      "code": "emergency",
+      "label": "Imprévu / urgence",
+      "emoji": "🚨",
+      "short_help": "Santé, famille, panne, réparation urgente ou dépense surprise.",
+      "form_defaults": {
+        "direction": "out",
+        "scope": "perso",
+        "kind": "expense",
+        "channel": "cash",
+        "category": "emergency",
+        "source_module": "PAY",
+        "label": "Imprévu ou urgence",
+        "note_text": "Dépense imprévue : santé, famille, panne, réparation urgente ou situation exceptionnelle."
+      },
+      "confirmation_template": "J’ai compris : imprévu de {amount_xof} FCFA. PAY l’intègre dans la température. Valider ?",
+      "amount_fields": {
+        "primary_input": "amount_xof",
+        "primary_currency": "XOF",
+        "secondary_display": "EUR",
+        "conversion_hint": "L’utilisateur saisit en FCFA ; DIGIY peut afficher l’équivalent euro."
+      }
+    }
+  ],
+  "intentions": [
+    {
+      "code": "income",
+      "label": "J’ai encaissé",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "default_status": "posted",
+      "examples": [
+        "J’ai encaissé 28000 cash course chauffeur",
+        "J’ai reçu 15000 Wave pour une vente",
+        "Course Saly AIBD 28000 en espèces",
+        "Client a payé 30000 pour la location"
+      ],
+      "required_fields": [
+        "amount_xof",
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : entrée de {amount_xof} FCFA, canal {channel}. Valider ?"
+    },
+    {
+      "code": "proof",
+      "label": "Preuve reçue",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "default_status": "payment_proof",
+      "examples": [
+        "Le client a envoyé une capture Wave de 15000",
+        "Preuve reçue pour réservation 30000",
+        "Capture paiement Astou 25000",
+        "Reçu envoyé par WhatsApp"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : preuve reçue pour {amount_xof} FCFA. Vérifier avant confirmation ?"
+    },
+    {
+      "code": "confirm",
+      "label": "Paiement confirmé",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "default_status": "payment_confirmed",
+      "examples": [
+        "Paiement confirmé 15000 Wave",
+        "J’ai vérifié, client a bien payé 30000",
+        "Montant reçu confirmé",
+        "Réservation payée et confirmée"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "confirmation_template": "J’ai compris : paiement confirmé de {amount_xof} FCFA. Enregistrer ?"
+    },
+    {
+      "code": "verify",
+      "label": "Paiement à vérifier",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "sale",
+      "default_status": "payment_to_verify",
+      "examples": [
+        "Client dit avoir payé 15000 Wave",
+        "Paiement annoncé mais pas encore vu",
+        "Montant à vérifier",
+        "Capture pas claire"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : paiement de {amount_xof} FCFA à vérifier."
+    },
+    {
+      "code": "relaunch",
+      "label": "Client à relancer",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "other",
+      "default_status": "client_relaunch",
+      "examples": [
+        "Relancer client pour preuve",
+        "Client doit envoyer capture",
+        "Demander confirmation du paiement",
+        "Rappeler client pour complément"
+      ],
+      "required_fields": [],
+      "confirmation_template": "J’ai compris : client à relancer. Ajouter une trace ?"
+    },
+    {
+      "code": "expense",
+      "label": "J’ai dépensé",
+      "direction": "out",
+      "default_scope": "pro",
+      "default_kind": "expense",
+      "default_status": "posted",
+      "examples": [
+        "J’ai dépensé 5000 carburant en espèces",
+        "J’ai payé 12000 fournisseur par Wave",
+        "Achat stock 35000 cash",
+        "Réparation véhicule 18000 espèces"
+      ],
+      "required_fields": [
+        "amount_xof",
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : sortie de {amount_xof} FCFA, canal {channel}. Valider ?"
+    },
+    {
+      "code": "saving",
+      "label": "Je mets de côté",
+      "direction": "in",
+      "default_scope": "savings",
+      "default_kind": "saving",
+      "default_status": "posted",
+      "examples": [
+        "Je mets 10000 de côté pour mon projet",
+        "Je réserve 25000 pour la sécurité",
+        "Je mets 50000 de côté pour acheter du stock",
+        "Réserve famille 20000 cash"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "confirmation_template": "J’ai compris : {amount_xof} FCFA mis de côté. Valider ?"
+    },
+    {
+      "code": "debt_repayment",
+      "label": "J’ai remboursé",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "debt_repayment",
+      "default_status": "posted",
+      "examples": [
+        "J’ai remboursé 20000 à Moussa en espèces",
+        "Dette fournisseur 50000 payée par Wave",
+        "J’ai donné 10000 pour rembourser la tontine",
+        "Moussa m’a remboursé 15000 cash"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "scope",
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : remboursement de dette de {amount_xof} FCFA. C’est pro ou perso ?"
+    },
+    {
+      "code": "bill_due",
+      "label": "À payer bientôt",
+      "direction": "out",
+      "default_scope": "pro",
+      "default_kind": "expense",
+      "default_status": "pending",
+      "examples": [
+        "Facture fournisseur 75000 à payer le 5 mai pro",
+        "Électricité 18000 à régler vendredi perso",
+        "Loyer boutique 120000 à payer le 30 pro",
+        "Internet 15000 à payer demain"
+      ],
+      "required_fields": [
+        "amount_xof",
+        "due_date"
+      ],
+      "needs_clarification_if_missing": [
+        "scope",
+        "due_date"
+      ],
+      "confirmation_template": "J’ai compris : facture ou échéance de {amount_xof} FCFA à prévoir. Valider ?"
+    },
+    {
+      "code": "emergency",
+      "label": "Imprévu / urgence",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "expense",
+      "default_status": "posted",
+      "examples": [
+        "J’ai dépensé 18000 pour médicaments perso",
+        "Hospitalisation 75000 à payer demain",
+        "J’ai donné 25000 pour urgence famille",
+        "Consultation enfant 12000 en espèces"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "confirmation_template": "J’ai compris : imprévu de {amount_xof} FCFA. PAY l’intègre dans la température. Valider ?"
+    },
+    {
+      "code": "debt_received",
+      "label": "On m’a remboursé",
+      "direction": "in",
+      "default_scope": "perso",
+      "default_kind": "other",
+      "default_status": "posted",
+      "examples": [
+        "Moussa m’a remboursé 15000 cash",
+        "Client m’a rendu 20000 Wave",
+        "On m’a remboursé 50000 pour l’avance",
+        "Remboursement famille 10000 espèces"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : remboursement reçu de {amount_xof} FCFA. Valider ?"
+    },
+    {
+      "code": "home_expense",
+      "label": "Dépense maison",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "expense",
+      "default_status": "posted",
+      "examples": [
+        "Dépense maison 8000 cash",
+        "École enfant 25000 Wave",
+        "Repas famille 12000 espèces",
+        "Santé famille 18000 cash"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : dépense maison de {amount_xof} FCFA. Valider ?"
+    },
+    {
+      "code": "debt_paid",
+      "label": "J’ai remboursé",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "expense",
+      "default_status": "posted",
+      "examples": [
+        "J’ai remboursé 20000 à Moussa en espèces",
+        "Dette fournisseur 50000 payée par Wave",
+        "J’ai donné 10000 pour rembourser la tontine",
+        "Avance remboursée 15000 cash"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "scope",
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : remboursement de dette de {amount_xof} FCFA. Valider ?"
+    },
+    {
+      "code": "credit_paid",
+      "label": "Crédit payé",
+      "direction": "out",
+      "default_scope": "perso",
+      "default_kind": "expense",
+      "default_status": "posted",
+      "examples": [
+        "Crédit téléphone payé 12000 Wave",
+        "Échéance banque 85000 payée",
+        "Remboursement emprunt 50000 cash",
+        "Crédit matériel 30000 payé"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : crédit ou emprunt remboursé de {amount_xof} FCFA. Valider ?"
+    },
+    {
+      "code": "loan_received",
+      "label": "J’ai emprunté",
+      "direction": "in",
+      "default_scope": "perso",
+      "default_kind": "other",
+      "default_status": "posted",
+      "examples": [
+        "J’ai emprunté 50000 à Moussa cash",
+        "Prêt reçu 100000 Wave",
+        "On m’a avancé 25000 pour la boutique",
+        "Emprunt famille 30000 espèces"
+      ],
+      "required_fields": [
+        "amount_xof"
+      ],
+      "needs_clarification_if_missing": [
+        "channel"
+      ],
+      "confirmation_template": "J’ai compris : emprunt reçu de {amount_xof} FCFA. À rembourser plus tard. Valider ?"
+    },
+    {
+      "code": "note",
+      "label": "Note rapide",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "other",
+      "default_status": "draft",
+      "examples": [
+        "Note rapide client à vérifier",
+        "À ranger plus tard vente Astou",
+        "Trace rapide sans détail",
+        "Rappel PAY à classer"
+      ],
+      "required_fields": [],
+      "needs_clarification_if_missing": [
+        "amount_xof",
+        "channel",
+        "scope"
+      ],
+      "confirmation_template": "J’ai compris : note rapide PAY. Je prépare un brouillon à vérifier ?"
+    }
+  ],
+  "channels": [
+    "wave",
+    "cash",
+    "orange_money",
+    "bank",
+    "other"
+  ],
+  "scopes": [
+    "pro",
+    "perso",
+    "savings"
+  ],
+  "source_modules": [
+    "PAY",
+    "DRIVER",
+    "COMMERCE",
+    "POS",
+    "LOC",
+    "MARKET",
+    "BUILD",
+    "RESA",
+    "EXPLORE",
+    "JOBS",
+    "QR_PRO",
+    "OTHER"
+  ],
+  "terrain_presets": {
+    "commerce": {
+      "label": "Petit commerce",
+      "safety_reserve_xof": 80000,
+      "monthly_fixed_costs_xof": 35000,
+      "rules": {
+        "danger_debt_ratio_pct": 35,
+        "minimum_cash_after_commitments_xof": 50000,
+        "recommended_savings_pct": 12,
+        "minimum_cash_after_commitments": {
+          "xof": 50000,
+          "eur": 76.22,
+          "xof_label": "50 000 FCFA",
+          "eur_label": "76,22 €"
+        }
+      },
+      "quick_categories": [
+        "payment_received",
+        "business_expense",
+        "stock",
+        "supplier",
+        "saving",
+        "home_expense",
+        "debt_repayment",
+        "credit_repayment",
+        "loan_received",
+        "bill_due",
+        "emergency",
+        "debt_received"
+      ],
+      "safety_reserve": {
+        "xof": 80000,
+        "eur": 121.96,
+        "xof_label": "80 000 FCFA",
+        "eur_label": "121,96 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 35000,
+        "eur": 53.36,
+        "xof_label": "35 000 FCFA",
+        "eur_label": "53,36 €"
+      }
+    },
+    "driver": {
+      "label": "Chauffeur",
+      "safety_reserve_xof": 60000,
+      "monthly_fixed_costs_xof": 45000,
+      "rules": {
+        "danger_debt_ratio_pct": 30,
+        "minimum_cash_after_commitments_xof": 40000,
+        "recommended_savings_pct": 10,
+        "minimum_cash_after_commitments": {
+          "xof": 40000,
+          "eur": 60.98,
+          "xof_label": "40 000 FCFA",
+          "eur_label": "60,98 €"
+        }
+      },
+      "quick_categories": [
+        "ride_income",
+        "fuel",
+        "repair",
+        "saving",
+        "home_expense",
+        "debt_repayment",
+        "credit_repayment",
+        "loan_received",
+        "bill_due",
+        "emergency",
+        "debt_received"
+      ],
+      "safety_reserve": {
+        "xof": 60000,
+        "eur": 91.47,
+        "xof_label": "60 000 FCFA",
+        "eur_label": "91,47 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 45000,
+        "eur": 68.6,
+        "xof_label": "45 000 FCFA",
+        "eur_label": "68,60 €"
+      }
+    },
+    "loc": {
+      "label": "Location",
+      "safety_reserve_xof": 150000,
+      "monthly_fixed_costs_xof": 60000,
+      "rules": {
+        "danger_debt_ratio_pct": 35,
+        "minimum_cash_after_commitments_xof": 100000,
+        "recommended_savings_pct": 18,
+        "minimum_cash_after_commitments": {
+          "xof": 100000,
+          "eur": 152.45,
+          "xof_label": "100 000 FCFA",
+          "eur_label": "152,45 €"
+        }
+      },
+      "quick_categories": [
+        "booking_payment",
+        "maintenance",
+        "cleaning",
+        "saving",
+        "home_expense",
+        "debt_repayment",
+        "credit_repayment",
+        "loan_received",
+        "bill_due",
+        "emergency",
+        "debt_received"
+      ],
+      "safety_reserve": {
+        "xof": 150000,
+        "eur": 228.67,
+        "xof_label": "150 000 FCFA",
+        "eur_label": "228,67 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 60000,
+        "eur": 91.47,
+        "xof_label": "60 000 FCFA",
+        "eur_label": "91,47 €"
+      }
+    },
+    "resto": {
+      "label": "Resto / service",
+      "safety_reserve_xof": 100000,
+      "monthly_fixed_costs_xof": 75000,
+      "rules": {
+        "danger_debt_ratio_pct": 35,
+        "minimum_cash_after_commitments_xof": 70000,
+        "recommended_savings_pct": 12,
+        "minimum_cash_after_commitments": {
+          "xof": 70000,
+          "eur": 106.71,
+          "xof_label": "70 000 FCFA",
+          "eur_label": "106,71 €"
+        }
+      },
+      "quick_categories": [
+        "daily_sales",
+        "stock",
+        "delivery",
+        "staff",
+        "saving",
+        "home_expense",
+        "debt_repayment",
+        "credit_repayment",
+        "loan_received",
+        "bill_due",
+        "emergency",
+        "debt_received"
+      ],
+      "safety_reserve": {
+        "xof": 100000,
+        "eur": 152.45,
+        "xof_label": "100 000 FCFA",
+        "eur_label": "152,45 €"
+      },
+      "monthly_fixed_costs": {
+        "xof": 75000,
+        "eur": 114.34,
+        "xof_label": "75 000 FCFA",
+        "eur_label": "114,34 €"
+      }
+    },
+    "prudence": {
+      "label": "Prudence",
+      "safety_reserve_xof": 100000,
+      "rules": {
+        "danger_debt_ratio_pct": 25,
+        "minimum_cash_after_commitments_xof": 80000,
+        "recommended_savings_pct": 20,
+        "minimum_cash_after_commitments": {
+          "xof": 80000,
+          "eur": 121.96,
+          "xof_label": "80 000 FCFA",
+          "eur_label": "121,96 €"
+        }
+      },
+      "quick_categories": [
+        "saving",
+        "debt_repayment",
+        "business_expense",
+        "home_expense",
+        "credit_repayment",
+        "loan_received",
+        "bill_due",
+        "emergency",
+        "debt_received"
+      ],
+      "safety_reserve": {
+        "xof": 100000,
+        "eur": 152.45,
+        "xof_label": "100 000 FCFA",
+        "eur_label": "152,45 €"
+      }
+    }
+  },
+  "analysis_rules": {
+    "objective_tracking": {
+      "enabled": true,
+      "message_if_late": "Tu es en dessous du rythme prévu. On peut compenser doucement ou ajuster l’objectif.",
+      "message_if_on_track": "Tu avances dans le bon sens. Garde le rythme.",
+      "message_if_ahead": "Tu es en avance. Protège une partie avant de dépenser."
+    },
+    "cash_visibility": {
+      "enabled": true,
+      "principle": "Le cash ne doit pas disparaître de la journée.",
+      "message": "Les espèces notées rendent le net plus juste."
+    },
+    "future_commitments": {
+      "enabled": true,
+      "include_bill_due": true,
+      "include_debts": true,
+      "message": "Ton solde visible doit être lu avec les factures et dettes à venir."
+    },
+    "payment_proof": {
+      "enabled": true,
+      "principle": "Une preuve reçue n’est pas encore un paiement confirmé.",
+      "message": "Vérifie le montant et le canal avant de confirmer."
+    },
+    "client_relaunch": {
+      "enabled": true,
+      "message": "Relance proprement : demande la preuve, le complément ou la confirmation."
+    },
+    "emergency_adjustment": {
+      "enabled": true,
+      "message": "Cette urgence peut modifier ton rythme. DIGIY l’intègre sans jugement."
+    },
+    "terrain_temperature": {
+      "enabled": true,
+      "include_home_expense": true,
+      "include_debt_received": true,
+      "include_debt_paid": true,
+      "include_credit_paid": true,
+      "include_loan_received": true,
+      "include_bill_due": true,
+      "include_emergency": true,
+      "message": "La température PAY lit la vraie pression : maison, dettes, crédits, emprunts, imprévus et réserve."
+    }
+  },
+  "audio_guidance": {
+    "enabled": true,
+    "intro": "Bienvenue dans MON ARGENT by DIGIY. Ici, PAY ne touche pas l’argent. Le client paie directement le professionnel. PAY aide à garder la preuve, la trace et la confiance.",
+    "admin": "Choisis le geste. DIGIY remplit les mots. Toi, tu ajustes le montant et tu valides.",
+    "cockpit": "Le chef de passe lit derrière et remonte seulement ce qui mérite ton action.",
+    "brain_admin": "Choisis ton terrain. DIGIY prépare les réglages. Le professionnel ajuste avec sa vérité.",
+    "currency": "Les montants du terrain restent en FCFA. DIGIY peut afficher l’équivalent en euro pour comprendre vite, sans mélanger les caisses.",
+    "temperature": "La température terrain lit ce qui entre, ce qui sort, ce qui reste, mais aussi la maison, les dettes, les crédits, les emprunts et les imprévus. PAY éclaire, l’humain décide."
+  },
+  "currency_display": {
+    "primary": {
+      "code": "XOF",
+      "label": "FCFA",
+      "symbol": "FCFA"
+    },
+    "secondary": {
+      "code": "EUR",
+      "label": "Euro",
+      "symbol": "€"
+    },
+    "dual_display_enabled": true,
+    "display_order": [
+      "XOF",
+      "EUR"
+    ],
+    "doctrine": "Le terrain travaille en FCFA. L’euro sert à lire, comparer ou préparer la France/Europe sans mélanger la caisse."
+  },
+  "exchange_rates": {
+    "base": "EUR",
+    "target": "XOF",
+    "eur_to_xof": 655.957,
+    "xof_to_eur": 0.00152449,
+    "source": "BCEAO",
+    "mode": "reference_rate",
+    "note": "Taux de lecture pour affichage double. Les opérations terrain restent en XOF sauf choix explicite du professionnel."
+  },
+  "safety_reserve": {
+    "xof": 0,
+    "eur": 0.0,
+    "xof_label": "0 FCFA",
+    "eur_label": "0,00 €"
+  },
+  "monthly_fixed_costs": {
+    "xof": 0,
+    "eur": 0.0,
+    "xof_label": "0 FCFA",
+    "eur_label": "0,00 €"
+  },
+  "dual_currency_examples": {
+    "10000_xof": {
+      "xof": 10000,
+      "eur": 15.24,
+      "xof_label": "10 000 FCFA",
+      "eur_label": "15,24 €"
+    },
+    "50000_xof": {
+      "xof": 50000,
+      "eur": 76.22,
+      "xof_label": "50 000 FCFA",
+      "eur_label": "76,22 €"
+    },
+    "100000_xof": {
+      "xof": 100000,
+      "eur": 152.45,
+      "xof_label": "100 000 FCFA",
+      "eur_label": "152,45 €"
+    },
+    "150000_xof": {
+      "xof": 150000,
+      "eur": 228.67,
+      "xof_label": "150 000 FCFA",
+      "eur_label": "228,67 €"
+    }
+  },
+  "updated_for": "pay-cockpit-voice-real-signal-grand-terrain-20260515",
+  "version": "pay-brain-grand-terrain-20260515",
+  "channels_catalog": [
+    {
+      "code": "wave",
+      "label": "Wave",
+      "public": true
+    },
+    {
+      "code": "cash",
+      "label": "Cash",
+      "public": true
+    },
+    {
+      "code": "orange_money",
+      "label": "Orange Money",
+      "public": true
+    },
+    {
+      "code": "bank",
+      "label": "Banque",
+      "public": true,
+      "aliases": [
+        "bank_transfer",
+        "virement"
+      ]
+    },
+    {
+      "code": "other",
+      "label": "Autre",
+      "public": true,
+      "aliases": [
+        "card",
+        "unknown",
+        "manual"
+      ]
+    }
+  ],
+  "scopes_catalog": [
+    {
+      "code": "pro",
+      "label": "Activité"
+    },
+    {
+      "code": "perso",
+      "label": "Perso",
+      "aliases": [
+        "personal"
+      ]
+    },
+    {
+      "code": "savings",
+      "label": "Épargne",
+      "aliases": [
+        "saving",
+        "epargne",
+        "épargne"
+      ]
+    }
+  ],
+  "compatibility": {
+    "canonical_intention_codes": [
+      "income",
+      "proof",
+      "confirm",
+      "verify",
+      "relaunch",
+      "expense",
+      "saving",
+      "note",
+      "debt_received",
+      "home_expense",
+      "debt_paid",
+      "credit_paid",
+      "loan_received",
+      "bill_due",
+      "emergency"
+    ],
+    "legacy_intention_aliases": {
+      "debt_repayment": "debt_paid",
+      "business_expense": "expense",
+      "payment_received": "income",
+      "payment_proof": "proof",
+      "payment_to_verify": "verify",
+      "payment_confirmed": "confirm",
+      "client_relaunch": "relaunch",
+      "quick_note": "note"
+    },
+    "cockpit_note": "Le cockpit actuel lit channels et scopes comme des tableaux de codes simples. Les catalogues détaillés sont gardés dans channels_catalog et scopes_catalog."
+  },
+  "language_engine": {
+    "enabled": true,
+    "mode": "rules_first_human_validation",
+    "doctrine": "Le pro parle simple. DIGIY propose une trace. Le professionnel valide toujours.",
+    "amount_detection": {
+      "currency_default": "XOF",
+      "accepted_formats": [
+        "28000",
+        "28 000",
+        "28.000",
+        "28k",
+        "28 mille",
+        "vingt huit mille"
+      ],
+      "currency_words": [
+        "fcfa",
+        "franc",
+        "francs",
+        "cfa",
+        "xof",
+        "euro",
+        "euros"
+      ],
+      "hint": "Si aucun montant n’est trouvé, rester en brouillon et demander le montant."
+    },
+    "channel_aliases": {
+      "wave": [
+        "wave",
+        "wafe",
+        "way",
+        "ouave",
+        "application wave",
+        "capture wave"
+      ],
+      "cash": [
+        "cash",
+        "espèces",
+        "espece",
+        "liquide",
+        "billet",
+        "main à main",
+        "en main"
+      ],
+      "orange_money": [
+        "orange money",
+        "om",
+        "orange",
+        "orange-money"
+      ],
+      "bank": [
+        "banque",
+        "virement",
+        "bank",
+        "compte bancaire",
+        "transfert bancaire"
+      ],
+      "other": [
+        "carte",
+        "card",
+        "autre",
+        "inconnu",
+        "pas sûr",
+        "à vérifier"
+      ]
+    },
+    "scope_aliases": {
+      "pro": [
+        "pro",
+        "activité",
+        "business",
+        "boutique",
+        "travail",
+        "client",
+        "chantier",
+        "course",
+        "livraison"
+      ],
+      "perso": [
+        "perso",
+        "maison",
+        "famille",
+        "enfant",
+        "école",
+        "santé",
+        "privé"
+      ],
+      "savings": [
+        "épargne",
+        "epargne",
+        "réserve",
+        "reserve",
+        "mettre de côté",
+        "sécurité",
+        "projet"
+      ]
+    },
+    "module_aliases": {
+      "DRIVER": [
+        "chauffeur",
+        "course",
+        "taxi",
+        "jakarta",
+        "trajet",
+        "aibd",
+        "saly",
+        "transport"
+      ],
+      "COMMERCE": [
+        "boutique",
+        "commerce",
+        "client",
+        "produit",
+        "vente",
+        "marchandise"
+      ],
+      "POS": [
+        "caisse",
+        "ticket",
+        "stock",
+        "article",
+        "panier"
+      ],
+      "MARKET": [
+        "market",
+        "annonce",
+        "vente en ligne",
+        "astou",
+        "fiche boutique"
+      ],
+      "LOC": [
+        "location",
+        "villa",
+        "chambre",
+        "réservation logement",
+        "locataire",
+        "nuitée"
+      ],
+      "RESA": [
+        "réservation",
+        "table",
+        "restaurant",
+        "resto",
+        "client réservé"
+      ],
+      "BUILD": [
+        "chantier",
+        "maçon",
+        "plombier",
+        "électricien",
+        "ouvrier",
+        "matériel"
+      ],
+      "EXPLORE": [
+        "lieu",
+        "visite",
+        "guide",
+        "spot",
+        "explore"
+      ],
+      "JOBS": [
+        "mission",
+        "job",
+        "travail",
+        "embauche",
+        "candidat"
+      ],
+      "PAY": [
+        "pay",
+        "mon argent",
+        "trace",
+        "preuve",
+        "paiement"
+      ]
+    },
+    "intention_aliases": {
+      "income": [
+        "j’ai encaissé",
+        "encaissé",
+        "j’ai reçu",
+        "reçu",
+        "client a payé",
+        "vente",
+        "course payée",
+        "paiement reçu",
+        "argent rentré",
+        "il a payé",
+        "elle a payé"
+      ],
+      "proof": [
+        "preuve reçue",
+        "capture reçue",
+        "capture wave",
+        "reçu envoyé",
+        "screenshot",
+        "photo paiement",
+        "message de paiement",
+        "preuve whatsapp"
+      ],
+      "confirm": [
+        "paiement confirmé",
+        "j’ai vérifié",
+        "bien reçu",
+        "c’est rentré",
+        "montant confirmé",
+        "payé confirmé",
+        "compte vérifié"
+      ],
+      "verify": [
+        "à vérifier",
+        "client dit avoir payé",
+        "pas encore vu",
+        "capture pas claire",
+        "montant pas sûr",
+        "paiement annoncé",
+        "je dois vérifier"
+      ],
+      "relaunch": [
+        "relancer",
+        "rappeler client",
+        "demander preuve",
+        "demander confirmation",
+        "client à rappeler",
+        "complément à demander"
+      ],
+      "expense": [
+        "j’ai payé",
+        "j’ai dépensé",
+        "dépense",
+        "achat",
+        "carburant",
+        "essence",
+        "gasoil",
+        "stock",
+        "fournisseur",
+        "livraison",
+        "réparation",
+        "emballage",
+        "sachet",
+        "internet",
+        "facture payée",
+        "matériel"
+      ],
+      "saving": [
+        "je mets de côté",
+        "mettre de côté",
+        "réserve",
+        "épargne",
+        "sécurité",
+        "stock futur",
+        "projet",
+        "j’ai gardé"
+      ],
+      "note": [
+        "note rapide",
+        "à ranger",
+        "trace",
+        "je note",
+        "mémo",
+        "rappel",
+        "à classer"
+      ],
+      "debt_received": [
+        "on m’a remboursé",
+        "m’a remboursé",
+        "remboursement reçu",
+        "on m’a rendu",
+        "argent rendu",
+        "avance rendue"
+      ],
+      "home_expense": [
+        "maison",
+        "famille",
+        "repas",
+        "école",
+        "santé",
+        "médicament",
+        "pharmacie",
+        "enfant",
+        "transport privé",
+        "dépense maison"
+      ],
+      "debt_paid": [
+        "j’ai remboursé",
+        "dette payée",
+        "avance remboursée",
+        "tontine",
+        "j’ai rendu",
+        "fournisseur remboursé"
+      ],
+      "credit_paid": [
+        "crédit payé",
+        "échéance",
+        "emprunt remboursé",
+        "banque payée",
+        "crédit téléphone",
+        "prêt remboursé",
+        "mensualité"
+      ],
+      "loan_received": [
+        "j’ai emprunté",
+        "prêt reçu",
+        "on m’a prêté",
+        "on m’a avancé",
+        "avance reçue",
+        "emprunt famille"
+      ],
+      "bill_due": [
+        "à payer bientôt",
+        "à régler",
+        "facture à venir",
+        "loyer à payer",
+        "échéance arrive",
+        "fournisseur à payer",
+        "demain à payer",
+        "vendredi à payer"
+      ],
+      "emergency": [
+        "urgence",
+        "imprévu",
+        "panne",
+        "hospitalisation",
+        "réparation urgente",
+        "dépense surprise",
+        "problème famille",
+        "santé urgence"
+      ]
+    },
+    "ambiguity_rules": [
+      {
+        "case": "payer",
+        "rule": "Si la phrase dit 'client a payé' ou 'on m’a payé', classer income. Si elle dit 'j’ai payé', classer expense sauf présence claire de dette/crédit/maison."
+      },
+      {
+        "case": "rembourser",
+        "rule": "Si la phrase dit 'on m’a remboursé' ou 'Moussa m’a remboursé', classer debt_received. Si elle dit 'j’ai remboursé', classer debt_paid."
+      },
+      {
+        "case": "emprunt",
+        "rule": "Si argent reçu mais à rendre plus tard, classer loan_received, pas income libre."
+      },
+      {
+        "case": "preuve",
+        "rule": "Une preuve ou capture n’est jamais payment_confirmed sans validation humaine."
+      },
+      {
+        "case": "montant_manquant",
+        "rule": "Si aucun montant fiable n’est capté, rester en note brouillon et demander le montant."
+      }
+    ],
+    "clarification_questions": {
+      "amount_xof": "Quel montant en FCFA ?",
+      "channel": "C’était par Wave, cash, Orange Money, banque ou autre ?",
+      "scope": "C’est pour l’activité ou la maison ?",
+      "due_date": "C’est à payer quand ?",
+      "client_or_person": "C’est lié à quel client ou quelle personne ?"
+    },
+    "confidence_policy": {
+      "high": "Préparer le brouillon avec montant, canal et catégorie.",
+      "medium": "Préparer le brouillon mais afficher les champs à vérifier.",
+      "low": "Classer en note rapide et demander une précision.",
+      "never_skip_human_confirmation": true
+    },
+    "examples_grand_terrain": [
+      {
+        "phrase": "J’ai encaissé 28000 cash course chauffeur Saly AIBD",
+        "intention": "income",
+        "amount_xof": 28000,
+        "channel": "cash",
+        "source_module": "DRIVER",
+        "scope": "pro"
+      },
+      {
+        "phrase": "Le client a envoyé capture Wave 15000 pour réservation",
+        "intention": "proof",
+        "amount_xof": 15000,
+        "channel": "wave",
+        "source_module": "RESA",
+        "scope": "pro",
+        "status": "payment_proof"
+      },
+      {
+        "phrase": "J’ai payé 5000 carburant cash",
+        "intention": "expense",
+        "amount_xof": 5000,
+        "channel": "cash",
+        "source_module": "DRIVER",
+        "scope": "pro"
+      },
+      {
+        "phrase": "Moussa m’a remboursé 15000 cash",
+        "intention": "debt_received",
+        "amount_xof": 15000,
+        "channel": "cash",
+        "scope": "perso"
+      },
+      {
+        "phrase": "Loyer boutique 120000 à payer le 30",
+        "intention": "bill_due",
+        "amount_xof": 120000,
+        "scope": "pro",
+        "status": "pending"
+      },
+      {
+        "phrase": "Hospitalisation enfant 75000 à payer demain",
+        "intention": "emergency",
+        "amount_xof": 75000,
+        "scope": "perso"
+      }
+    ]
+  }
+}
