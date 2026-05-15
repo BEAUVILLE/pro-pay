@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT — Ajouter · Actions rapides PAY</title>
+  <meta name="digiy-build" content="pay-admin-20260515-voice-terrain" />
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
@@ -1196,6 +1197,179 @@
       }
     }
 
+    /* =========================================================
+       DIGIY PAY — VOIX TERRAIN
+       Le pro parle, DIGIY prépare, le doigt valide.
+       ========================================================= */
+    .voice-pay-panel{
+      margin-bottom:16px;
+      padding:16px;
+      border-radius:26px;
+      border:2px solid rgba(22,101,52,.25);
+      background:
+        radial-gradient(circle at right top,rgba(34,197,94,.14),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      color:#1f2a1f;
+      box-shadow:0 14px 34px rgba(77,52,22,.13);
+      display:grid;
+      gap:14px;
+    }
+
+    .voice-pay-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .voice-pay-title{
+      font-size:15px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#14532d;
+    }
+
+    .voice-pay-help{
+      margin-top:5px;
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:950;
+      max-width:72ch;
+    }
+
+    .voice-pay-grid{
+      display:grid;
+      grid-template-columns:1fr .9fr;
+      gap:12px;
+      align-items:start;
+    }
+
+    .voice-pay-input{
+      width:100%;
+      min-height:120px;
+      resize:vertical;
+      border-radius:20px;
+      border:2px solid rgba(83,58,26,.22);
+      background:rgba(255,255,255,.76);
+      color:#1f2a1f;
+      padding:14px;
+      font-size:18px;
+      line-height:1.55;
+      font-weight:950;
+      outline:none;
+    }
+
+    .voice-pay-input::placeholder{
+      color:rgba(31,42,31,.52);
+      font-weight:900;
+    }
+
+    .voice-pay-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .voice-btn{
+      min-height:50px;
+      border-radius:999px;
+      border:1px solid rgba(83,58,26,.22);
+      background:rgba(255,255,255,.68);
+      color:#1f2a1f;
+      padding:11px 14px;
+      font-size:14px;
+      font-weight:1000;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .voice-btn.primary{
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      border-color:rgba(121,83,12,.28);
+    }
+
+    .voice-btn.confirm{
+      background:linear-gradient(135deg,#22c55e,#bbf7d0);
+      border-color:rgba(22,101,52,.28);
+    }
+
+    .voice-btn.danger{
+      background:rgba(254,226,226,.90);
+      border-color:rgba(159,18,57,.22);
+      color:#9f1239;
+    }
+
+    .voice-btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .voice-draft{
+      min-height:120px;
+      border-radius:20px;
+      border:2px solid rgba(83,58,26,.18);
+      background:rgba(255,255,255,.62);
+      padding:14px;
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:950;
+      display:grid;
+      gap:8px;
+      align-content:start;
+    }
+
+    .voice-draft strong{
+      color:#241a0d;
+      font-weight:1000;
+    }
+
+    .voice-draft .ok{
+      color:#14532d;
+      font-weight:1000;
+    }
+
+    .voice-draft .warn{
+      color:#6b4e09;
+      font-weight:1000;
+    }
+
+    .voice-examples{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .voice-example{
+      border:1px solid rgba(83,58,26,.22);
+      border-radius:999px;
+      background:rgba(255,255,255,.66);
+      color:#1f2a1f;
+      padding:8px 11px;
+      font-size:12px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    .voice-example:hover{
+      background:rgba(250,204,21,.24);
+    }
+
+    @media(max-width:820px){
+      .voice-pay-grid{
+        grid-template-columns:1fr;
+      }
+      .voice-pay-input{
+        min-height:110px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1320,7 +1494,51 @@
 
 
           
-          <section class="quick-presets" id="payQuickPresets" aria-label="Actions rapides PAY">
+          
+          <section class="voice-pay-panel" id="payVoicePanel" aria-label="PAY agit à la voix">
+            <div class="voice-pay-head">
+              <div>
+                <div class="voice-pay-title">🎙️ PAY agit à la voix</div>
+                <div class="voice-pay-help">
+                  Parle comme au terrain. DIGIY prépare la ligne, mais n’enregistre jamais seul.
+                  Tu valides toujours avec le doigt.
+                </div>
+              </div>
+            </div>
+
+            <div class="voice-pay-grid">
+              <div>
+                <textarea
+                  class="voice-pay-input"
+                  id="voicePayInput"
+                  placeholder="Exemple : J’ai encaissé 15000 Wave pour POS"
+                ></textarea>
+
+                <div class="voice-pay-actions" style="margin-top:10px;">
+                  <button class="voice-btn primary" id="btnVoiceStart" type="button">🎙️ Parler</button>
+                  <button class="voice-btn" id="btnVoiceStop" type="button">⏹ Stop</button>
+                  <button class="voice-btn primary" id="btnVoicePrepare" type="button">⚡ Préparer</button>
+                  <button class="voice-btn confirm" id="btnVoiceFill" type="button" disabled>✅ Remplir la saisie</button>
+                  <button class="voice-btn danger" id="btnVoiceClear" type="button">Effacer</button>
+                </div>
+              </div>
+
+              <div class="voice-draft" id="voicePayDraft">
+                <strong>Doctrine PAY</strong>
+                <span>La voix prépare. Le clic confirme. PAY enregistre seulement après validation.</span>
+              </div>
+            </div>
+
+            <div class="voice-examples" aria-label="Exemples voix PAY">
+              <button class="voice-example" type="button" data-voice-example="J’ai encaissé 15000 Wave pour POS">POS 15000 Wave</button>
+              <button class="voice-example" type="button" data-voice-example="Dépense maison 8000 cash">Dépense maison</button>
+              <button class="voice-example" type="button" data-voice-example="J’ai remboursé 20000 à Moussa cash">Dette remboursée</button>
+              <button class="voice-example" type="button" data-voice-example="J’ai emprunté 50000 Wave">Emprunt reçu</button>
+              <button class="voice-example" type="button" data-voice-example="Course chauffeur 28000 cash">Course chauffeur</button>
+            </div>
+          </section>
+
+<section class="quick-presets" id="payQuickPresets" aria-label="Actions rapides PAY">
             <div class="quick-presets-head">
               <div>
                 <div class="quick-presets-title">⚡ Actions rapides PAY</div>
@@ -2392,6 +2610,335 @@
     }
 
 
+
+    /* =========================================================
+       PAY VOICE — Le pro parle, DIGIY prépare, le doigt valide.
+       ========================================================= */
+    let VOICE_LAST_DRAFT = null;
+    let VOICE_RECOGNITION = null;
+
+    function stripAccents(value){
+      try{
+        return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      }catch(_){
+        return String(value || "");
+      }
+    }
+
+    function normVoiceText(value){
+      return stripAccents(value)
+        .toLowerCase()
+        .replace(/[’']/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function extractVoiceAmount(text){
+      const raw = String(text || "").replace(/\u202f/g, " ");
+      const matches = raw.match(/\d[\d\s.,]*/g) || [];
+      for(const m of matches){
+        const cleaned = String(m).replace(/[^\d]/g, "");
+        const n = Number(cleaned);
+        if(Number.isFinite(n) && n > 0) return Math.round(n);
+      }
+
+      const t = normVoiceText(text);
+      const small = {
+        "mille": 1000,
+        "deux mille": 2000,
+        "trois mille": 3000,
+        "quatre mille": 4000,
+        "cinq mille": 5000,
+        "six mille": 6000,
+        "sept mille": 7000,
+        "huit mille": 8000,
+        "neuf mille": 9000,
+        "dix mille": 10000,
+        "quinze mille": 15000,
+        "vingt mille": 20000,
+        "vingt cinq mille": 25000,
+        "trente mille": 30000,
+        "cinquante mille": 50000,
+        "cent mille": 100000
+      };
+
+      for(const [words, amount] of Object.entries(small)){
+        if(t.includes(words)) return amount;
+      }
+
+      return 0;
+    }
+
+    function detectVoiceChannel(t){
+      if(/\bwave\b/.test(t)) return "wave";
+      if(t.includes("orange money") || t.includes("orange") || t.includes("om ")) return "orange_money";
+      if(t.includes("banque") || t.includes("virement") || t.includes("bank")) return "bank";
+      if(t.includes("cash") || t.includes("espece") || t.includes("especes") || t.includes("liquide")) return "cash";
+      return "other";
+    }
+
+    function detectVoiceModule(t){
+      const checks = [
+        ["POS", ["pos", "caisse", "ticket", "addition", "stock", "boutique caisse"]],
+        ["DRIVER", ["driver", "chauffeur", "course", "taxi", "transport", "vehicule"]],
+        ["MARKET", ["market", "marche", "vente market", "annonce", "boutique"]],
+        ["LOC", ["loc", "location", "logement", "nuit", "villa", "appartement"]],
+        ["RESA", ["resa", "reservation", "reserve", "table", "resto", "restaurant"]],
+        ["BUILD", ["build", "chantier", "macon", "plombier", "electricien", "travaux", "artisan"]],
+        ["EXPLORE", ["explore", "lieu", "circuit", "visite", "decouverte", "tour"]],
+        ["JOBS", ["jobs", "job", "mission", "travail", "service"]],
+        ["PAY", ["pay", "mon argent", "argent"]]
+      ];
+
+      for(const [module, words] of checks){
+        if(words.some(w => t.includes(w))) return module;
+      }
+
+      return "PAY";
+    }
+
+    function detectVoicePreset(t){
+      if(t.includes("on m a rembourse") || t.includes("m a rembourse") || t.includes("remboursement recu")) return "debt_received";
+      if(t.includes("j ai rembourse") || t.includes("dette rembourse") || t.includes("tontine")) return "debt_paid";
+      if(t.includes("j ai emprunte") || t.includes("emprunt recu") || t.includes("pret recu") || t.includes("avance recu")) return "loan_received";
+      if(t.includes("credit paye") || t.includes("echeance") || t.includes("emprunt rembourse")) return "credit_paid";
+      if(t.includes("a payer") || t.includes("facture") || t.includes("loyer") || t.includes("fournisseur a payer")) return "bill_due";
+      if(t.includes("urgence") || t.includes("imprevu") || t.includes("panne") || t.includes("hopital") || t.includes("medicament")) return "emergency";
+      if(t.includes("maison") || t.includes("famille") || t.includes("ecole") || t.includes("repas") || t.includes("sante")) return "home_expense";
+      if(t.includes("mis de cote") || t.includes("mets de cote") || t.includes("reserve") || t.includes("epargne")) return "saving";
+      if(t.includes("relancer") || t.includes("rappeler client")) return "relaunch";
+      if(t.includes("preuve") || t.includes("capture") || t.includes("recu")) return "proof";
+      if(t.includes("confirme") || t.includes("confirmer")) return "confirm";
+      if(t.includes("verifier") || t.includes("a verifier") || t.includes("annonce")) return "verify";
+      if(t.includes("depense") || t.includes("paye") || t.includes("achat") || t.includes("carburant") || t.includes("livraison")) return "expense";
+      if(t.includes("encaisse") || t.includes("recu") || t.includes("vente") || t.includes("course") || t.includes("client a paye")) return "income";
+      return "note";
+    }
+
+    function parseVoicePay(text){
+      const original = String(text || "").trim();
+      const t = normVoiceText(original);
+      const presetCode = detectVoicePreset(t);
+      const preset = PAY_QUICK_PRESETS[presetCode] || PAY_QUICK_PRESETS.note;
+      const amount = extractVoiceAmount(original);
+      const channel = detectVoiceChannel(t);
+      const module = detectVoiceModule(t);
+
+      const noteParts = [];
+      if(original) noteParts.push("Voix terrain : " + original);
+      if(!amount) noteParts.push("Montant à compléter.");
+      if(channel === "other") noteParts.push("Canal à vérifier.");
+
+      return {
+        ok: !!original,
+        original,
+        presetCode,
+        preset,
+        amount,
+        channel,
+        module,
+        label: preset.label,
+        note: noteParts.join(" "),
+        confidence: [
+          amount ? "montant" : "",
+          channel !== "other" ? "canal" : "",
+          module ? "module" : "",
+          presetCode ? "geste" : ""
+        ].filter(Boolean).length
+      };
+    }
+
+    function renderVoiceDraft(draft){
+      const box = $("voicePayDraft");
+      if(!box) return;
+
+      if(!draft || !draft.ok){
+        box.innerHTML = `<strong>Je n’ai rien à préparer.</strong><span>Parle ou écris une phrase simple : “J’ai encaissé 15000 Wave pour POS”.</span>`;
+        return;
+      }
+
+      const amountTxt = draft.amount ? money(draft.amount) : "à compléter";
+      const channelTxt = draft.channel || "other";
+      const warn = !draft.amount ? `<div class="warn">⚠️ Montant non détecté : tu le complèteras avant validation.</div>` : "";
+      const channelWarn = draft.channel === "other" ? `<div class="warn">⚠️ Canal non sûr : vérifie Wave, cash, Orange Money ou banque.</div>` : "";
+
+      box.innerHTML = `
+        <strong>J’ai compris :</strong>
+        <div>Geste : <span class="ok">${esc(draft.label)}</span></div>
+        <div>Montant : <span class="ok">${esc(amountTxt)}</span></div>
+        <div>Canal : <span class="ok">${esc(channelTxt)}</span></div>
+        <div>Module : <span class="ok">${esc(draft.module)}</span></div>
+        ${warn}
+        ${channelWarn}
+        <div>Phrase : ${esc(draft.original)}</div>
+      `;
+    }
+
+    function prepareVoicePay(){
+      const input = $("voicePayInput");
+      const text = input ? input.value : "";
+      const draft = parseVoicePay(text);
+
+      VOICE_LAST_DRAFT = draft;
+      renderVoiceDraft(draft);
+
+      const btn = $("btnVoiceFill");
+      if(btn) btn.disabled = !draft.ok;
+
+      if(draft.ok){
+        toast("🎙️ Mouvement préparé par la voix");
+      }else{
+        toast("Parle ou écris d’abord une phrase PAY");
+      }
+
+      return draft;
+    }
+
+    function fillVoicePayDraft(){
+      const draft = VOICE_LAST_DRAFT || prepareVoicePay();
+      if(!draft || !draft.ok) return;
+
+      applyQuickPreset(draft.presetCode);
+
+      if(draft.amount){
+        setFieldValue("amount", String(draft.amount));
+      }
+
+      setFieldValue("channel", draft.channel || draft.preset.channel || "other");
+      setFieldValue("sourceModule", draft.module || draft.preset.sourceModule || "PAY");
+      setFieldValue("labelText", draft.label || draft.preset.label);
+      setFieldValue("noteText", draft.note || draft.preset.note || "");
+      setFieldValue("movementDate", todayStr());
+
+      syncKindByScope();
+
+      const preview = $("quickPresetPreview");
+      if(preview){
+        preview.style.display = "block";
+        preview.innerHTML =
+          `<strong>${esc(draft.label)}</strong><br>` +
+          `Préparé à la voix : ${esc(draft.original)}<br>` +
+          `<span>Le pro doit vérifier puis cliquer sur Enregistrer.</span>`;
+      }
+
+      toast("✅ Saisie remplie. Vérifie puis enregistre.");
+      const saveBtn = $("btnSave");
+      if(saveBtn){
+        try{ saveBtn.scrollIntoView({ behavior:"smooth", block:"center" }); }catch(_){}
+      }
+    }
+
+    function getSpeechRecognition(){
+      return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+    }
+
+    function startVoiceRecognition(){
+      const Rec = getSpeechRecognition();
+      const input = $("voicePayInput");
+
+      if(!Rec){
+        toast("🎙️ Voix indisponible ici. Écris la phrase puis Préparer.");
+        if(input) input.focus();
+        return;
+      }
+
+      try{
+        if(VOICE_RECOGNITION){
+          try{ VOICE_RECOGNITION.stop(); }catch(_){}
+        }
+
+        const rec = new Rec();
+        VOICE_RECOGNITION = rec;
+        rec.lang = "fr-FR";
+        rec.interimResults = true;
+        rec.continuous = false;
+        rec.maxAlternatives = 1;
+
+        rec.onstart = () => {
+          toast("🎙️ Je t’écoute...");
+          const box = $("voicePayDraft");
+          if(box){
+            box.innerHTML = `<strong>🎙️ Écoute en cours…</strong><span>Parle naturellement : “J’ai encaissé 15000 Wave pour POS”.</span>`;
+          }
+        };
+
+        rec.onresult = (event) => {
+          let finalText = "";
+          let interimText = "";
+
+          for(let i = event.resultIndex; i < event.results.length; i += 1){
+            const piece = event.results[i][0]?.transcript || "";
+            if(event.results[i].isFinal) finalText += piece;
+            else interimText += piece;
+          }
+
+          const spoken = (finalText || interimText || "").trim();
+          if(input && spoken){
+            input.value = spoken;
+          }
+
+          if(finalText){
+            prepareVoicePay();
+          }
+        };
+
+        rec.onerror = (event) => {
+          console.warn("[PAY voice error]", event);
+          toast("🎙️ Voix non comprise. Tu peux écrire la phrase.");
+        };
+
+        rec.onend = () => {
+          const value = input ? input.value.trim() : "";
+          if(value) prepareVoicePay();
+        };
+
+        rec.start();
+      }catch(err){
+        console.warn("[PAY voice start]", err);
+        toast("🎙️ Micro bloqué. Écris la phrase puis Préparer.");
+      }
+    }
+
+    function stopVoiceRecognition(){
+      try{
+        if(VOICE_RECOGNITION) VOICE_RECOGNITION.stop();
+      }catch(_){}
+      toast("⏹ Voix arrêtée");
+    }
+
+    function clearVoicePay(){
+      const input = $("voicePayInput");
+      if(input) input.value = "";
+      VOICE_LAST_DRAFT = null;
+      const btn = $("btnVoiceFill");
+      if(btn) btn.disabled = true;
+      renderVoiceDraft(null);
+      toast("Voix effacée");
+    }
+
+    function bindVoicePay(){
+      const start = $("btnVoiceStart");
+      const stop = $("btnVoiceStop");
+      const prepare = $("btnVoicePrepare");
+      const fill = $("btnVoiceFill");
+      const clear = $("btnVoiceClear");
+
+      if(start) start.addEventListener("click", startVoiceRecognition);
+      if(stop) stop.addEventListener("click", stopVoiceRecognition);
+      if(prepare) prepare.addEventListener("click", prepareVoicePay);
+      if(fill) fill.addEventListener("click", fillVoicePayDraft);
+      if(clear) clear.addEventListener("click", clearVoicePay);
+
+      document.querySelectorAll("[data-voice-example]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const input = $("voicePayInput");
+          if(input) input.value = btn.getAttribute("data-voice-example") || "";
+          prepareVoicePay();
+        });
+      });
+    }
+
+
     function bindAnchorLinks(){
       ["fastMovements","bottomMovements","fastAdd","bottomAdd","fastDrafts","bottomDrafts"].forEach(id => {
         const el = $(id);
@@ -2484,6 +3031,7 @@
 
     bindAnchorLinks();
     bindQuickPresets();
+    bindVoicePay();
     resetForm();
     boot();
   </script>
