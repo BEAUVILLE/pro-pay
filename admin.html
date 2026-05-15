@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT — Ajouter · Actions rapides PAY</title>
-  <meta name="digiy-build" content="pay-admin-20260515-voice-terrain" />
+  <meta name="digiy-build" content="pay-admin-20260515-voice-terrain-mic-diagnostics" />
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
@@ -1525,7 +1525,7 @@
 
               <div class="voice-draft" id="voicePayDraft">
                 <strong>Doctrine PAY</strong>
-                <span>La voix prépare. Le clic confirme. PAY enregistre seulement après validation.</span>
+                <span>La voix prépare. Le clic confirme. PAY enregistre seulement après validation. Micro bloqué ? Autorise le micro dans le cadenas du navigateur.</span>
               </div>
             </div>
 
@@ -2832,19 +2832,80 @@
       return window.SpeechRecognition || window.webkitSpeechRecognition || null;
     }
 
-    function startVoiceRecognition(){
+    function voiceErrorMessage(code){
+      const map = {
+        "not-allowed": "Micro refusé. Clique sur le cadenas du navigateur puis autorise le micro pour ce site.",
+        "service-not-allowed": "Service vocal bloqué par le navigateur. Essaie Chrome, HTTPS, puis autorise le micro.",
+        "audio-capture": "Aucun micro détecté ou micro déjà utilisé par une autre application.",
+        "no-speech": "Aucune parole détectée. Réessaie en parlant près du téléphone.",
+        "network": "Reconnaissance vocale indisponible réseau. Tu peux écrire la phrase puis Préparer.",
+        "aborted": "Écoute arrêtée. Tu peux relancer le micro.",
+        "language-not-supported": "Langue vocale non supportée ici. Tu peux écrire la phrase."
+      };
+
+      return map[String(code || "")] || "Micro non disponible ici. Tu peux écrire la phrase puis cliquer sur Préparer.";
+    }
+
+    function showVoiceMessage(title, text, kind){
+      const box = $("voicePayDraft");
+      if(!box) return;
+
+      const cls = kind === "bad" ? "warn" : "ok";
+      box.innerHTML = `
+        <strong>${esc(title || "Voix PAY")}</strong>
+        <span class="${cls}">${esc(text || "")}</span>
+        <span>La voix prépare seulement. Le clic valide toujours.</span>
+      `;
+    }
+
+    async function checkMicroPermissionHint(){
+      try{
+        if(!navigator.permissions || !navigator.permissions.query) return "";
+
+        const perm = await navigator.permissions.query({ name: "microphone" });
+        if(perm && perm.state === "denied"){
+          return "Le navigateur indique que le micro est refusé. Clique sur le cadenas dans la barre d’adresse et autorise le micro.";
+        }
+        if(perm && perm.state === "prompt"){
+          return "Le navigateur va demander l’autorisation du micro. Il faut cliquer sur Autoriser.";
+        }
+        if(perm && perm.state === "granted"){
+          return "Micro autorisé par le navigateur.";
+        }
+      }catch(_){}
+
+      return "";
+    }
+
+    async function startVoiceRecognition(){
       const Rec = getSpeechRecognition();
       const input = $("voicePayInput");
 
-      if(!Rec){
-        toast("🎙️ Voix indisponible ici. Écris la phrase puis Préparer.");
+      if(!window.isSecureContext){
+        const msg = "Le micro navigateur exige une page sécurisée HTTPS. Ouvre la page depuis pro-pay.digiylyfe.com, pas depuis un fichier local.";
+        toast("🎙️ HTTPS requis pour le micro");
+        showVoiceMessage("Micro bloqué", msg, "bad");
         if(input) input.focus();
         return;
       }
 
+      if(!Rec){
+        const msg = "Reconnaissance vocale non disponible sur ce navigateur. Essaie Chrome/Android ou Chrome desktop. Sinon écris la phrase puis Préparer.";
+        toast("🎙️ Voix indisponible ici");
+        showVoiceMessage("Voix indisponible", msg, "bad");
+        if(input) input.focus();
+        return;
+      }
+
+      const permHint = await checkMicroPermissionHint();
+      if(permHint){
+        showVoiceMessage("Contrôle micro", permHint, permHint.includes("refusé") ? "bad" : "ok");
+      }
+
       try{
         if(VOICE_RECOGNITION){
-          try{ VOICE_RECOGNITION.stop(); }catch(_){}
+          try{ VOICE_RECOGNITION.abort(); }catch(_){}
+          VOICE_RECOGNITION = null;
         }
 
         const rec = new Rec();
@@ -2856,10 +2917,11 @@
 
         rec.onstart = () => {
           toast("🎙️ Je t’écoute...");
-          const box = $("voicePayDraft");
-          if(box){
-            box.innerHTML = `<strong>🎙️ Écoute en cours…</strong><span>Parle naturellement : “J’ai encaissé 15000 Wave pour POS”.</span>`;
-          }
+          showVoiceMessage(
+            "🎙️ Écoute en cours…",
+            "Parle naturellement : “J’ai encaissé 15000 Wave pour POS”.",
+            "ok"
+          );
         };
 
         rec.onresult = (event) => {
@@ -2883,19 +2945,41 @@
         };
 
         rec.onerror = (event) => {
-          console.warn("[PAY voice error]", event);
-          toast("🎙️ Voix non comprise. Tu peux écrire la phrase.");
+          const code = event?.error || "unknown";
+          const msg = voiceErrorMessage(code);
+
+          console.warn("[PAY voice error]", {
+            error: code,
+            message: event?.message || "",
+            full: event
+          });
+
+          toast("🎙️ " + msg, 4200);
+          showVoiceMessage("Micro : " + code, msg, "bad");
         };
 
         rec.onend = () => {
           const value = input ? input.value.trim() : "";
-          if(value) prepareVoicePay();
+          if(value){
+            prepareVoicePay();
+          }else{
+            const box = $("voicePayDraft");
+            if(box && !box.textContent.includes("Micro :")){
+              showVoiceMessage(
+                "Écoute terminée",
+                "Aucune phrase gardée. Tu peux reparler ou écrire directement.",
+                "ok"
+              );
+            }
+          }
         };
 
         rec.start();
       }catch(err){
         console.warn("[PAY voice start]", err);
-        toast("🎙️ Micro bloqué. Écris la phrase puis Préparer.");
+        const msg = err?.message || "Micro bloqué. Vérifie l’autorisation du navigateur.";
+        toast("🎙️ " + msg, 4200);
+        showVoiceMessage("Micro bloqué", msg, "bad");
       }
     }
 
@@ -3037,4 +3121,5 @@
   </script>
 </body>
 </html>
+
 
