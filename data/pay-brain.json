@@ -41,7 +41,15 @@
     ],
     "fallback_if_voice_unavailable": "text",
     "confirm_button_label": "✅ Confirmer et remplir la saisie",
-    "draft_button_label": "Préparer"
+    "draft_button_label": "Préparer",
+    "micro_policy": {
+      "starts_only_on_click": true,
+      "visible_status_during_listening": "🎧 J’écoute…",
+      "auto_stop_after_one_phrase": true,
+      "fallback_text_always_available": true,
+      "privacy_text": "Le micro sert à capter une phrase volontaire. Rien n’est enregistré sans validation."
+    },
+    "recommended_button_label": "🎙️ Parler 1 phrase"
   },
   "statuses": [
     {
@@ -728,65 +736,40 @@
         "channel"
       ],
       "confirmation_template": "J’ai compris : emprunt reçu de {amount_xof} FCFA. À rembourser plus tard. Valider ?"
+    },
+    {
+      "code": "note",
+      "label": "Note rapide",
+      "direction": "in",
+      "default_scope": "pro",
+      "default_kind": "other",
+      "default_status": "draft",
+      "examples": [
+        "Note rapide client à vérifier",
+        "À ranger plus tard vente Astou",
+        "Trace rapide sans détail",
+        "Rappel PAY à classer"
+      ],
+      "required_fields": [],
+      "needs_clarification_if_missing": [
+        "amount_xof",
+        "channel",
+        "scope"
+      ],
+      "confirmation_template": "J’ai compris : note rapide PAY. Je prépare un brouillon à vérifier ?"
     }
   ],
   "channels": [
-    {
-      "code": "wave",
-      "label": "Wave",
-      "public": true
-    },
-    {
-      "code": "cash",
-      "label": "Cash",
-      "public": true
-    },
-    {
-      "code": "orange_money",
-      "label": "Orange Money",
-      "public": true
-    },
-    {
-      "code": "bank",
-      "label": "Banque",
-      "public": true,
-      "aliases": [
-        "bank_transfer",
-        "virement"
-      ]
-    },
-    {
-      "code": "other",
-      "label": "Autre",
-      "public": true,
-      "aliases": [
-        "card",
-        "unknown",
-        "manual"
-      ]
-    }
+    "wave",
+    "cash",
+    "orange_money",
+    "bank",
+    "other"
   ],
   "scopes": [
-    {
-      "code": "pro",
-      "label": "Activité"
-    },
-    {
-      "code": "perso",
-      "label": "Perso",
-      "aliases": [
-        "personal"
-      ]
-    },
-    {
-      "code": "savings",
-      "label": "Épargne",
-      "aliases": [
-        "saving",
-        "epargne",
-        "épargne"
-      ]
-    }
+    "pro",
+    "perso",
+    "savings"
   ],
   "source_modules": [
     "PAY",
@@ -1119,5 +1102,504 @@
       "eur_label": "228,67 €"
     }
   },
-  "updated_for": "pay-admin-clics-cockpit-temperature-terrain-20260514"
+  "updated_for": "pay-cockpit-voice-real-signal-grand-terrain-20260515",
+  "version": "pay-brain-grand-terrain-20260515",
+  "channels_catalog": [
+    {
+      "code": "wave",
+      "label": "Wave",
+      "public": true
+    },
+    {
+      "code": "cash",
+      "label": "Cash",
+      "public": true
+    },
+    {
+      "code": "orange_money",
+      "label": "Orange Money",
+      "public": true
+    },
+    {
+      "code": "bank",
+      "label": "Banque",
+      "public": true,
+      "aliases": [
+        "bank_transfer",
+        "virement"
+      ]
+    },
+    {
+      "code": "other",
+      "label": "Autre",
+      "public": true,
+      "aliases": [
+        "card",
+        "unknown",
+        "manual"
+      ]
+    }
+  ],
+  "scopes_catalog": [
+    {
+      "code": "pro",
+      "label": "Activité"
+    },
+    {
+      "code": "perso",
+      "label": "Perso",
+      "aliases": [
+        "personal"
+      ]
+    },
+    {
+      "code": "savings",
+      "label": "Épargne",
+      "aliases": [
+        "saving",
+        "epargne",
+        "épargne"
+      ]
+    }
+  ],
+  "compatibility": {
+    "canonical_intention_codes": [
+      "income",
+      "proof",
+      "confirm",
+      "verify",
+      "relaunch",
+      "expense",
+      "saving",
+      "note",
+      "debt_received",
+      "home_expense",
+      "debt_paid",
+      "credit_paid",
+      "loan_received",
+      "bill_due",
+      "emergency"
+    ],
+    "legacy_intention_aliases": {
+      "debt_repayment": "debt_paid",
+      "business_expense": "expense",
+      "payment_received": "income",
+      "payment_proof": "proof",
+      "payment_to_verify": "verify",
+      "payment_confirmed": "confirm",
+      "client_relaunch": "relaunch",
+      "quick_note": "note"
+    },
+    "cockpit_note": "Le cockpit actuel lit channels et scopes comme des tableaux de codes simples. Les catalogues détaillés sont gardés dans channels_catalog et scopes_catalog."
+  },
+  "language_engine": {
+    "enabled": true,
+    "mode": "rules_first_human_validation",
+    "doctrine": "Le pro parle simple. DIGIY propose une trace. Le professionnel valide toujours.",
+    "amount_detection": {
+      "currency_default": "XOF",
+      "accepted_formats": [
+        "28000",
+        "28 000",
+        "28.000",
+        "28k",
+        "28 mille",
+        "vingt huit mille"
+      ],
+      "currency_words": [
+        "fcfa",
+        "franc",
+        "francs",
+        "cfa",
+        "xof",
+        "euro",
+        "euros"
+      ],
+      "hint": "Si aucun montant n’est trouvé, rester en brouillon et demander le montant."
+    },
+    "channel_aliases": {
+      "wave": [
+        "wave",
+        "wafe",
+        "way",
+        "ouave",
+        "application wave",
+        "capture wave"
+      ],
+      "cash": [
+        "cash",
+        "espèces",
+        "espece",
+        "liquide",
+        "billet",
+        "main à main",
+        "en main"
+      ],
+      "orange_money": [
+        "orange money",
+        "om",
+        "orange",
+        "orange-money"
+      ],
+      "bank": [
+        "banque",
+        "virement",
+        "bank",
+        "compte bancaire",
+        "transfert bancaire"
+      ],
+      "other": [
+        "carte",
+        "card",
+        "autre",
+        "inconnu",
+        "pas sûr",
+        "à vérifier"
+      ]
+    },
+    "scope_aliases": {
+      "pro": [
+        "pro",
+        "activité",
+        "business",
+        "boutique",
+        "travail",
+        "client",
+        "chantier",
+        "course",
+        "livraison"
+      ],
+      "perso": [
+        "perso",
+        "maison",
+        "famille",
+        "enfant",
+        "école",
+        "santé",
+        "privé"
+      ],
+      "savings": [
+        "épargne",
+        "epargne",
+        "réserve",
+        "reserve",
+        "mettre de côté",
+        "sécurité",
+        "projet"
+      ]
+    },
+    "module_aliases": {
+      "DRIVER": [
+        "chauffeur",
+        "course",
+        "taxi",
+        "jakarta",
+        "trajet",
+        "aibd",
+        "saly",
+        "transport"
+      ],
+      "COMMERCE": [
+        "boutique",
+        "commerce",
+        "client",
+        "produit",
+        "vente",
+        "marchandise"
+      ],
+      "POS": [
+        "caisse",
+        "ticket",
+        "stock",
+        "article",
+        "panier"
+      ],
+      "MARKET": [
+        "market",
+        "annonce",
+        "vente en ligne",
+        "astou",
+        "fiche boutique"
+      ],
+      "LOC": [
+        "location",
+        "villa",
+        "chambre",
+        "réservation logement",
+        "locataire",
+        "nuitée"
+      ],
+      "RESA": [
+        "réservation",
+        "table",
+        "restaurant",
+        "resto",
+        "client réservé"
+      ],
+      "BUILD": [
+        "chantier",
+        "maçon",
+        "plombier",
+        "électricien",
+        "ouvrier",
+        "matériel"
+      ],
+      "EXPLORE": [
+        "lieu",
+        "visite",
+        "guide",
+        "spot",
+        "explore"
+      ],
+      "JOBS": [
+        "mission",
+        "job",
+        "travail",
+        "embauche",
+        "candidat"
+      ],
+      "PAY": [
+        "pay",
+        "mon argent",
+        "trace",
+        "preuve",
+        "paiement"
+      ]
+    },
+    "intention_aliases": {
+      "income": [
+        "j’ai encaissé",
+        "encaissé",
+        "j’ai reçu",
+        "reçu",
+        "client a payé",
+        "vente",
+        "course payée",
+        "paiement reçu",
+        "argent rentré",
+        "il a payé",
+        "elle a payé"
+      ],
+      "proof": [
+        "preuve reçue",
+        "capture reçue",
+        "capture wave",
+        "reçu envoyé",
+        "screenshot",
+        "photo paiement",
+        "message de paiement",
+        "preuve whatsapp"
+      ],
+      "confirm": [
+        "paiement confirmé",
+        "j’ai vérifié",
+        "bien reçu",
+        "c’est rentré",
+        "montant confirmé",
+        "payé confirmé",
+        "compte vérifié"
+      ],
+      "verify": [
+        "à vérifier",
+        "client dit avoir payé",
+        "pas encore vu",
+        "capture pas claire",
+        "montant pas sûr",
+        "paiement annoncé",
+        "je dois vérifier"
+      ],
+      "relaunch": [
+        "relancer",
+        "rappeler client",
+        "demander preuve",
+        "demander confirmation",
+        "client à rappeler",
+        "complément à demander"
+      ],
+      "expense": [
+        "j’ai payé",
+        "j’ai dépensé",
+        "dépense",
+        "achat",
+        "carburant",
+        "essence",
+        "gasoil",
+        "stock",
+        "fournisseur",
+        "livraison",
+        "réparation",
+        "emballage",
+        "sachet",
+        "internet",
+        "facture payée",
+        "matériel"
+      ],
+      "saving": [
+        "je mets de côté",
+        "mettre de côté",
+        "réserve",
+        "épargne",
+        "sécurité",
+        "stock futur",
+        "projet",
+        "j’ai gardé"
+      ],
+      "note": [
+        "note rapide",
+        "à ranger",
+        "trace",
+        "je note",
+        "mémo",
+        "rappel",
+        "à classer"
+      ],
+      "debt_received": [
+        "on m’a remboursé",
+        "m’a remboursé",
+        "remboursement reçu",
+        "on m’a rendu",
+        "argent rendu",
+        "avance rendue"
+      ],
+      "home_expense": [
+        "maison",
+        "famille",
+        "repas",
+        "école",
+        "santé",
+        "médicament",
+        "pharmacie",
+        "enfant",
+        "transport privé",
+        "dépense maison"
+      ],
+      "debt_paid": [
+        "j’ai remboursé",
+        "dette payée",
+        "avance remboursée",
+        "tontine",
+        "j’ai rendu",
+        "fournisseur remboursé"
+      ],
+      "credit_paid": [
+        "crédit payé",
+        "échéance",
+        "emprunt remboursé",
+        "banque payée",
+        "crédit téléphone",
+        "prêt remboursé",
+        "mensualité"
+      ],
+      "loan_received": [
+        "j’ai emprunté",
+        "prêt reçu",
+        "on m’a prêté",
+        "on m’a avancé",
+        "avance reçue",
+        "emprunt famille"
+      ],
+      "bill_due": [
+        "à payer bientôt",
+        "à régler",
+        "facture à venir",
+        "loyer à payer",
+        "échéance arrive",
+        "fournisseur à payer",
+        "demain à payer",
+        "vendredi à payer"
+      ],
+      "emergency": [
+        "urgence",
+        "imprévu",
+        "panne",
+        "hospitalisation",
+        "réparation urgente",
+        "dépense surprise",
+        "problème famille",
+        "santé urgence"
+      ]
+    },
+    "ambiguity_rules": [
+      {
+        "case": "payer",
+        "rule": "Si la phrase dit 'client a payé' ou 'on m’a payé', classer income. Si elle dit 'j’ai payé', classer expense sauf présence claire de dette/crédit/maison."
+      },
+      {
+        "case": "rembourser",
+        "rule": "Si la phrase dit 'on m’a remboursé' ou 'Moussa m’a remboursé', classer debt_received. Si elle dit 'j’ai remboursé', classer debt_paid."
+      },
+      {
+        "case": "emprunt",
+        "rule": "Si argent reçu mais à rendre plus tard, classer loan_received, pas income libre."
+      },
+      {
+        "case": "preuve",
+        "rule": "Une preuve ou capture n’est jamais payment_confirmed sans validation humaine."
+      },
+      {
+        "case": "montant_manquant",
+        "rule": "Si aucun montant fiable n’est capté, rester en note brouillon et demander le montant."
+      }
+    ],
+    "clarification_questions": {
+      "amount_xof": "Quel montant en FCFA ?",
+      "channel": "C’était par Wave, cash, Orange Money, banque ou autre ?",
+      "scope": "C’est pour l’activité ou la maison ?",
+      "due_date": "C’est à payer quand ?",
+      "client_or_person": "C’est lié à quel client ou quelle personne ?"
+    },
+    "confidence_policy": {
+      "high": "Préparer le brouillon avec montant, canal et catégorie.",
+      "medium": "Préparer le brouillon mais afficher les champs à vérifier.",
+      "low": "Classer en note rapide et demander une précision.",
+      "never_skip_human_confirmation": true
+    },
+    "examples_grand_terrain": [
+      {
+        "phrase": "J’ai encaissé 28000 cash course chauffeur Saly AIBD",
+        "intention": "income",
+        "amount_xof": 28000,
+        "channel": "cash",
+        "source_module": "DRIVER",
+        "scope": "pro"
+      },
+      {
+        "phrase": "Le client a envoyé capture Wave 15000 pour réservation",
+        "intention": "proof",
+        "amount_xof": 15000,
+        "channel": "wave",
+        "source_module": "RESA",
+        "scope": "pro",
+        "status": "payment_proof"
+      },
+      {
+        "phrase": "J’ai payé 5000 carburant cash",
+        "intention": "expense",
+        "amount_xof": 5000,
+        "channel": "cash",
+        "source_module": "DRIVER",
+        "scope": "pro"
+      },
+      {
+        "phrase": "Moussa m’a remboursé 15000 cash",
+        "intention": "debt_received",
+        "amount_xof": 15000,
+        "channel": "cash",
+        "scope": "perso"
+      },
+      {
+        "phrase": "Loyer boutique 120000 à payer le 30",
+        "intention": "bill_due",
+        "amount_xof": 120000,
+        "scope": "pro",
+        "status": "pending"
+      },
+      {
+        "phrase": "Hospitalisation enfant 75000 à payer demain",
+        "intention": "emergency",
+        "amount_xof": 75000,
+        "scope": "perso"
+      }
+    ]
+  }
 }
