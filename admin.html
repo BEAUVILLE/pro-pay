@@ -1370,6 +1370,127 @@
       }
     }
 
+    /* =========================================================
+       DIGIY PAY — DETTES CLIENTS
+       Crédit vendeur · Argent à recevoir
+       ========================================================= */
+    .client-debts-panel{
+      margin-bottom:16px;
+      padding:16px;
+      border-radius:26px;
+      border:2px solid rgba(121,83,12,.24);
+      background:
+        radial-gradient(circle at right top,rgba(250,204,21,.18),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      color:#1f2a1f;
+      box-shadow:0 14px 34px rgba(77,52,22,.13);
+      display:grid;
+      gap:14px;
+    }
+
+    .client-debts-title{
+      font-size:15px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#6b4e09;
+    }
+
+    .client-debts-sub{
+      margin-top:5px;
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:950;
+    }
+
+    .client-debts-rule{
+      padding:13px;
+      border-radius:18px;
+      border:2px solid rgba(22,101,52,.20);
+      background:rgba(220,252,231,.76);
+      color:#14532d;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:1000;
+    }
+
+    .client-debts-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .client-debt-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:start;
+      padding:13px;
+      border-radius:18px;
+      border:2px solid rgba(83,58,26,.18);
+      background:rgba(255,255,255,.64);
+    }
+
+    .client-debt-name{
+      color:#241a0d;
+      font-size:16px;
+      font-weight:1000;
+      line-height:1.25;
+    }
+
+    .client-debt-meta{
+      margin-top:4px;
+      color:#3d3324;
+      font-size:14px;
+      font-weight:900;
+      line-height:1.45;
+    }
+
+    .client-debt-amount{
+      color:#6b4e09;
+      font-size:16px;
+      font-weight:1000;
+      white-space:nowrap;
+      text-align:right;
+    }
+
+    .client-debt-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:9px;
+    }
+
+    .client-debt-mini-btn{
+      min-height:36px;
+      border-radius:999px;
+      border:1px solid rgba(83,58,26,.22);
+      background:rgba(255,255,255,.68);
+      color:#1f2a1f;
+      padding:7px 10px;
+      font-size:12px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    .client-debt-mini-btn.danger{
+      color:#9f1239;
+      background:rgba(254,226,226,.90);
+      border-color:rgba(159,18,57,.22);
+    }
+
+    .client-debts-empty{
+      padding:16px;
+      border-radius:18px;
+      border:2px dashed rgba(83,58,26,.22);
+      background:rgba(255,255,255,.42);
+      color:#3d3324;
+      font-size:14px;
+      font-weight:950;
+      text-align:center;
+      line-height:1.5;
+    }
+
   </style>
 </head>
 <body>
@@ -1535,6 +1656,55 @@
               <button class="voice-example" type="button" data-voice-example="J’ai remboursé 20000 à Moussa cash">Dette remboursée</button>
               <button class="voice-example" type="button" data-voice-example="J’ai emprunté 50000 Wave">Emprunt reçu</button>
               <button class="voice-example" type="button" data-voice-example="Course chauffeur 28000 cash">Course chauffeur</button>
+            </div>
+          </section>
+
+
+          <section class="client-debts-panel" id="payClientDebts" aria-label="Dettes clients">
+            <div>
+              <div class="client-debts-title">📒 Dettes clients</div>
+              <div class="client-debts-sub">Crédit vendeur · Argent à recevoir</div>
+            </div>
+
+            <div class="client-debts-rule">
+              Ce montant est à recevoir. Il n’entre dans la caisse que quand le client paie.
+            </div>
+
+            <div class="row2">
+              <div class="field">
+                <label class="label" for="clientDebtName">Nom</label>
+                <input id="clientDebtName" type="text" maxlength="80" placeholder="Fatou" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="clientDebtPhone">Tel</label>
+                <input id="clientDebtPhone" type="tel" maxlength="30" placeholder="77 123 45 67" />
+              </div>
+            </div>
+
+            <div class="row2">
+              <div class="field">
+                <label class="label" for="clientDebtAmount">Somme due</label>
+                <input id="clientDebtAmount" type="number" min="1" step="1" placeholder="50000" />
+              </div>
+
+              <div class="field">
+                <label class="label" for="clientDebtDate">Date</label>
+                <input id="clientDebtDate" type="date" />
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary" id="btnSaveClientDebt" type="button">📒 Ajouter dette client</button>
+              <button class="btn secondary" id="btnClearClientDebt" type="button">🧹 Vider</button>
+            </div>
+
+            <div class="helper">
+              Dette client = argent attendu. Pas encore recette réelle.
+            </div>
+
+            <div class="client-debts-list" id="clientDebtsList">
+              <div class="client-debts-empty">Aucune dette client enregistrée sur ce téléphone pour l’instant.</div>
             </div>
           </section>
 
@@ -2364,6 +2534,7 @@
 
         toast("🗑 Mouvement supprimé");
         await loadHistory();
+        renderClientDebts();
       }catch(err){
         logErr("[PAY admin delete RPC]", err);
         const msg = errText(err);
@@ -3023,6 +3194,181 @@
     }
 
 
+    /* =========================================================
+       DETTES CLIENTS — Crédit vendeur · Argent à recevoir
+       V1 locale : ne gonfle jamais la caisse réelle.
+       ========================================================= */
+    function clientDebtKey(){
+      const slug = String(SLUG || "default").trim().toLowerCase() || "default";
+      return "digiy_pay_client_debts:" + slug;
+    }
+
+    function readClientDebts(){
+      try{
+        const raw = localStorage.getItem(clientDebtKey());
+        const arr = JSON.parse(raw || "[]");
+        return Array.isArray(arr) ? arr : [];
+      }catch(_){
+        return [];
+      }
+    }
+
+    function writeClientDebts(items){
+      try{
+        localStorage.setItem(clientDebtKey(), JSON.stringify(Array.isArray(items) ? items : []));
+        return true;
+      }catch(_){
+        return false;
+      }
+    }
+
+    function clearClientDebtFields(){
+      const ids = ["clientDebtName","clientDebtPhone","clientDebtAmount","clientDebtDate"];
+      ids.forEach(id => {
+        const el = $(id);
+        if(el) el.value = "";
+      });
+    }
+
+    function renderClientDebts(){
+      const box = $("clientDebtsList");
+      if(!box) return;
+
+      const items = readClientDebts();
+
+      if(!items.length){
+        box.innerHTML = `<div class="client-debts-empty">Aucune dette client enregistrée sur ce téléphone pour l’instant.</div>`;
+        return;
+      }
+
+      const total = items.reduce((sum, item) => sum + Number(item.amount_xof || 0), 0);
+
+      box.innerHTML = `
+        <div class="client-debts-rule">
+          Total à recevoir : ${esc(money(total))}. Ce total n’est pas ajouté aux entrées PAY.
+        </div>
+        ${items.map(item => `
+          <div class="client-debt-row" data-client-debt-id="${esc(item.id)}">
+            <div>
+              <div class="client-debt-name">${esc(item.name || "Client")}</div>
+              <div class="client-debt-meta">
+                Tel : ${esc(item.phone || "—")}<br>
+                Date : ${esc(item.due_date || "—")}<br>
+                Statut : À recevoir
+              </div>
+              <div class="client-debt-actions">
+                <button class="client-debt-mini-btn" type="button" data-client-debt-pay="${esc(item.id)}">✅ Paiement reçu</button>
+                <button class="client-debt-mini-btn danger" type="button" data-client-debt-delete="${esc(item.id)}">Supprimer</button>
+              </div>
+            </div>
+            <div class="client-debt-amount">${esc(money(item.amount_xof))}</div>
+          </div>
+        `).join("")}
+      `;
+
+      box.querySelectorAll("[data-client-debt-delete]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-client-debt-delete") || "";
+          const ok = window.confirm("Supprimer cette dette client ?");
+          if(!ok) return;
+          const next = readClientDebts().filter(item => item.id !== id);
+          writeClientDebts(next);
+          renderClientDebts();
+          toast("🗑 Dette client supprimée");
+        });
+      });
+
+      box.querySelectorAll("[data-client-debt-pay]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-client-debt-pay") || "";
+          const item = readClientDebts().find(x => x.id === id);
+          if(!item) return;
+
+          setFieldValue("direction", "in");
+          setFieldValue("scope", "pro");
+          setFieldValue("kind", "sale");
+          setFieldValue("channel", "wave");
+          setFieldValue("category", "client_debt_payment");
+          setFieldValue("movementDate", todayStr());
+          setFieldValue("sourceModule", "PAY");
+          setFieldValue("amount", String(item.amount_xof || ""));
+          setFieldValue("labelText", "Paiement dette client — " + (item.name || "Client"));
+          setFieldValue(
+            "noteText",
+            "Paiement reçu sur dette client / crédit vendeur. Client : " +
+            (item.name || "—") +
+            ". Tel : " +
+            (item.phone || "—") +
+            ". Date prévue : " +
+            (item.due_date || "—") +
+            "."
+          );
+
+          try{
+            $("payForm").scrollIntoView({ behavior:"smooth", block:"start" });
+          }catch(_){}
+
+          toast("✅ Paiement préparé. Vérifie le canal puis enregistre.");
+        });
+      });
+    }
+
+    function saveClientDebt(){
+      const name = String($("clientDebtName")?.value || "").trim();
+      const phone = String($("clientDebtPhone")?.value || "").trim();
+      const amount = Number($("clientDebtAmount")?.value || 0);
+      const dueDate = String($("clientDebtDate")?.value || "").trim();
+
+      if(!name){
+        toast("Nom client manquant");
+        $("clientDebtName")?.focus();
+        return;
+      }
+
+      if(!amount || amount <= 0){
+        toast("Somme due invalide");
+        $("clientDebtAmount")?.focus();
+        return;
+      }
+
+      const item = {
+        id: "debt-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+        name,
+        phone,
+        amount_xof: Math.round(amount),
+        due_date: dueDate || todayStr(),
+        status: "open",
+        created_at: new Date().toISOString()
+      };
+
+      const items = readClientDebts();
+      items.unshift(item);
+
+      if(!writeClientDebts(items)){
+        toast("Impossible de garder la dette client sur ce téléphone");
+        return;
+      }
+
+      clearClientDebtFields();
+      renderClientDebts();
+      toast("📒 Dette client ajoutée — pas comptée en caisse");
+    }
+
+    function bindClientDebts(){
+      const save = $("btnSaveClientDebt");
+      const clear = $("btnClearClientDebt");
+
+      if(save) save.addEventListener("click", saveClientDebt);
+      if(clear) clear.addEventListener("click", () => {
+        clearClientDebtFields();
+        toast("Champs dette client vidés");
+      });
+
+      renderClientDebts();
+    }
+
+
+
     function bindAnchorLinks(){
       ["fastMovements","bottomMovements","fastAdd","bottomAdd","fastDrafts","bottomDrafts"].forEach(id => {
         const el = $(id);
@@ -3116,10 +3462,13 @@
     bindAnchorLinks();
     bindQuickPresets();
     bindVoicePay();
+    bindClientDebts();
     resetForm();
     boot();
   </script>
 </body>
 </html>
+
+
 
 
