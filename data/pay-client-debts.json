@@ -1,0 +1,15 @@
+{
+  "department": "Dettes clients",
+  "subtitle": "Crédit vendeur · Argent à recevoir",
+  "fields": ["Nom", "Tel", "Somme due", "Date"],
+  "rule": "Ce montant est à recevoir. Il n’entre dans la caisse que quand le client paie.",
+  "count_as_cash": false,
+  "cash_entry_only_when_paid": true,
+  "statuses": [
+    { "code": "open", "label": "À recevoir" },
+    { "code": "partial", "label": "Payé en partie" },
+    { "code": "late", "label": "En retard" },
+    { "code": "settled", "label": "Soldé" }
+  ],
+  "updated_for": "pay-dettes-clients-20260515"
+}
