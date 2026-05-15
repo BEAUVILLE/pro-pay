@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT — Ajouter · Actions rapides PAY</title>
-  <meta name="digiy-build" content="pay-admin-20260515-dettes-clients-visible-v3" />
+  <meta name="digiy-build" content="pay-admin-20260515-dettes-clients-voice-v4" />
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
@@ -1535,6 +1535,7 @@
               <button class="voice-example" type="button" data-voice-example="J’ai remboursé 20000 à Moussa cash">Dette remboursée</button>
               <button class="voice-example" type="button" data-voice-example="J’ai emprunté 50000 Wave">Emprunt reçu</button>
               <button class="voice-example" type="button" data-voice-example="Course chauffeur 28000 cash">Course chauffeur</button>
+              <button class="voice-example" type="button" data-voice-example="POS Fatou dette client 50000 tel 771234567 date fin du mois">Dette Fatou</button>
             </div>
 
           <section class="quick-presets" id="payClientDebts" aria-label="Dettes clients PAY">
@@ -2736,7 +2737,7 @@
       if(/\bwave\b/.test(t)) return "wave";
       if(t.includes("orange money") || t.includes("orange") || t.includes("om ")) return "orange_money";
       if(t.includes("banque") || t.includes("virement") || t.includes("bank")) return "bank";
-      if(t.includes("cash") || t.includes("espece") || t.includes("especes") || t.includes("liquide")) return "cash";
+      if(t.includes("cash") || t.includes("cache") || t.includes("caches") || t.includes("espece") || t.includes("especes") || t.includes("liquide")) return "cash";
       return "other";
     }
 
@@ -2778,9 +2779,151 @@
       return "note";
     }
 
+
+    function isClientDebtVoice(t){
+      return (
+        t.includes("dette client") ||
+        t.includes("dettes clients") ||
+        t.includes("credit vendeur") ||
+        t.includes("client doit") ||
+        t.includes("client me doit") ||
+        /\b[a-z]{2,}\s+doit\s+\d/i.test(t) ||
+        /\b[a-z]{2,}\s+doit\s+[a-z]+\s*mille/i.test(t)
+      ) && !t.includes("je dois") && !t.includes("j dois") && !t.includes("j ai rembourse");
+    }
+
+    function extractClientDebtPhone(original){
+      const raw = String(original || "");
+      const m = raw.match(/(?:tel|tél|telephone|téléphone|whatsapp|wa)\s*[:\-]?\s*([+0-9][0-9\s().-]{6,})/i);
+      if(m && m[1]) return m[1].replace(/[^\d+]/g, "");
+      const any = raw.match(/(?:\+?221)?\s*(7[05678])[\s.-]?(\d{3})[\s.-]?(\d{2})[\s.-]?(\d{2})/);
+      if(any) return (any[1] + any[2] + any[3] + any[4]).replace(/[^\d]/g, "");
+      return "";
+    }
+
+    function clientDebtLastDayOfMonth(){
+      const d = new Date();
+      return new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    }
+
+    function clientDebtIsoDate(d){
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+
+    function extractClientDebtDate(original){
+      const raw = String(original || "");
+      const t = normVoiceText(raw);
+
+      if(t.includes("fin du mois")) return clientDebtIsoDate(clientDebtLastDayOfMonth());
+      if(t.includes("demain")){
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        return clientDebtIsoDate(d);
+      }
+
+      const weekdays = {
+        lundi:1, mardi:2, mercredi:3, jeudi:4, vendredi:5, samedi:6, dimanche:0
+      };
+
+      for(const [name, target] of Object.entries(weekdays)){
+        if(t.includes(name)){
+          const d = new Date();
+          const today = d.getDay();
+          let add = (target - today + 7) % 7;
+          if(add === 0) add = 7;
+          d.setDate(d.getDate() + add);
+          return clientDebtIsoDate(d);
+        }
+      }
+
+      const months = {
+        janvier:0, fevrier:1, février:1, mars:2, avril:3, mai:4, juin:5,
+        juillet:6, aout:7, août:7, septembre:8, octobre:9, novembre:10, decembre:11, décembre:11
+      };
+
+      const m1 = raw.toLowerCase().match(/\b(\d{1,2})\s+(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\b/);
+      if(m1){
+        const d = new Date();
+        d.setMonth(months[m1[2]], Number(m1[1]));
+        return clientDebtIsoDate(d);
+      }
+
+      const m2 = raw.match(/\b(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?\b/);
+      if(m2){
+        const now = new Date();
+        const year = m2[3] ? Number(String(m2[3]).length === 2 ? "20" + m2[3] : m2[3]) : now.getFullYear();
+        const d = new Date(year, Number(m2[2]) - 1, Number(m2[1]));
+        if(!Number.isNaN(d.getTime())) return clientDebtIsoDate(d);
+      }
+
+      return "";
+    }
+
+    function extractClientDebtName(original){
+      const raw = String(original || "").trim();
+      const withoutPhone = raw
+        .replace(/(?:tel|tél|telephone|téléphone|whatsapp|wa)\s*[:\-]?\s*[+0-9][0-9\s().-]{6,}/ig, " ")
+        .replace(/(?:\+?221)?\s*(7[05678])[\s.-]?(\d{3})[\s.-]?(\d{2})[\s.-]?(\d{2})/g, " ")
+        .replace(/\d[\d\s.,]*/g, " ");
+
+      const words = withoutPhone
+        .replace(/[.,;:!?()]/g, " ")
+        .split(/\s+/)
+        .map(w => w.trim())
+        .filter(Boolean);
+
+      const stop = new Set([
+        "pos","pay","driver","market","loc","resa","build","explore","jobs","commerce",
+        "client","dette","dettes","credit","crédit","vendeur","doit","me","doivent",
+        "date","fin","du","mois","en","fois","payable","vendredi","lundi","mardi","mercredi",
+        "jeudi","samedi","dimanche","tel","tél","telephone","téléphone","whatsapp","wa",
+        "course","location","vente","reservation","réservation"
+      ]);
+
+      for(const w of words){
+        const clean = stripAccents(w).toLowerCase();
+        if(clean.length < 2) continue;
+        if(stop.has(clean)) continue;
+        if(/^\d+$/.test(clean)) continue;
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      }
+
+      return "";
+    }
+
+    function parseClientDebtVoice(original, t){
+      const amount = extractVoiceAmount(original);
+      return {
+        ok: true,
+        type: "client_debt",
+        original: String(original || "").trim(),
+        name: extractClientDebtName(original),
+        phone: extractClientDebtPhone(original),
+        amount,
+        dueDate: extractClientDebtDate(original),
+        module: detectVoiceModule(t),
+        label: "Dettes clients",
+        confidence: [
+          amount ? "somme due" : "",
+          extractClientDebtName(original) ? "nom" : "",
+          extractClientDebtDate(original) ? "date" : "",
+          extractClientDebtPhone(original) ? "tel" : ""
+        ].filter(Boolean).length
+      };
+    }
+
+
     function parseVoicePay(text){
       const original = String(text || "").trim();
       const t = normVoiceText(original);
+
+      if(original && isClientDebtVoice(t)){
+        return parseClientDebtVoice(original, t);
+      }
+
       const presetCode = detectVoicePreset(t);
       const preset = PAY_QUICK_PRESETS[presetCode] || PAY_QUICK_PRESETS.note;
       const amount = extractVoiceAmount(original);
@@ -2820,6 +2963,29 @@
         return;
       }
 
+      if(draft.type === "client_debt"){
+        const amountTxt = draft.amount ? money(draft.amount) : "somme due à compléter";
+        const nameTxt = draft.name || "nom à compléter";
+        const phoneTxt = draft.phone || "tel optionnel";
+        const dateTxt = draft.dueDate || "date à préciser";
+        const warn = !draft.amount ? `<div class="warn">⚠️ Somme due non détectée : complète avant d’ajouter.</div>` : "";
+        const nameWarn = !draft.name ? `<div class="warn">⚠️ Nom client non détecté : complète avant d’ajouter.</div>` : "";
+
+        box.innerHTML = `
+          <strong>📒 Dette client préparée :</strong>
+          <div>Nom : <span class="ok">${esc(nameTxt)}</span></div>
+          <div>Tel : <span class="ok">${esc(phoneTxt)}</span></div>
+          <div>Somme due : <span class="ok">${esc(amountTxt)}</span></div>
+          <div>Date : <span class="ok">${esc(dateTxt)}</span></div>
+          <div>Module annoncé : <span class="ok">${esc(draft.module || "PAY")}</span></div>
+          ${warn}
+          ${nameWarn}
+          <div>Phrase : ${esc(draft.original)}</div>
+          <div class="warn">Dette client = argent attendu. Pas encore recette réelle.</div>
+        `;
+        return;
+      }
+
       const amountTxt = draft.amount ? money(draft.amount) : "à compléter";
       const channelTxt = draft.channel || "other";
       const warn = !draft.amount ? `<div class="warn">⚠️ Montant non détecté : tu le complèteras avant validation.</div>` : "";
@@ -2849,7 +3015,7 @@
       if(btn) btn.disabled = !draft.ok;
 
       if(draft.ok){
-        toast("🎙️ Mouvement préparé par la voix");
+        toast(draft.type === "client_debt" ? "📒 Dette client préparée par la voix" : "🎙️ Mouvement préparé par la voix");
       }else{
         toast("Parle ou écris d’abord une phrase PAY");
       }
@@ -2857,9 +3023,33 @@
       return draft;
     }
 
+
+    function fillClientDebtFromVoice(draft){
+      if(!draft || draft.type !== "client_debt") return false;
+
+      setFieldValue("clientDebtName", draft.name || "");
+      setFieldValue("clientDebtPhone", draft.phone || "");
+      if(draft.amount) setFieldValue("clientDebtAmount", String(draft.amount));
+      if(draft.dueDate) setFieldValue("clientDebtDate", draft.dueDate);
+
+      const panel = $("payClientDebts");
+      if(panel){
+        try{ panel.scrollIntoView({ behavior:"smooth", block:"start" }); }catch(_){}
+      }
+
+      toast("📒 Dette client remplie. Vérifie puis clique sur Ajouter dette client.");
+      return true;
+    }
+
+
     function fillVoicePayDraft(){
       const draft = VOICE_LAST_DRAFT || prepareVoicePay();
       if(!draft || !draft.ok) return;
+
+      if(draft.type === "client_debt"){
+        fillClientDebtFromVoice(draft);
+        return;
+      }
 
       applyQuickPreset(draft.presetCode);
 
@@ -3403,6 +3593,9 @@
   </script>
 </body>
 </html>
+
+
+
 
 
 
