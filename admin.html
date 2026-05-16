@@ -1203,16 +1203,75 @@
        ========================================================= */
     .voice-pay-panel{
       margin-bottom:16px;
-      padding:16px;
-      border-radius:26px;
-      border:2px solid rgba(22,101,52,.25);
+      padding:20px;
+      border-radius:28px;
+      border:3px solid rgba(250,204,21,.55);
       background:
-        radial-gradient(circle at right top,rgba(34,197,94,.14),transparent 34%),
-        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+        radial-gradient(circle at right top,rgba(250,204,21,.18),transparent 36%),
+        radial-gradient(circle at left bottom,rgba(34,197,94,.14),transparent 30%),
+        linear-gradient(160deg,rgba(255,252,235,.99),rgba(246,232,202,.97));
       color:#1f2a1f;
-      box-shadow:0 14px 34px rgba(77,52,22,.13);
+      box-shadow:
+        0 0 0 1px rgba(250,204,21,.18),
+        0 20px 50px rgba(77,52,22,.20),
+        0 4px 16px rgba(250,204,21,.12);
       display:grid;
-      gap:14px;
+      gap:16px;
+    }
+
+    /* Badge doctrine en tête de section */
+    .voice-doctrine-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 13px;
+      border-radius:999px;
+      border:2px solid rgba(250,204,21,.55);
+      background:rgba(250,204,21,.16);
+      color:#6b4e09;
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      width:max-content;
+    }
+
+    /* Flow 3 étapes */
+    .voice-flow{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+    .voice-flow-step{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid rgba(83,58,26,.22);
+      background:rgba(255,255,255,.62);
+      font-size:13px;
+      font-weight:1000;
+      color:#241a0d;
+    }
+    .voice-flow-step .num{
+      width:22px;height:22px;border-radius:50%;
+      background:linear-gradient(135deg,#facc15,#f59e0b);
+      color:#241a0d;
+      font-size:11px;font-weight:1000;
+      display:grid;place-items:center;
+      flex-shrink:0;
+    }
+    .voice-flow-step.final .num{
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+      color:#032215;
+    }
+    .voice-flow-arrow{
+      color:rgba(121,83,12,.55);
+      font-size:16px;
+      font-weight:900;
     }
 
     .voice-pay-head{
@@ -1224,18 +1283,18 @@
     }
 
     .voice-pay-title{
-      font-size:15px;
+      font-size:18px;
       font-weight:1000;
-      letter-spacing:.08em;
-      text-transform:uppercase;
+      letter-spacing:.04em;
       color:#14532d;
+      line-height:1.2;
     }
 
     .voice-pay-help{
-      margin-top:5px;
+      margin-top:6px;
       color:#3d3324;
       font-size:15px;
-      line-height:1.5;
+      line-height:1.55;
       font-weight:950;
       max-width:72ch;
     }
@@ -1346,19 +1405,32 @@
       flex-wrap:wrap;
     }
 
-    .voice-example{
-      border:1px solid rgba(83,58,26,.22);
-      border-radius:999px;
-      background:rgba(255,255,255,.66);
-      color:#1f2a1f;
-      padding:8px 11px;
+    .voice-examples-label{
+      width:100%;
       font-size:12px;
       font-weight:1000;
+      letter-spacing:.07em;
+      text-transform:uppercase;
+      color:#6b4e09;
+      margin-bottom:4px;
+    }
+
+    .voice-example{
+      border:1px solid rgba(121,83,12,.28);
+      border-radius:999px;
+      background:rgba(255,255,255,.78);
+      color:#241a0d;
+      padding:9px 13px;
+      font-size:13px;
+      font-weight:1000;
       cursor:pointer;
+      transition:.15s ease;
     }
 
     .voice-example:hover{
-      background:rgba(250,204,21,.24);
+      background:rgba(250,204,21,.32);
+      border-color:rgba(121,83,12,.45);
+      transform:translateY(-1px);
     }
 
     @media(max-width:820px){
@@ -1498,10 +1570,19 @@
           <section class="voice-pay-panel" id="payVoicePanel" aria-label="PAY agit à la voix">
             <div class="voice-pay-head">
               <div>
-                <div class="voice-pay-title">🎙️ PAY agit à la voix</div>
+                <div class="voice-doctrine-badge">❖ DIGIY prepare · Toi tu valides</div>
+                <div class="voice-pay-title" style="margin-top:10px;">🎙️ PAY agit à la voix — terrain direct</div>
                 <div class="voice-pay-help">
-                  Parle comme au terrain. DIGIY prépare la ligne, mais n’enregistre jamais seul.
-                  Tu valides toujours avec le doigt.
+                  Parle comme au terrain. DIGIY prépare le mouvement, tu corriges si besoin, puis tu valides avec le doigt. PAY n’enregistre jamais seul.
+                </div>
+                <div class="voice-flow">
+                  <div class="voice-flow-step"><span class="num">1</span> Tu parles ou tu écris</div>
+                  <div class="voice-flow-arrow">&rarr;</div>
+                  <div class="voice-flow-step"><span class="num">2</span> DIGIY prépare</div>
+                  <div class="voice-flow-arrow">&rarr;</div>
+                  <div class="voice-flow-step"><span class="num">3</span> Tu corriges si besoin</div>
+                  <div class="voice-flow-arrow">&rarr;</div>
+                  <div class="voice-flow-step final"><span class="num">✓</span> Tu valides · PAY enregistre</div>
                 </div>
               </div>
             </div>
@@ -1530,6 +1611,7 @@
             </div>
 
             <div class="voice-examples" aria-label="Exemples voix PAY">
+              <div class="voice-examples-label">⚡ Touches rapides — clique pour charger l'exemple</div>
               <button class="voice-example" type="button" data-voice-example="J’ai encaissé 15000 Wave pour POS">🧾 POS 15000 Wave</button>
               <button class="voice-example" type="button" data-voice-example="Location villa 3 nuits 60000 Wave">🏠 Location villa</button>
               <button class="voice-example" type="button" data-voice-example="Vente market boutique 12000 cash">🛒 Vente boutique</button>
@@ -3609,6 +3691,15 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 
