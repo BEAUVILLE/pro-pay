@@ -1,0 +1,133 @@
+// pay-proof.js — DIGIY PAY · preuve de paiement Wave
+// Doctrine : sobre devant, redoutable derrière. Rien en dur.
+// Dépendances : pay-tools.js (DIGIY_PAY_TOOLS) + index.html (DIGIY_PAY_STATE)
+
+(() => {
+  "use strict";
+
+  // ─── Config locale (aucune valeur sensible) ─────────────────────────────────
+  const PROOF_BUCKET = "pay-proofs";
+  const MAX_SIZE_MB  = 10;
+
+  // ─── Helpers DOM ────────────────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+
+  function setMsg(id, text, tone) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = text || "";
+    el.style.color =
+      tone === "ok"  ? "#22c55e" :
+      tone === "bad" ? "#ef4444" :
+      "rgba(234,255,241,.75)";
+  }
+
+  // ─── Accès aux modules externes ─────────────────────────────────────────────
+  function tools()    { return window.DIGIY_PAY_TOOLS || null; }
+  function getOrder() { return window.DIGIY_PAY_STATE?.getOrder?.() || null; }
+  function getSb()    { return tools()?.getSupabaseClient?.() || null; }
+
+  // ─── Upload Supabase Storage ─────────────────────────────────────────────────
+  async function uploadToStorage(file, order) {
+    const client = getSb();
+    if (!client) throw new Error("Supabase indisponible.");
+
+    const ext  = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const ref  = order.reference || ("proof-" + Date.now().toString(36));
+    const path = `${(order.module || "PAY").toUpperCase()}/${ref}.${ext}`;
+
+    const { error } = await client.storage
+      .from(PROOF_BUCKET)
+      .upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" });
+
+    if (error) throw error;
+
+    const { data: urlData } = client.storage.from(PROOF_BUCKET).getPublicUrl(path);
+    return { path, url: urlData?.publicUrl || "" };
+  }
+
+  // ─── Enregistrement RPC (non-bloquant) ───────────────────────────────────────
+  async function recordProof(order, proofUrl) {
+    const client = getSb();
+    if (!client) return;
+
+    try {
+      await client.rpc("digiy_pay_record_proof_submission", {
+        p_reference:  order.reference  || "",
+        p_module:     order.module     || "PAY",
+        p_phone:      order.phone      || "",
+        p_plan:       order.plan       || "",
+        p_amount_xof: Number(order.amount_xof || order.amount || 0),
+        p_proof_url:  proofUrl         || "",
+        p_slug:       order.slug       || ""
+      });
+    } catch (e) {
+      // Non-bloquant — la preuve est déjà uploadée
+      console.warn("[pay-proof] RPC record:", e?.message);
+    }
+  }
+
+  // ─── Handler bouton 📤 Envoyer preuve Wave ───────────────────────────────────
+  async function handleSendProof() {
+    const btn       = $("btnSendProof");
+    const fileInput = $("proofFile");
+
+    // Vérif fichier
+    if (!fileInput?.files?.length) {
+      setMsg("payMsg", "📸 Sélectionne d'abord la photo du reçu Wave.");
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      setMsg("payMsg", `⚠️ Fichier trop lourd (max ${MAX_SIZE_MB} Mo).`, "bad");
+      return;
+    }
+
+    // Vérif commande
+    const order = getOrder();
+    if (!order?.reference) {
+      setMsg("payMsg", "⚠️ Prépare d'abord la référence paiement.", "warn");
+      return;
+    }
+
+    // Lancement
+    if (btn) btn.disabled = true;
+    setMsg("payMsg", "⏳ Envoi de la preuve en cours…");
+
+    try {
+      const { url } = await uploadToStorage(file, order);
+      await recordProof(order, url);
+
+      setMsg("payMsg", "✅ Preuve envoyée. Activation après validation.", "ok");
+      setMsg("proofSendMsg", "");
+
+    } catch (e) {
+      console.error("[pay-proof] upload:", e?.message || e);
+
+      // Fallback : guide vers WA / SMS
+      setMsg("payMsg",
+        "⚠️ Envoi direct impossible. Utilise WhatsApp ou SMS ci-dessous.", "warn");
+      setMsg("proofSendMsg",
+        "👇 Joins la photo du reçu manuellement dans le message.");
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  // ─── Init ────────────────────────────────────────────────────────────────────
+  function init() {
+    const btnSend = $("btnSendProof");
+    if (btnSend) btnSend.addEventListener("click", handleSendProof);
+
+    console.info("[pay-proof] prêt — bucket:", PROOF_BUCKET);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+})();
