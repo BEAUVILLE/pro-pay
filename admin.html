@@ -1530,12 +1530,16 @@
             </div>
 
             <div class="voice-examples" aria-label="Exemples voix PAY">
-              <button class="voice-example" type="button" data-voice-example="J’ai encaissé 15000 Wave pour POS">POS 15000 Wave</button>
-              <button class="voice-example" type="button" data-voice-example="Dépense maison 8000 cash">Dépense maison</button>
-              <button class="voice-example" type="button" data-voice-example="J’ai remboursé 20000 à Moussa cash">Dette remboursée</button>
-              <button class="voice-example" type="button" data-voice-example="J’ai emprunté 50000 Wave">Emprunt reçu</button>
-              <button class="voice-example" type="button" data-voice-example="Course chauffeur 28000 cash">Course chauffeur</button>
-              <button class="voice-example" type="button" data-voice-example="POS Fatou dette client 50000 tel 771234567 date fin du mois">Dette Fatou</button>
+              <button class="voice-example" type="button" data-voice-example="J’ai encaissé 15000 Wave pour POS">🧾 POS 15000 Wave</button>
+              <button class="voice-example" type="button" data-voice-example="Location villa 3 nuits 60000 Wave">🏠 Location villa</button>
+              <button class="voice-example" type="button" data-voice-example="Vente market boutique 12000 cash">🛒 Vente boutique</button>
+              <button class="voice-example" type="button" data-voice-example="Réservation resto 45000 Wave">📅 Réservation resto</button>
+              <button class="voice-example" type="button" data-voice-example="Chantier travaux payé 80000 Wave">🏗️ Chantier travaux</button>
+              <button class="voice-example" type="button" data-voice-example="Dépense maison 8000 cash">🏡 Dépense maison</button>
+              <button class="voice-example" type="button" data-voice-example="J’ai remboursé 20000 à Moussa cash">💸 Dette remboursée</button>
+              <button class="voice-example" type="button" data-voice-example="J’ai emprunté 50000 Wave">📥 Emprunt reçu</button>
+              <button class="voice-example" type="button" data-voice-example="Course chauffeur 28000 cash">🚗 Course chauffeur</button>
+              <button class="voice-example" type="button" data-voice-example="POS Fatou dette client 50000 tel 771234567 date fin du mois">📒 Dette Fatou</button>
             </div>
 
           <section class="quick-presets" id="payClientDebts" aria-label="Dettes clients PAY">
@@ -2742,20 +2746,25 @@
     }
 
     function detectVoiceModule(t){
+      // Padding d'espaces : word boundary matching.
+      // Sans ca, "encaisse".includes("caisse") = true bloquait tout sur POS.
+      const padded = " " + t + " ";
+      const wordHit = w => padded.includes(" " + w + " ");
+
       const checks = [
-        ["POS", ["pos", "caisse", "ticket", "addition", "stock", "boutique caisse"]],
-        ["DRIVER", ["driver", "chauffeur", "course", "taxi", "transport", "vehicule"]],
-        ["MARKET", ["market", "marche", "vente market", "annonce", "boutique"]],
-        ["LOC", ["loc", "location", "logement", "nuit", "villa", "appartement"]],
-        ["RESA", ["resa", "reservation", "reserve", "table", "resto", "restaurant"]],
-        ["BUILD", ["build", "chantier", "macon", "plombier", "electricien", "travaux", "artisan"]],
-        ["EXPLORE", ["explore", "lieu", "circuit", "visite", "decouverte", "tour"]],
-        ["JOBS", ["jobs", "job", "mission", "travail", "service"]],
-        ["PAY", ["pay", "mon argent", "argent"]]
+        ["POS",     ["pos", "caisse", "ticket", "addition", "stock", "boutique caisse"]],
+        ["DRIVER",  ["driver", "chauffeur", "course chauffeur", "taxi", "transport", "vehicule"]],
+        ["MARKET",  ["market", "vente market", "annonce", "boutique"]],
+        ["LOC",     ["loc", "location", "logement", "nuit", "villa", "appartement"]],
+        ["RESA",    ["resa", "reservation", "resto", "restaurant"]],
+        ["BUILD",   ["build", "chantier", "macon", "plombier", "electricien", "travaux", "artisan"]],
+        ["EXPLORE", ["explore", "circuit", "visite", "decouverte", "tour"]],
+        ["JOBS",    ["jobs", "job", "mission"]],
+        ["PAY",     ["pay", "mon argent"]]
       ];
 
       for(const [module, words] of checks){
-        if(words.some(w => t.includes(w))) return module;
+        if(words.some(wordHit)) return module;
       }
 
       return "PAY";
@@ -3527,6 +3536,13 @@
       try{
         cleanVisibleUrl();
 
+        // Garde : session.js doit avoir posé DIGIY_SESSION avant boot()
+        if(!window.DIGIY_SESSION || typeof window.DIGIY_SESSION.require !== "function"){
+          setState("bad", "Session indisponible", "Recharge la page ou repasse par ton code PIN.");
+          console.warn("[PAY admin boot] window.DIGIY_SESSION manquant — session.js non chargé ?");
+          return;
+        }
+
         const session = window.DIGIY_SESSION.require("./pin.html?redirect=admin");
         if(!session) return;
 
@@ -3593,6 +3609,15 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 
