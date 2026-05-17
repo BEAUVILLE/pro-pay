@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>MON ARGENT — Ajouter · Actions rapides PAY</title>
-  <meta name="digiy-build" content="pay-admin-20260515-dettes-clients-voice-v4" />
+  <meta name="digiy-build" content="pay-admin-20260517-langage-commun-v1" />
   <meta name="theme-color" content="#04110d" />
   <meta
     name="description"
@@ -1819,10 +1819,10 @@
               </div>
 
               <div class="field">
-                <label class="label" for="scope">Scope</label>
+                <label class="label" for="scope">Nature</label>
                 <select id="scope" required>
                   <option value="pro">ACTIVITÉ</option>
-                  <option value="personal">PERSO</option>
+                  <option value="perso">PERSO</option>
                   <option value="savings">ÉPARGNE</option>
                 </select>
               </div>
@@ -2096,7 +2096,7 @@
 
     function normalizePrefillScope(value){
       const v = String(value || "").toLowerCase();
-      if(v === "perso" || v === "personal") return "personal";
+      if(v === "perso" || v === "personal") return "perso";
       if(v === "saving" || v === "savings" || v === "epargne" || v === "épargne") return "savings";
       return "pro";
     }
@@ -2266,7 +2266,7 @@
         $("direction").value = "in";
       }else if(scope === "pro" && kind.value === "saving"){
         kind.value = "sale";
-      }else if(scope === "personal" && kind.value === "saving"){
+      }else if(scope === "perso" && kind.value === "saving"){
         kind.value = "other";
       }
     }
@@ -2274,8 +2274,7 @@
 
     function dbScopeFromUi(scope){
       const v = String(scope || "").toLowerCase();
-      if(v === "personal") return "perso";
-      if(v === "perso") return "perso";
+      if(v === "personal" || v === "perso") return "perso";
       if(v === "savings") return "savings";
       if(v === "saving") return "savings";
       return "pro";
@@ -2564,7 +2563,7 @@
 
       debt_received: {
         direction: "in",
-        scope: "personal",
+        scope: "perso",
         kind: "other",
         channel: "cash",
         category: "debt_received",
@@ -2588,7 +2587,7 @@
 
       home_expense: {
         direction: "out",
-        scope: "personal",
+        scope: "perso",
         kind: "expense",
         channel: "cash",
         category: "home_expense",
@@ -2600,7 +2599,7 @@
 
       debt_paid: {
         direction: "out",
-        scope: "personal",
+        scope: "perso",
         kind: "expense",
         channel: "cash",
         category: "debt_repayment",
@@ -2612,7 +2611,7 @@
 
       credit_paid: {
         direction: "out",
-        scope: "personal",
+        scope: "perso",
         kind: "expense",
         channel: "bank",
         category: "credit_repayment",
@@ -2636,7 +2635,7 @@
 
       loan_received: {
         direction: "in",
-        scope: "personal",
+        scope: "perso",
         kind: "other",
         channel: "cash",
         category: "loan_received",
@@ -2660,7 +2659,7 @@
 
       emergency: {
         direction: "out",
-        scope: "personal",
+        scope: "perso",
         kind: "expense",
         channel: "cash",
         category: "emergency",
@@ -3691,6 +3690,34 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
