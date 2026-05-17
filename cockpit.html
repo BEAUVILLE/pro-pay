@@ -11,9 +11,9 @@
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="digiy-build" content="pay-cockpit-20260515-dettes-clients-v1" />
+  <meta name="digiy-build" content="pay-cockpit-20260517-langage-commun-v1" />
   <script>
-    window.DIGIY_BUILD_ID = "pay-cockpit-20260515-dettes-clients-v1";
+    window.DIGIY_BUILD_ID = "pay-cockpit-20260517-langage-commun-v1";
     window.DIGIY_CACHE_GUARD = true;
   </script>
 
@@ -28,9 +28,9 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./session.js?v=pay-cockpit-20260515-dettes-clients-v1"></script>
-  <script src="./pay-tools.js?v=pay-cockpit-20260515-dettes-clients-v1"></script>
-  <script src="./pay-alerts.js?v=pay-cockpit-20260515-dettes-clients-v1"></script>
+  <script src="./session.js?v=pay-cockpit-20260517-langage-commun-v1"></script>
+  <script src="./pay-tools.js?v=pay-cockpit-20260517-langage-commun-v1"></script>
+  <script src="./pay-alerts.js?v=pay-cockpit-20260517-langage-commun-v1"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1297,7 +1297,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "pay-cockpit-20260515-dettes-clients-v1";
+      const BUILD_ID = "pay-cockpit-20260517-langage-commun-v1";
       const BUILD_KEY = "digiy_pay_cockpit_build_id";
       const CLEAN_KEY = "digiy_pay_cockpit_cache_cleaned";
 
@@ -1965,7 +1965,7 @@
 
   function adminScopeFromDraft(draft){
     const scope=String(draft?.scope||"").toLowerCase();
-    if(scope==="perso"||scope==="personal") return "personal";
+    if(scope==="perso"||scope==="personal") return "perso";
     if(scope==="savings"||draft?.intent_code==="saving") return "savings";
     return "pro";
   }
@@ -3873,6 +3873,17 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
